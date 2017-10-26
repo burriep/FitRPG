@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">FitRPG</string>
+    <string name="have_no_fear_i_am_here">Have No Fear! I Am Here!</string>
+    <string name="hero_button">Allmight</string>
+    <string name="stamina_label">Stamina Amount: </string>
+    <string name="strength_label">Strength Amount: </string>
+    <string name="endurance_label">Endurance Amount: </string>
+    <string name="dexterity_label">Dexterity Amount: </string>
+    <string name="speed_label">Speed Amount: </string>
+    <string name="combat_start_button">Run Combat!</string>
+    <string name="player_label">Player</string>
+    <string name="enemy_label">Enemy</string>
 </resources>
