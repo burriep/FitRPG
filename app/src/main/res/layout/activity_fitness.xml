@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.uwm.cs.fitrpg.view.FitnessActivity">
+
+    <LinearLayout
+        android:id="@+id/fitness_menu"
+        android:orientation="vertical"
+        android:background="@color/colorPrimary"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <TextView
+            android:id="@+id/tv_fitness_history"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="View History"
+            android:textSize="20dp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:clickable="true"/>
+        <TextView
+            android:id="@+id/tv_fitness_record_data"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Record Data"
+            android:textSize="20dp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:clickable="true"/>
+        <TextView
+            android:id="@+id/tv_fitness_track_data"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Track Data"
+            android:textSize="20dp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:clickable="true"/>
+        <TextView
+            android:id="@+id/tv_fitness_gotoMap"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="Go To Map"
+            android:textSize="20dp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:clickable="true"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fitness_frag_data"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_weight="4"
+        android:layout_height="match_parent">
+
+    </LinearLayout>
+
+</LinearLayout>
