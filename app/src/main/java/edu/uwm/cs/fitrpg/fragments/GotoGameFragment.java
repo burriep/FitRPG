@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import edu.uwm.cs.fitrpg.GameActivity;
 import edu.uwm.cs.fitrpg.view.FitnessActivity;
 import edu.uwm.cs.fitrpg.MainActivity;
 import edu.uwm.cs.fitrpg.R;
@@ -31,7 +32,7 @@ public class GotoGameFragment extends Fragment{
         btnGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(fragmentView.getContext(), MainActivity.class);
+                Intent intent = new Intent(fragmentView.getContext(), GameActivity.class);
                 startActivity(intent);
             }
         });
