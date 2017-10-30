@@ -14,6 +14,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        frDB = new DatabaseHelper(this);
+        DatabaseHelper frDB = new DatabaseHelper(this);
     }
 }
