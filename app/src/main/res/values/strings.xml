@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">FitRPG</string>
+    <string name="title_activity_track_fitness">TrackFitnessActivity</string>
+    <string name="activity_tracking_start_record">Start</string>
+    <string name="activity_tracking_pause_record">Pause</string>
+    <string name="activity_tracking_stop_record">Stop</string>
+    <string name="no_location_detected">No location detected. Make sure location is enabled on the device.</string>
+    <string name="location_permission_rationale">Location permission is needed for core functionality</string>
+    <string name="location_permission_denied_explanation">Permission was denied, but is needed for core functionality.</string>
+    <string name="settings">Settings</string>
+    <string name="title_activity_maps">Map</string>
+    <plurals name="num_locations_reported">
+        <item quantity="zero">No location reported</item>
+        <item quantity="one">One location reported</item>
+        <item quantity="other">%d locations reported</item>
+    </plurals>
 </resources>
