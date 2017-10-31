@@ -13,6 +13,8 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="number"
+        android:text="10"
+        android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/EnemyStamina"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/StaminaLabel"
@@ -38,6 +40,8 @@
         android:layout_marginStart="16dp"
         android:ems="10"
         android:inputType="number"
+        android:text="10"
+        android:textAlignment="center"
         app:layout_constraintBaseline_toBaselineOf="@+id/PlayerStamina"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -50,6 +54,8 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="number"
+        android:text="5"
+        android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/EnemyStrength"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/StrengthLabel"
@@ -75,6 +81,8 @@
         android:layout_marginStart="16dp"
         android:ems="10"
         android:inputType="number"
+        android:text="5"
+        android:textAlignment="center"
         app:layout_constraintBaseline_toBaselineOf="@+id/PlayerStrength"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -87,6 +95,8 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="number"
+        android:text="5"
+        android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/EnemyEndurance"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/EnduranceLabel"
@@ -102,6 +112,7 @@
         app:layout_constraintBaseline_toBaselineOf="@+id/PlayerEndurance"
         app:layout_constraintEnd_toStartOf="@+id/PlayerEndurance"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
@@ -112,6 +123,8 @@
         android:layout_marginStart="16dp"
         android:ems="10"
         android:inputType="number"
+        android:text="5"
+        android:textAlignment="center"
         app:layout_constraintBaseline_toBaselineOf="@+id/PlayerEndurance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -124,6 +137,8 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="number"
+        android:text="5"
+        android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/EnemyDexterity"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/DexterityLabel"
@@ -149,6 +164,8 @@
         android:layout_marginStart="16dp"
         android:ems="10"
         android:inputType="number"
+        android:text="5"
+        android:textAlignment="center"
         app:layout_constraintBaseline_toBaselineOf="@+id/PlayerDexterity"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -161,6 +178,8 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="number"
+        android:text="5"
+        android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/EnemySpeed"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/SpeedLabel"
@@ -186,6 +205,8 @@
         android:layout_marginStart="16dp"
         android:ems="10"
         android:inputType="number"
+        android:text="5"
+        android:textAlignment="center"
         app:layout_constraintBaseline_toBaselineOf="@+id/PlayerSpeed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -194,27 +215,32 @@
     <TextView
         android:id="@+id/PlayerLabel"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_height="23dp"
+        android:layout_marginEnd="86dp"
+        android:layout_marginTop="16dp"
         android:text="@string/player_label"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="202dp" />
+        app:layout_constraintEnd_toStartOf="@+id/EnemyLabel"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/EnemyLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="16dp"
         android:text="@string/enemy_label"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="309dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:onClick="sendMessage"
         android:text="@string/combat_start_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="134dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>

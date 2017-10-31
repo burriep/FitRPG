@@ -10,4 +10,5 @@
     <string name="combat_start_button">Run Combat!</string>
     <string name="player_label">Player</string>
     <string name="enemy_label">Enemy</string>
+    <string name="run_round_label">Run Round!</string>
 </resources>
