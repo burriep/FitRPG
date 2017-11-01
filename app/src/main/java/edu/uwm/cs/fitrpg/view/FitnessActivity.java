@@ -91,8 +91,7 @@ public class FitnessActivity extends AppCompatActivity {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.fitness_frag_data, fragment);
             transaction.commit();
-        }
-        else if (fragmentEntry != null) {
+        } else if (fragmentEntry != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.fitness_frag_data, fragmentEntry);

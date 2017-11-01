@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -30,30 +29,26 @@ import java.util.List;
 import java.util.Locale;
 
 public class TrackFitnessActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-
     private boolean isRecording;
     private TextView elapsedTime;
     private FusedLocationProviderClient mFusedLocationClient;
     private List<Location> locations;
     private long sumOfPreviousTimes;
-    private List<Long> times;
     private Button startStopButton;
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
-    private static final long UPDATE_INTERVAL = 5000; // Every 60 seconds.
+    private static final long UPDATE_INTERVAL = 5000; // Every 5 seconds.
 
     /**
-     * The fastest rate for active location updates. Updates will never be more frequent
-     * than this value, but they may be less frequent.
+     * The fastest rate for active location updates. Updates will never be more frequent than this value, but they may be less frequent.
      */
-    private static final long FASTEST_UPDATE_INTERVAL = 1000; // Every 30 seconds
+    private static final long FASTEST_UPDATE_INTERVAL = 1000; // Every 1 second
 
     /**
-     * The max time before batched results are delivered by location services. Results may be
-     * delivered sooner than this interval.
+     * The max time before batched results are delivered by location services. Results may be delivered sooner than this interval.
      */
-    private static final long MAX_WAIT_TIME = UPDATE_INTERVAL * 5; // Every 5 minutes.
+    private static final long MAX_WAIT_TIME = 60000; // Every 1 minute.
 
     /**
      * Stores parameters for requests to the FusedLocationProviderApi.
