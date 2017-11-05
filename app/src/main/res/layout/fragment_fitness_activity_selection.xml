@@ -4,7 +4,7 @@
     android:id="@+id/fitness_activity_selection_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.uwm.cs.fitrpg.FitnessActivitySelectionFragment">
+    tools:context="edu.uwm.cs.fitrpg.fragments.FitnessActivitySelectionFragment">
 
     <RadioGroup
         android:id="@+id/activity_type"

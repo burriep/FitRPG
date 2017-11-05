@@ -1,4 +1,4 @@
-package edu.uwm.cs.fitrpg;
+package edu.uwm.cs.fitrpg.fragments;
 
 import android.Manifest;
 import android.content.Context;
@@ -16,6 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioGroup;
+
+import edu.uwm.cs.fitrpg.BuildConfig;
+import edu.uwm.cs.fitrpg.R;
+import edu.uwm.cs.fitrpg.Utils;
 
 
 /**

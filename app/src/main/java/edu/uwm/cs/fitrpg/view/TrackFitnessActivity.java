@@ -1,14 +1,15 @@
-package edu.uwm.cs.fitrpg;
+package edu.uwm.cs.fitrpg.view;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
+import edu.uwm.cs.fitrpg.R;
+import edu.uwm.cs.fitrpg.fragments.FitnessActivitySelectionFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessTrackDataFragment;
+import edu.uwm.cs.fitrpg.model.FitnessActivity;
 
 public class TrackFitnessActivity extends AppCompatActivity implements FitnessActivitySelectionFragment.OnFragmentInteractionListener {
     @Override

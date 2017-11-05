@@ -2,7 +2,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="edu.uwm.cs.fitrpg.TrackFitnessActivity"
+    tools:context="edu.uwm.cs.fitrpg.view.TrackFitnessActivity"
     android:id="@+id/track_fitness_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent">

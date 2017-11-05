@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import edu.uwm.cs.fitrpg.MainActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessHistoryFragment;

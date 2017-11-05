@@ -23,8 +23,8 @@ import com.google.android.gms.location.LocationServices;
 import java.util.List;
 import java.util.Locale;
 
-import edu.uwm.cs.fitrpg.FitnessActivity;
-import edu.uwm.cs.fitrpg.LocationUpdatesBroadcastReceiver;
+import edu.uwm.cs.fitrpg.model.FitnessActivity;
+import edu.uwm.cs.fitrpg.services.LocationUpdatesBroadcastReceiver;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.Utils;
 

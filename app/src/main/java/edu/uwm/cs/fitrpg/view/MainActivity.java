@@ -1,7 +1,10 @@
-package edu.uwm.cs.fitrpg;
+package edu.uwm.cs.fitrpg.view;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import edu.uwm.cs.fitrpg.DatabaseHelper;
+import edu.uwm.cs.fitrpg.R;
 
 
 /*

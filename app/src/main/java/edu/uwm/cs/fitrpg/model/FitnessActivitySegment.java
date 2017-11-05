@@ -1,4 +1,4 @@
-package edu.uwm.cs.fitrpg;
+package edu.uwm.cs.fitrpg.model;
 
 import android.location.Location;
 

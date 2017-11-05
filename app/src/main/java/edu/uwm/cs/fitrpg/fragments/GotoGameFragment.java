@@ -10,9 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import edu.uwm.cs.fitrpg.GameActivity;
-import edu.uwm.cs.fitrpg.TrackFitnessActivity;
-import edu.uwm.cs.fitrpg.view.FitnessActivity;
-import edu.uwm.cs.fitrpg.MainActivity;
+import edu.uwm.cs.fitrpg.view.TrackFitnessActivity;
 import edu.uwm.cs.fitrpg.R;
 
 public class GotoGameFragment extends Fragment{

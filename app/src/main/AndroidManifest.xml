@@ -18,12 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".view.MainActivity" />
         <activity android:name=".GameActivity" />
         <activity android:name=".view.HomeScreen" />
         <activity android:name=".view.FitnessActivity"></activity>
         <activity
-            android:name=".TrackFitnessActivity"
+            android:name=".view.TrackFitnessActivity"
             android:label="@string/title_activity_track_fitness">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

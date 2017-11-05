@@ -16,7 +16,7 @@
  * Changes to the sample code from Google have been made to customize it to the needs of this app.
  */
 
-package edu.uwm.cs.fitrpg;
+package edu.uwm.cs.fitrpg.services;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
