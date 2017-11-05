@@ -1,17 +1,14 @@
 package edu.uwm.cs.fitrpg.graphics;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.support.v4.view.MotionEventCompat;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import edu.uwm.cs.fitrpg.GameActivity;
-import edu.uwm.cs.fitrpg.graphics.GameThread;
+import edu.uwm.cs.fitrpg.game.GameThread;
+
 /**
  * Created by SS Fink on 10/17/2017.
  */
@@ -82,6 +79,7 @@ public class GameView extends SurfaceView
             case MotionEvent.ACTION_DOWN:
                 x = e.getX();
                 y = e.getY();
+                scene.spawnParticles(10, 100, 1, 1, (int)x, (int)y, Color.parseColor("#FFFFFF"), Particle.Behavior.DEFAULT);
                 return true;
             default:
                 return super.onTouchEvent(e);
