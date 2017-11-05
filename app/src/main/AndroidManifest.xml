@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.uwm.cs.fitrpg">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,7 +11,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".view.SplashScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".GameActivity" />
+        <activity android:name=".view.HomeScreen" />
+        <activity android:name=".view.FitnessActivity"></activity>
+        <activity
+            android:name=".TrackFitnessActivity"
+            android:label="@string/title_activity_track_fitness">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -17,9 +32,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".CombatActivity"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".view.HomeScreen"></activity>
         <activity android:name=".MapActivity"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".view.HomeScreen"></activity>
     </application>
 
 </manifest>
