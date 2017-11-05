@@ -3,6 +3,7 @@ package edu.uwm.cs.fitrpg.graphics;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.icu.text.MessagePattern;
 
 import java.util.ArrayList;
 
@@ -134,6 +135,8 @@ public class Scene
 
     public void tick(float deltaTime)
     {
+
+        ArrayList<Particle> killThese = new ArrayList<Particle>();
         // update the animatedSprites, if they exist
         if(!spriteList.isEmpty())
             for (AnimatedSprite s : spriteList)
@@ -146,9 +149,14 @@ public class Scene
         {
             for (Particle p : particleList)
             {
-                if(p.getCurLife() <= 0) particleList.remove(p);
-                p.tick(deltaTime);
+                if(p.getCurLife() <= 0) killThese.add(p);
+                else p.tick(deltaTime);
+            }
 
+            // remove the marked particles
+            for (Particle p: killThese)
+            {
+                particleList.remove(p);
             }
         }
 
