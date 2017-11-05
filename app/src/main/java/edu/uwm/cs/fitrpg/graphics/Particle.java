@@ -3,6 +3,8 @@ package edu.uwm.cs.fitrpg.graphics;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import java.util.Random;
+
 /**
  * Created by SS Fink on 10/17/2017.
  */
@@ -15,7 +17,7 @@ public class Particle {
     private int color;
     private Behavior behavior;
     private Paint paint;
-    public enum Behavior {RANDOM};
+    public enum Behavior {RANDOM, DEFAULT};
 
     public Particle(float life, float speedX, float speedY, int x, int y, int color, Behavior behavior)
     {
@@ -40,15 +42,19 @@ public class Particle {
     {
         // Decrement the current life
         curLife -= deltaTime;
+        if(curLife <= 0) return;
+        Random r = new Random();
         // Advance the particle on the path based on behavior
         switch(behavior)
         {
             case RANDOM:
+                //this.x +=
                 break;
             default:
                 // Make the particle move based on the axis speeds
-                this.x += speedX;
-                this.y += speedY;
+
+                this.x += speedX + (int)r.nextInt()%8;
+                this.y += speedY + (int)r.nextInt()%8;
                 break;
         }
 
@@ -56,7 +62,7 @@ public class Particle {
 
     public void draw(Canvas canvas)
     {
-        canvas.drawRect(x, y, x+1, y+1, paint);
+        canvas.drawCircle(x, y, 4, paint);
     }
 
 }
