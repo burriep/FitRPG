@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context="edu.uwm.cs.fitrpg.CombatActivity">
 
+
     <ImageView
         android:id="@+id/CombatPlayerHealthBarEmpty"
         android:layout_width="150dp"

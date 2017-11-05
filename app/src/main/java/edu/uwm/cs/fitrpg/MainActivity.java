@@ -14,8 +14,47 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void sendMessage(View view) {
+    public void launchCombat(View view) {
         Intent intent = new Intent(this, CombatActivity.class);
+        EditText textHolder = (EditText)findViewById(R.id.PlayerStamina);
+        int statValue = Integer.parseInt(textHolder.getText().toString());
+        intent.putExtra("edu.uwm.cs.fitrpg.playerStamina", statValue);
+        textHolder = (EditText)findViewById(R.id.EnemyStamina);
+        statValue = Integer.parseInt(textHolder.getText().toString());
+        intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", statValue);
+
+        textHolder = (EditText)findViewById(R.id.PlayerStrength);
+        statValue = Integer.parseInt(textHolder.getText().toString());
+        intent.putExtra("edu.uwm.cs.fitrpg.playerStrength", statValue);
+        textHolder = (EditText)findViewById(R.id.EnemyStrength);
+        statValue = Integer.parseInt(textHolder.getText().toString());
+        intent.putExtra("edu.uwm.cs.fitrpg.enemyStrength", statValue);
+
+        textHolder = (EditText)findViewById(R.id.PlayerEndurance);
+        statValue = Integer.parseInt(textHolder.getText().toString());
+        intent.putExtra("edu.uwm.cs.fitrpg.playerEndurance", statValue);
+        textHolder = (EditText)findViewById(R.id.EnemyEndurance);
+        statValue = Integer.parseInt(textHolder.getText().toString());
+        intent.putExtra("edu.uwm.cs.fitrpg.enemyEndurance", statValue);
+
+        textHolder = (EditText)findViewById(R.id.PlayerDexterity);
+        statValue = Integer.parseInt(textHolder.getText().toString());
+        intent.putExtra("edu.uwm.cs.fitrpg.playerDexterity", statValue);
+        textHolder = (EditText)findViewById(R.id.EnemyDexterity);
+        statValue = Integer.parseInt(textHolder.getText().toString());
+        intent.putExtra("edu.uwm.cs.fitrpg.enemyDexterity", statValue);
+
+        textHolder = (EditText)findViewById(R.id.PlayerSpeed);
+        statValue = Integer.parseInt(textHolder.getText().toString());
+        intent.putExtra("edu.uwm.cs.fitrpg.playerSpeed", statValue);
+        textHolder = (EditText)findViewById(R.id.EnemySpeed);
+        statValue = Integer.parseInt(textHolder.getText().toString());
+        intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", statValue);
+        startActivity(intent);
+    }
+
+    public void launchMap(View view) {
+        Intent intent = new Intent(this, MapActivity.class);
         EditText textHolder = (EditText)findViewById(R.id.PlayerStamina);
         int statValue = Integer.parseInt(textHolder.getText().toString());
         intent.putExtra("edu.uwm.cs.fitrpg.playerStamina", statValue);

@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,7 +28,11 @@ public class CombatActivity extends AppCompatActivity {
     private TextView combatLog;
     private int combatLogLines;
 
+    private int loop = 1;
+
     private long lastAttackTime;
+
+    private Button combatButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +62,12 @@ public class CombatActivity extends AppCompatActivity {
         textHolder = (TextView) findViewById((R.id.CombatPlayerSpeedAmount));
         textHolder.setText(Integer.toString(playerUnit.GetSpeed())+ " SPD");
 
-        enemyUnit = new CombatUnit(intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStamina", 0),
-                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStrength", 0),
-                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyEndurance", 0),
-                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyDexterity", 0),
-                intent.getIntExtra("edu.uwm.cs.fitrpg.enemySpeed", 0));
+        loop = intent.getIntExtra("edu.uwm.cs.fitrpg.loopCount", 1);
+        enemyUnit = new CombatUnit(intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStamina", 0) * loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStrength", 0)* loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyEndurance", 0)* loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyDexterity", 0)* loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemySpeed", 0)* loop);
 
         enemyHealthLabel = (TextView) findViewById((R.id.CombatEnemyHealthValue));
         enemyHealthLabel.setText(Integer.toString(enemyUnit.GetCurrentHP()) + "/" + Integer.toString(enemyUnit.GetMaxHP()));
@@ -92,11 +99,40 @@ public class CombatActivity extends AppCompatActivity {
             }
         }, (int)(1/Math.log((double)(enemyUnit.GetSpeed() + 1)) * 1000));
         lastAttackTime = 0;
+
+        combatButton = (Button)findViewById(R.id.CombatRunRoundButton);
     }
 
     public void RunCombatRound(View view)
     {
-        RunPlayerAttack();
+        if(playerUnit.GetCurrentHP() > 0 && enemyUnit.GetCurrentHP() > 0) {
+            RunPlayerAttack();
+        }
+        else
+        {
+            Intent intent = new Intent(this, MapActivity.class);
+            intent.putExtra("edu.uwm.cs.fitrpg.playerStamina", playerUnit.GetStamina());
+            intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", enemyUnit.GetStamina()/loop);
+
+            intent.putExtra("edu.uwm.cs.fitrpg.playerStrength", playerUnit.GetStrength());
+            intent.putExtra("edu.uwm.cs.fitrpg.enemyStrength", enemyUnit.GetStrength()/loop);
+
+            intent.putExtra("edu.uwm.cs.fitrpg.playerEndurance", playerUnit.GetEndurance());
+            intent.putExtra("edu.uwm.cs.fitrpg.enemyEndurance", enemyUnit.GetEndurance()/loop);
+
+            intent.putExtra("edu.uwm.cs.fitrpg.playerDexterity", playerUnit.GetDexterity());
+            intent.putExtra("edu.uwm.cs.fitrpg.enemyDexterity", enemyUnit.GetDexterity()/loop);
+
+            intent.putExtra("edu.uwm.cs.fitrpg.playerSpeed", playerUnit.GetSpeed());
+            intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", enemyUnit.GetSpeed()/loop);
+
+            if (playerUnit.GetCurrentHP() > 0)
+            {
+                loop++;
+            }
+            intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);
+            startActivity(intent);
+        }
     }
 
     public void RunEnemyAttack()
@@ -126,6 +162,10 @@ public class CombatActivity extends AppCompatActivity {
         }
         playerHealthLabel.setText(Integer.toString(playerUnit.GetCurrentHP()) + "/" + Integer.toString(playerUnit.GetMaxHP()));
         playerHealthBar.getLayoutParams().width = (int)(defaultHealthBarWidth * ((double)playerUnit.GetCurrentHP()/(double)playerUnit.GetMaxHP()));
+        if(playerUnit.GetCurrentHP() <= 0)
+        {
+            combatButton.setText("Continue");
+        }
     }
 
     public void RunPlayerAttack()
@@ -170,5 +210,9 @@ public class CombatActivity extends AppCompatActivity {
         combatLog.setText(initialText + logAddition);
         enemyHealthLabel.setText(Integer.toString(enemyUnit.GetCurrentHP()) + "/" + Integer.toString(enemyUnit.GetMaxHP()));
         enemyHealthBar.getLayoutParams().width = (int)(defaultHealthBarWidth * ((double)enemyUnit.GetCurrentHP()/(double)enemyUnit.GetMaxHP()));
+        if(enemyUnit.GetCurrentHP() <= 0)
+        {
+            combatButton.setText("Continue");
+        }
     }
 }
