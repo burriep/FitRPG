@@ -46,7 +46,7 @@ public class FitnessActivitySegment {
         return distance;
     }
 
-    public double getDuration() {
+    public long getDuration() {
         return stopTime - startTime;
     }
 

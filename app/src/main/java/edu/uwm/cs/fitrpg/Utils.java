@@ -21,48 +21,56 @@ package edu.uwm.cs.fitrpg;
 import android.content.Context;
 import android.location.Location;
 import android.preference.PreferenceManager;
-import java.util.List;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 
-class Utils {
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
 
-    final static String KEY_LOCATION_UPDATES_REQUESTED = "location-updates-requested";
-    final static String KEY_LOCATION_UPDATES_RESULT = "location-update-result";
-
-    public static FitnessActivity currentActivity;
-
-    static void setRequestingLocationUpdates(Context context, boolean value) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putBoolean(KEY_LOCATION_UPDATES_REQUESTED, value)
-                .apply();
-    }
-
-    static boolean getRequestingLocationUpdates(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean(KEY_LOCATION_UPDATES_REQUESTED, false);
+public class Utils {
+    /**
+     * Shows a {@link Snackbar} using {@code text}.
+     *
+     * @param view
+     * @param text The Snackbar text.
+     */
+    public static void showSnackbar(View view, final String text) {
+        Snackbar.make(view, text, Snackbar.LENGTH_LONG).show();
     }
 
     /**
-     * Called when new Locations are received.
-     * @param context
-     * @param locations
+     * Shows a {@link Snackbar}.
+     *
+     * @param view
+     * @param mainText      The id for the string resource for the Snackbar text.
+     * @param actionText    The text of the action item.
+     * @param listener      The listener associated with the Snackbar action.
      */
-    static void setLocationUpdatesResult(Context context, List<Location> locations) {
-        // TODO: store data in db
-        FitnessActivity activity = currentActivity;
-        if (activity != null) {
-            activity.addLocations(locations);
-        }
-        String updatedLocationResult = "";
-
-        PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putString(KEY_LOCATION_UPDATES_RESULT, updatedLocationResult)
-                .apply();
+    public static void showSnackbar(@NonNull View view, final String mainText, final String actionText, View.OnClickListener listener) {
+        Snackbar.make(view, mainText, Snackbar.LENGTH_INDEFINITE)
+                .setAction(actionText, listener).show();
     }
 
-    static String getLocationUpdatesResult(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(KEY_LOCATION_UPDATES_RESULT, "");
+    public static String formatDuration(long ms) {
+        long seconds = ms / 1000L;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        long days = hours / 24;
+        String result = "";
+        if (days > 0) {
+            result += days + days == 1 ? "day " : "days ";
+        }
+        // cleanup clock values
+        hours = hours % 24;
+        minutes = minutes % 60;
+        seconds = seconds % 60;
+
+        if (hours > 0) {
+            result += String.format(Locale.ENGLISH, "%02d:", hours);
+        }
+        result += String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds);
+        return result;
     }
 }

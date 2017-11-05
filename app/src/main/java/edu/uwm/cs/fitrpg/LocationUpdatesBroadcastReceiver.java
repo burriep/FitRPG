@@ -26,11 +26,13 @@ import com.google.android.gms.location.LocationResult;
 
 import java.util.List;
 
+import edu.uwm.cs.fitrpg.fragments.FitnessTrackDataFragment;
+
 /**
  * Receiver for handling location updates.
  */
 public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
-    static final String ACTION_PROCESS_UPDATES = "edu.uwm.cs.fitrpg.action.PROCESS_UPDATES";
+    public static final String ACTION_PROCESS_UPDATES = "edu.uwm.cs.fitrpg.action.PROCESS_UPDATES";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -40,7 +42,7 @@ public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
                 LocationResult result = LocationResult.extractResult(intent);
                 if (result != null) {
                     List<Location> locations = result.getLocations();
-                    Utils.setLocationUpdatesResult(context, locations);
+                    FitnessTrackDataFragment.setLocationUpdatesResult(context, locations);
                 }
             }
         }

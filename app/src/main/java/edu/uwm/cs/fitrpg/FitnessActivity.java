@@ -8,7 +8,7 @@ import java.util.List;
 public class FitnessActivity {
     private List<FitnessActivitySegment> segments = new LinkedList<>();
     private double cachedDistance;
-    private double cachedDuration;
+    private long cachedDuration;
     private double cachedTopSpeed;
 
     public void start() {
@@ -29,6 +29,14 @@ public class FitnessActivity {
         cachedDistance += segment.getDistance();
         cachedDuration += segment.getDuration();
         cachedTopSpeed = Math.max(cachedTopSpeed, segment.getTopSpeed());
+    }
+
+    public boolean isStarted() {
+        if (!segments.isEmpty()) {
+            FitnessActivitySegment segment = segments.get(segments.size() - 1);
+            return segment.isStarted() && !segment.isStopped();
+        }
+        return false;
     }
 
     public void addLocation(Location l) {
@@ -64,12 +72,12 @@ public class FitnessActivity {
         return d;
     }
 
-    public double getDuration() {
-        double d = cachedDuration;
+    public long getDuration() {
+        long d = cachedDuration;
         if (!segments.isEmpty()) {
             FitnessActivitySegment segment = segments.get(segments.size() - 1);
             if (!segment.isStopped()) {
-                d += segment.getDuration();
+                d += (android.os.SystemClock.elapsedRealtimeNanos() - segment.getStartTime());
             }
         }
         return d;
