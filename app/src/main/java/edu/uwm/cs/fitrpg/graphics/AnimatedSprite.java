@@ -54,6 +54,8 @@ public class AnimatedSprite
         return this.ypos;
     }
 
+    public float getAnimSpeed(){return this.animSpeed;}
+
     public void setXpos(float x)
     {
         this.xpos = x;
@@ -62,6 +64,25 @@ public class AnimatedSprite
     public void setYpos(float y)
     {
         this.ypos = y;
+    }
+
+    public void setAnimSpeed(float animSpeed)
+    {
+        this.animSpeed = animSpeed;
+    }
+
+    public void setSpriteSheetRow(int y)
+    {
+        this.spriteRect.top = y*this.spriteHeight;
+        this.spriteRect.bottom = y*this.spriteHeight +spriteHeight;
+    }
+
+
+
+    public void setNumFrames(int numFrames)
+    {
+        this.numFrames = numFrames;
+        this.curFrame = 0;
     }
 
     ////////////////////////////////////////////////////////////
@@ -98,7 +119,7 @@ public class AnimatedSprite
             ypos += deltaTime;
             transY -= deltaTime;
         }
-       if(timer < animSpeed * 5) return;
+       if(timer < animSpeed) return;
         timer = 0;
         curFrame++;
         if(isLooped)
