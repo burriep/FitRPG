@@ -193,6 +193,7 @@ public class FitnessActivity implements Serializable {
         ContentValues values = new ContentValues();
         values.put("act_id", act_id);
         values.put("usr_id", usr_id);
+        values.put("act_type", "Tracked Fitness");
         values.put("s_tme", (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).format(startDate));
         values.put("e_tme", (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).format(stopDate));
         values.put("dist", getDistance());

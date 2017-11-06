@@ -10,9 +10,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+//<<<<<<< Updated upstream
+//=======
+import edu.uwm.cs.fitrpg.HistoryList;
+import edu.uwm.cs.fitrpg.MainActivity;
+//>>>>>>> Stashed changes
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessHistoryFragment;
+import edu.uwm.cs.fitrpg.fragments.FitnessTrackDataFragment;
 
 public class FitnessActivity extends AppCompatActivity {
     private static int position;
@@ -32,8 +38,10 @@ public class FitnessActivity extends AppCompatActivity {
         history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                position = 1;
-                replaceFragment(position);
+                gotoList();
+
+//                position = 1;
+//                replaceFragment(position);
             }
         });
 
@@ -65,6 +73,7 @@ public class FitnessActivity extends AppCompatActivity {
     private void replaceFragment(int pos) {
         Fragment fragment = null;
         FitnessEntryFragment fragmentEntry = null;
+        TrackFitnessActivity fragEntry = null;
         Bundle bundle = new Bundle();
 
         switch (pos) {
@@ -77,9 +86,7 @@ public class FitnessActivity extends AppCompatActivity {
                 fragmentEntry.setArguments(bundle);
                 break;
             case (3):
-                bundle.putInt("Position", position);
-                fragmentEntry = new FitnessEntryFragment();
-                fragmentEntry.setArguments(bundle);
+                gotoTracker();
                 break;
             default:
                 fragment = new FitnessHistoryFragment();
@@ -96,6 +103,22 @@ public class FitnessActivity extends AppCompatActivity {
             transaction.replace(R.id.fitness_frag_data, fragmentEntry);
             transaction.commit();
         }
+        else if (fragEntry != null) {
+//            FragmentManager fragmentManager = getSupportFragmentManager();
+//            FragmentTransaction transaction = fragmentManager.beginTransaction();
+//            transaction.replace(R.id.fitness_frag_data, fragEntry);
+//            transaction.commit();
+        }
+    }
+
+    public void gotoList() {
+        Intent intent = new Intent(this, HistoryList.class);
+        startActivity(intent);
+    }
+
+    public void gotoTracker() {
+        Intent intent = new Intent(this, TrackFitnessActivity.class);
+        startActivity(intent);
     }
 
 }

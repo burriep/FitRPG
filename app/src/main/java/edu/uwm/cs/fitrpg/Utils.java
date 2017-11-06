@@ -25,9 +25,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+//<<<<<<< Updated upstream
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
+//=======
+//public class Utils {
+//>>>>>>> Stashed changes
 
 public class Utils {
     /**

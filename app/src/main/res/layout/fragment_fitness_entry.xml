@@ -12,35 +12,124 @@
 
         <RadioGroup
             android:id="@+id/radioGroup_fitness_activities"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <RadioButton
-                android:layout_width="wrap_content"
+                android:id="@+id/rb_time_based"
+                android:layout_width="0dp"
+                android:layout_weight="1.5"
                 android:layout_height="wrap_content"
-                android:text="Radiogroup for selecting activity type"/>
-
+                android:text="Time-Based"/>
+            <RadioButton
+                android:id="@+id/rb_rep_based"
+                android:layout_width="0dp"
+                android:layout_weight="1.5"
+                android:layout_height="wrap_content"
+                android:text="Rep-Based"/>
+            <RadioButton
+                android:id="@+id/rb_distance_based"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:text="Distance-Based"/>
 
         </RadioGroup>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:id="@+id/ll_entry_middle"
-        android:layout_width="match_parent"
-        android:layout_weight="5"
-        android:layout_height="0dp">
-
-        <TextView
-            android:id="@+id/tv_middle_note"
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/ll_entry_middle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Fragment that will display tracking info or data entry variables"
-            android:gravity="center"
-            android:textColor="#fff"/>
+            android:layout_weight="5"
+            android:layout_height="0dp">
 
-    </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/tv_top_title"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:textSize="18dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text=""
+                    android:textColor="#fff"/>
+                <EditText
+                    android:id="@+id/et_activity_type"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content"
+                    android:hint=""
+                    android:visibility="invisible"
+                    android:inputType="textAutoComplete"
+                    android:imeOptions="actionNext"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/tv_middle_title"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:textSize="18dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text=""
+
+                    android:textColor="#fff"/>
+                <EditText
+                    android:id="@+id/et_middle_entry"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content"
+                    android:hint=""
+                    android:visibility="invisible"
+                    android:inputType="number"
+                    android:imeOptions="actionNext"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/tv_bottom_title"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:textSize="18dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text=""
+                    android:textColor="#fff"/>
+                <EditText
+                    android:id="@+id/et_bottom_entry"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:hint=""
+                    android:inputType="number"
+                    android:imeOptions="actionDone"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
 
     <LinearLayout
         android:orientation="horizontal"
