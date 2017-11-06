@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import edu.uwm.cs.fitrpg.MainActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessHistoryFragment;
@@ -91,8 +90,7 @@ public class FitnessActivity extends AppCompatActivity {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.fitness_frag_data, fragment);
             transaction.commit();
-        }
-        else if (fragmentEntry != null) {
+        } else if (fragmentEntry != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.fitness_frag_data, fragmentEntry);

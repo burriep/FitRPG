@@ -1,4 +1,4 @@
-package edu.uwm.cs.fitrpg;
+package edu.uwm.cs.fitrpg.view;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import edu.uwm.cs.fitrpg.DatabaseHelper;
+import edu.uwm.cs.fitrpg.MapActivity;
+import edu.uwm.cs.fitrpg.R;
 
 
 /*

@@ -68,6 +68,15 @@ public class MapActivity extends AppCompatActivity {
         //}
     }
 
+    public void ResetMap(int passedLoop)
+    {
+        isTraveling = false;
+        mapView.setCurrentNode(0);
+        mapView.setTravelProgress(0);
+        mapView.setTravelProgress(0);
+        loop = passedLoop;
+    }
+
     public void MoveCharacter(View view)
     {
         if(!isTraveling) {
