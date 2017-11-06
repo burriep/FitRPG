@@ -11,16 +11,16 @@ import android.widget.TextView;
 
 public class MapActivity extends AppCompatActivity {
 
-    private MapView mapView;
-    private View[] mapNodes;
-    private boolean isTraveling;
-    private int travelDuration = 1000;
-    private int travelProgress = 0;
-    private int destinationNode = 0;
+    private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
+    private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
+    private boolean isTraveling;               //PS Local storage of whether the player is currently traveling, and thus whether a node button is clickable
+    private int travelDuration = 1000;         //PS How long in milliseconds it takes currently to travel
+    private int travelProgress = 0;            //PS A number between 0-100 representing the percentage of how far along the current travel is
+    private int destinationNode = 0;           //PS The node the player is currently traveling to
 
-    private int basePlayerStamina = 1000;
-    private int basePlayerStrength = 5;
-    private int basePlayerEndurance = 5;
+    private int basePlayerStamina = 1000;      //PS A debug value for how much stamina the player will be told to have.  Set high so as to not die, even on higher loops.
+    private int basePlayerStrength = 5;        //PS A debug value for how much strength the player will be told to have.
+    private int basePlayerEndurance = 5;       //PS 
     private int basePlayerDexterity = 5;
     private int basePlayerSpeed = 5;
 
@@ -94,29 +94,39 @@ public class MapActivity extends AppCompatActivity {
                 mapView.setDestinationNode(destinationNode);
                 mapView.setIsTraveling(true);
 
-                final Handler mapTravelHandler = new Handler();
-                mapTravelHandler.postDelayed(new Runnable() {
-                    public void run() {
-                        travelProgress += 200;
-                        mapView.setTravelProgress((travelProgress*100)/travelDuration);
-                        if (travelProgress < travelDuration) {
-                            mapTravelHandler.postDelayed(this, 200);
-                        }
-                        else
-                        {
-                            isTraveling = false;
-                            mapView.setCurrentNode(destinationNode);
-                            mapView.setIsTraveling(false);
-                            mapView.setTravelProgress(0);
-                            travelProgress = 0;
-                            if(destinationNode == mapView.getBossNode())
-                            {
-                                LaunchCombat();
-                            }
-                        }
-                    }
-                }, 200);
+                StartMoving();
             }
+        }
+    }
+
+    private void StartMoving()
+    {
+        final Handler mapTravelHandler = new Handler();
+        mapTravelHandler.postDelayed(new Runnable() {
+            public void run() {
+                travelProgress += 200;
+                mapView.setTravelProgress((travelProgress*100)/travelDuration);
+                if (travelProgress < travelDuration) {
+                    mapTravelHandler.postDelayed(this, 200);
+                }
+                else
+                {
+                    StopMoving();
+                }
+            }
+        }, 200);
+    }
+
+    private void StopMoving()
+    {
+        isTraveling = false;
+        mapView.setCurrentNode(destinationNode);
+        mapView.setIsTraveling(false);
+        mapView.setTravelProgress(0);
+        travelProgress = 0;
+        if(destinationNode == mapView.getBossNode())
+        {
+            LaunchCombat();
         }
     }
 

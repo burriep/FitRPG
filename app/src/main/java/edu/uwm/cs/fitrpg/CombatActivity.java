@@ -33,6 +33,7 @@ public class CombatActivity extends AppCompatActivity {
     private long lastAttackTime;
 
     private Button combatButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,13 +42,41 @@ public class CombatActivity extends AppCompatActivity {
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
 
-        TextView textHolder;
+        //PS TODO Replace extracting these values from an intent by extracting them from DB
+        playerUnit = new CombatUnit(intent.getIntExtra("edu.uwm.cs.fitrpg.playerStamina", 10),
+               intent.getIntExtra("edu.uwm.cs.fitrpg.playerStrength", 5),
+                intent.getIntExtra("edu.uwm.cs.fitrpg.playerEndurance", 5),
+                intent.getIntExtra("edu.uwm.cs.fitrpg.playerDexterity", 5),
+                intent.getIntExtra("edu.uwm.cs.fitrpg.playerSpeed", 5));
 
-        playerUnit = new CombatUnit(intent.getIntExtra("edu.uwm.cs.fitrpg.playerStamina", 0),
-               intent.getIntExtra("edu.uwm.cs.fitrpg.playerStrength", 0),
-                intent.getIntExtra("edu.uwm.cs.fitrpg.playerEndurance", 0),
-                intent.getIntExtra("edu.uwm.cs.fitrpg.playerDexterity", 0),
-                intent.getIntExtra("edu.uwm.cs.fitrpg.playerSpeed", 0));
+        SetPlayerDisplay();
+
+        loop = intent.getIntExtra("edu.uwm.cs.fitrpg.loopCount", 1);
+
+        //PS TODO Generate enemy types or something for DB and pull stats from there rather than intent?
+        enemyUnit = new CombatUnit(intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStamina", 10) * loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStrength", 5)* loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyEndurance", 5)* loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyDexterity", 5)* loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemySpeed", 5)* loop);
+
+        SetEnemyDisplay();
+
+        playerHealthBar = (ImageView)findViewById(R.id.CombatPlayerHealthBar);
+        enemyHealthBar = (ImageView)findViewById(R.id.CombatEnemyHealthBar);
+        defaultHealthBarWidth = playerHealthBar.getLayoutParams().width;
+        combatLog = (TextView) findViewById(R.id.CombatLog);
+        combatButton = (Button)findViewById(R.id.CombatRunRoundButton);
+
+        combatLogLines = 0;
+        lastAttackTime = 0;
+
+        AutomateEnemyAttack();
+    }
+
+    private void SetPlayerDisplay()
+    {
+        TextView textHolder;
 
         playerHealthLabel = (TextView) findViewById((R.id.CombatPlayerHealthValue));
         playerHealthLabel.setText(Integer.toString(playerUnit.GetCurrentHP()) + "/" + Integer.toString(playerUnit.GetMaxHP()));
@@ -61,13 +90,11 @@ public class CombatActivity extends AppCompatActivity {
         textHolder.setText(Integer.toString(playerUnit.GetDexterity()) + " DEX");
         textHolder = (TextView) findViewById((R.id.CombatPlayerSpeedAmount));
         textHolder.setText(Integer.toString(playerUnit.GetSpeed())+ " SPD");
+    }
 
-        loop = intent.getIntExtra("edu.uwm.cs.fitrpg.loopCount", 1);
-        enemyUnit = new CombatUnit(intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStamina", 0) * loop,
-                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStrength", 0)* loop,
-                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyEndurance", 0)* loop,
-                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyDexterity", 0)* loop,
-                intent.getIntExtra("edu.uwm.cs.fitrpg.enemySpeed", 0)* loop);
+    private void SetEnemyDisplay()
+    {
+        TextView textHolder;
 
         enemyHealthLabel = (TextView) findViewById((R.id.CombatEnemyHealthValue));
         enemyHealthLabel.setText(Integer.toString(enemyUnit.GetCurrentHP()) + "/" + Integer.toString(enemyUnit.GetMaxHP()));
@@ -81,13 +108,10 @@ public class CombatActivity extends AppCompatActivity {
         textHolder.setText(Integer.toString(enemyUnit.GetDexterity()) + " DEX");
         textHolder = (TextView) findViewById((R.id.CombatEnemySpeedAmount));
         textHolder.setText(Integer.toString(enemyUnit.GetSpeed())+ " SPD");
+    }
 
-        playerHealthBar = (ImageView)findViewById(R.id.CombatPlayerHealthBar);
-        enemyHealthBar = (ImageView)findViewById(R.id.CombatEnemyHealthBar);
-        defaultHealthBarWidth = playerHealthBar.getLayoutParams().width;
-        combatLog = (TextView) findViewById(R.id.CombatLog);
-        combatLogLines = 0;
-
+    private void AutomateEnemyAttack()
+    {
         final Handler enemyAttackHandler = new Handler();
         enemyAttackHandler.postDelayed(new Runnable(){
             public void run(){
@@ -98,9 +122,6 @@ public class CombatActivity extends AppCompatActivity {
                 }
             }
         }, (int)(1/Math.log((double)(enemyUnit.GetSpeed() + 1)) * 1000));
-        lastAttackTime = 0;
-
-        combatButton = (Button)findViewById(R.id.CombatRunRoundButton);
     }
 
     public void RunCombatRound(View view)
@@ -137,6 +158,20 @@ public class CombatActivity extends AppCompatActivity {
         }
     }
 
+    //PS This is the framework for an enemy attack vs a player without any of the text log stuff, to built upon with graphics
+    public void BasicEnemyAttack()
+    {
+        if(enemyUnit.GetCurrentHP() > 0 && playerUnit.GetCurrentHP() > 0) {
+            int damageAmount = enemyUnit.Attack(playerUnit);
+        }
+        playerHealthLabel.setText(Integer.toString(playerUnit.GetCurrentHP()) + "/" + Integer.toString(playerUnit.GetMaxHP()));
+        playerHealthBar.getLayoutParams().width = (int)(defaultHealthBarWidth * ((double)playerUnit.GetCurrentHP()/(double)playerUnit.GetMaxHP()));
+        if(playerUnit.GetCurrentHP() <= 0)
+        {
+            combatButton.setText("Continue");
+        }
+    }
+
     public void RunEnemyAttack()
     {
         if(enemyUnit.GetCurrentHP() > 0 && playerUnit.GetCurrentHP() > 0) {
@@ -169,6 +204,23 @@ public class CombatActivity extends AppCompatActivity {
             combatButton.setText("Continue");
         }
     }
+
+    //PS This is the framework for a player attack vs an enemy without any of the text log stuff, to built upon with graphics
+    public void BasicPlayerAttack()
+    {
+        long currentTime = System.currentTimeMillis();
+        if(currentTime - lastAttackTime > (1/Math.log((double)(playerUnit.GetSpeed() + 1)) * 500) && playerUnit.GetCurrentHP() > 0 && enemyUnit.GetCurrentHP() > 0) {
+            int damageAmount = playerUnit.Attack(enemyUnit);
+            lastAttackTime = currentTime;
+        }
+        enemyHealthLabel.setText(Integer.toString(enemyUnit.GetCurrentHP()) + "/" + Integer.toString(enemyUnit.GetMaxHP()));
+        enemyHealthBar.getLayoutParams().width = (int)(defaultHealthBarWidth * ((double)enemyUnit.GetCurrentHP()/(double)enemyUnit.GetMaxHP()));
+        if(enemyUnit.GetCurrentHP() <= 0)
+        {
+            combatButton.setText("Continue");
+        }
+    }
+
 
     public void RunPlayerAttack()
     {
