@@ -62,9 +62,7 @@ public class TrackFitnessActivity extends AppCompatActivity implements FitnessAc
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.findFragmentById(R.id.track_fitness_container) != null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            FitnessActivity fa = new FitnessActivity();
-            fa.start();
-            FitnessTrackDataFragment fragment = FitnessTrackDataFragment.newInstance(0, fa);
+            FitnessTrackDataFragment fragment = FitnessTrackDataFragment.newInstance(activity, null);
             Bundle args = new Bundle();
 //            args.putInt(ArticleFragment.ARG_POSITION, position);
             fragment.setArguments(args);
