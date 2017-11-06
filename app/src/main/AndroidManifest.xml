@@ -19,9 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.MainActivity" />
-        <activity android:name=".GameActivity" />
+        <activity android:name=".view.GameActivity" />
         <activity android:name=".view.HomeScreen" />
-        <activity android:name=".view.FitnessActivity"></activity>
+        <activity android:name=".view.FitnessActivity" />
         <activity
             android:name=".view.TrackFitnessActivity"
             android:label="@string/title_activity_track_fitness">
