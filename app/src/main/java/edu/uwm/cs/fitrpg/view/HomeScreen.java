@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.MainActivity;
+import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.CurrentLevelFragment;
 import edu.uwm.cs.fitrpg.fragments.GotoGameFragment;
@@ -89,7 +90,8 @@ public class HomeScreen extends AppCompatActivity{
     }
 
     public void gotoGame() {
-        Intent intent = new Intent(this, GameActivity.class);
+        //Intent intent = new Intent(this, GameActivity.class);
+        Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
 
