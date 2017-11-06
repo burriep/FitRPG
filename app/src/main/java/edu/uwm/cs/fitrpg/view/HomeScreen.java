@@ -17,7 +17,7 @@ import edu.uwm.cs.fitrpg.fragments.GotoGameFragment;
 
 public class HomeScreen extends AppCompatActivity{
 
-    ImageButton ibGame, ibFitness;
+    ImageButton ibGame, ibFitness, ibGraphics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +35,7 @@ public class HomeScreen extends AppCompatActivity{
 
         ibGame = (ImageButton) findViewById(R.id.btn_go_to_game);
         ibFitness = (ImageButton) findViewById(R.id.btn_go_to_fitness);
+        ibGraphics = (ImageButton) findViewById(R.id.btn_go_to_graphics);
 
         ibGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,6 +48,13 @@ public class HomeScreen extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 gotoFitness();
+            }
+        });
+
+        ibGraphics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gotoGraphics();
             }
         });
 
@@ -95,6 +103,11 @@ public class HomeScreen extends AppCompatActivity{
 
     public void gotoFitness() {
         Intent intent = new Intent(this, FitnessActivity.class);
+        startActivity(intent);
+    }
+
+    public void gotoGraphics() {
+        Intent intent = new Intent(this, GameActivity.class);
         startActivity(intent);
     }
 
