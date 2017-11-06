@@ -130,6 +130,8 @@ public class CombatActivity extends AppCompatActivity {
             {
                 loop++;
             }
+            finish();
+
             intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);
             startActivity(intent);
         }

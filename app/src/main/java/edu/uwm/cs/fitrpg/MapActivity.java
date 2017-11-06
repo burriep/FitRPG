@@ -68,6 +68,7 @@ public class MapActivity extends AppCompatActivity {
         //}
     }
 
+    //PS Unused currently
     public void ResetMap(int passedLoop)
     {
         isTraveling = false;
@@ -140,5 +141,6 @@ public class MapActivity extends AppCompatActivity {
         intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);
 
         startActivity(intent);
+        finish();
     }
 }
