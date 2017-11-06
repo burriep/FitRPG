@@ -9,14 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
-//<<<<<<< Updated upstream
-import edu.uwm.cs.fitrpg.view.GameActivity;
 import edu.uwm.cs.fitrpg.view.TrackFitnessActivity;
-//=======
-//import edu.uwm.cs.fitrpg.GameActivity;
-import edu.uwm.cs.fitrpg.view.FitnessActivity;
 import edu.uwm.cs.fitrpg.MainActivity;
-//>>>>>>> Stashed changes
 import edu.uwm.cs.fitrpg.R;
 
 public class GotoGameFragment extends Fragment{
