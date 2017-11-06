@@ -175,12 +175,22 @@
                 android:src="@drawable/ic_game"
                 android:backgroundTint="@color/colorPrimary"
                 />
+
+            <ImageButton
+                android:id="@+id/btn_go_to_graphics"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="50dp"
+                android:src="@drawable/ic_graphics"
+                android:backgroundTint="@color/colorPrimary"/>
+
             <ImageButton
                 android:id="@+id/btn_go_to_fitness"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginLeft="150dp"
+                android:layout_marginLeft="50dp"
                 android:src="@drawable/ic_fitness"
                 android:backgroundTint="@color/colorPrimary"/>
 
