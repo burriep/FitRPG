@@ -1,5 +1,6 @@
 package edu.uwm.cs.fitrpg.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -9,9 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.FitnessActivitySelectionFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessTrackDataFragment;
-import edu.uwm.cs.fitrpg.model.FitnessActivity;
 
-public class TrackFitnessActivity extends AppCompatActivity implements FitnessActivitySelectionFragment.OnFragmentInteractionListener {
+public class TrackFitnessActivity extends AppCompatActivity implements FitnessActivitySelectionFragment.OnFragmentInteractionListener, FitnessTrackDataFragment.OnFragmentInteractionListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,5 +83,17 @@ public class TrackFitnessActivity extends AppCompatActivity implements FitnessAc
         if (fragment != null) {
             fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    @Override
+    public void onStopTrackingFitnessActivity() {
+        Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onCancelTrackingFitnessActivity() {
+        Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+        startActivity(intent);
     }
 }

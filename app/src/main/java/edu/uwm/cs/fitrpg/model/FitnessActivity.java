@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,11 +24,13 @@ public class FitnessActivity implements Serializable {
     private int act_num;
     private int act_id;
     private int usr_id;
+    private Date startDate;
+    private Date stopDate;
     private long startTime;
-    private long stopTime;
     private double cachedDistance; // in meters
     private int cachedDuration; // in ms
     private double cachedTopSpeed; // in meters / s
+    private int sets;
     private int repetitions;
 
     private Location lastLocation;
@@ -42,6 +45,7 @@ public class FitnessActivity implements Serializable {
         segmentStartTime = android.os.SystemClock.elapsedRealtime();
         if (startTime <= 0) {
             startTime = segmentStartTime;
+            startDate = Calendar.getInstance().getTime();
         }
     }
 
@@ -49,7 +53,8 @@ public class FitnessActivity implements Serializable {
         if (!isTracking()) {
             throw new IllegalStateException("Already stopped.");
         }
-        stopTime = android.os.SystemClock.elapsedRealtime();
+        stopDate = Calendar.getInstance().getTime();
+        long stopTime = android.os.SystemClock.elapsedRealtime();
         cachedDistance += segmentDistance;
         cachedDuration += (stopTime - segmentStartTime);
         cachedTopSpeed = Math.max(cachedTopSpeed, segmentTopSpeed);
@@ -130,6 +135,14 @@ public class FitnessActivity implements Serializable {
         this.repetitions = repetitions;
     }
 
+    public int getSets() {
+        return sets;
+    }
+
+    public void setSets(int sets) {
+        this.sets = sets;
+    }
+
     public static FitnessActivity get(Context context, int id) {
         SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
         // Define a projection that specifies which columns from the database
@@ -143,25 +156,25 @@ public class FitnessActivity implements Serializable {
                 "dist",
                 "dur",
                 "t_spd",
+                "sets",
                 "reps"
         };
         // Filter results WHERE "title" = 'My Title'
         String selection = "act_num = ?";
-        String[] selectionArgs = { Integer.toString(id) };
+        String[] selectionArgs = {Integer.toString(id)};
 
         // How you want the results sorted in the resulting Cursor
         String sortOrder = "act_num DESC";
         Cursor cursor = db.query("fr_hst", projection, selection, selectionArgs, null, null, sortOrder);
         FitnessActivity fa = null;
-        while(cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             fa = new FitnessActivity();
             fa.act_num = cursor.getInt(cursor.getColumnIndexOrThrow("act_num"));
             fa.act_id = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
-
             fa.usr_id = cursor.getInt(cursor.getColumnIndexOrThrow("usr_id"));
             try {
-                fa.startTime = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).parse(cursor.getString(cursor.getColumnIndexOrThrow("s_tme"))).getTime();
-                fa.stopTime = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).parse(cursor.getString(cursor.getColumnIndexOrThrow("e_tme"))).getTime();
+                fa.startDate = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).parse(cursor.getString(cursor.getColumnIndexOrThrow("s_tme")));
+                fa.stopDate = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).parse(cursor.getString(cursor.getColumnIndexOrThrow("e_tme")));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -169,6 +182,7 @@ public class FitnessActivity implements Serializable {
             fa.cachedDuration = cursor.getInt(cursor.getColumnIndexOrThrow("dur"));
             fa.cachedTopSpeed = cursor.getDouble(cursor.getColumnIndexOrThrow("t_spd"));
             fa.repetitions = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
+            fa.sets = cursor.getInt(cursor.getColumnIndexOrThrow("sets"));
         }
         cursor.close();
         return fa;
@@ -179,11 +193,12 @@ public class FitnessActivity implements Serializable {
         ContentValues values = new ContentValues();
         values.put("act_id", act_id);
         values.put("usr_id", usr_id);
-        values.put("s_tme", (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).format(new Date(startTime)));
-        values.put("e_tme", (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).format(new Date(stopTime)));
+        values.put("s_tme", (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).format(startDate));
+        values.put("e_tme", (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).format(stopDate));
         values.put("dist", getDistance());
         values.put("dur", getDuration());
         values.put("t_spd", getTopSpeed());
+        values.put("sets", getSets());
         values.put("reps", getRepetitions());
         act_num = (int) db.insert("fr_hst", null, values);
         return act_num > 0;

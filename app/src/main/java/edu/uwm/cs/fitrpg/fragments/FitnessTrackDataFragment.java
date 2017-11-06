@@ -42,6 +42,9 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
     private TextView averageSpeedText;
     private TextView topSpeedText;
     private Button fitnessContinuePauseRecord;
+    private Button fitnessCancel;
+    private Button fitnessStop;
+    private OnFragmentInteractionListener mListener;
 
     // The BroadcastReceiver used to listen from broadcasts from the service.
     private MyReceiver myReceiver;
@@ -103,7 +106,6 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param fitnessActivityId
      * @return A new instance of fragment BlankFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -122,6 +124,16 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
         myReceiver = new MyReceiver();
         if (getArguments() != null) {
             String fitnessActivityType = getArguments().getString(ARG_CURRENT_FITNESS_ACTIVITY_TYPE);
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -180,10 +192,24 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
         averageSpeedText = view.findViewById(R.id.average_speed_text);
         topSpeedText = view.findViewById(R.id.top_speed_text);
         fitnessContinuePauseRecord = view.findViewById(R.id.fitness_continue_pause_record);
+        fitnessCancel = view.findViewById(R.id.fitness_cancel);
+        fitnessStop = view.findViewById(R.id.fitness_stop);
         fitnessContinuePauseRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 recordFitnessActivity(view);
+            }
+        });
+        fitnessCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelFitnessActivity(view);
+            }
+        });
+        fitnessStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopFitnessActivity(view);
             }
         });
     }
@@ -197,7 +223,7 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
     private Runnable updateClockTask = new Runnable() {
         public void run() {
             // update clock / time
-            String display = Utils.formatDuration(currentActivity.getDuration() / 1000000);
+            String display = Utils.formatDuration(currentActivity.getDuration());
             elapsedTimeText.setText(display);
             // update location summary
 //            updateLocationSummary();
@@ -218,6 +244,24 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
         } else {
             startTrackingFitness();
         }
+    }
+
+    public void cancelFitnessActivity(View view) {
+        if (isRecording) {
+            stopTrackingFitness();
+        }
+        mListener.onCancelTrackingFitnessActivity();
+    }
+
+    public void stopFitnessActivity(View view) {
+        if (isRecording) {
+            stopTrackingFitness();
+        }
+        if (currentActivity != null) {
+            // TODO: save in a background thread / async
+            currentActivity.create(getContext());
+        }
+        mListener.onStopTrackingFitnessActivity();
     }
 
     private void startTrackingFitness() {
@@ -280,5 +324,20 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
         } else if (s.equals(KEY_LOCATION_UPDATES_REQUESTED)) {
             boolean requestingUpdates = sp.getBoolean(KEY_LOCATION_UPDATES_REQUESTED, false);
         }
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        void onStopTrackingFitnessActivity();
+        void onCancelTrackingFitnessActivity();
     }
 }

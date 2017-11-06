@@ -4,6 +4,7 @@
     <string name="activity_tracking_start_record">Start</string>
     <string name="activity_tracking_pause_record">Pause</string>
     <string name="activity_tracking_stop_record">Stop</string>
+    <string name="activity_tracking_cancel_record">Cancel</string>
     <string name="no_location_detected">No location detected. Make sure location is enabled on the device.</string>
     <string name="location_permission_rationale">Location permission is needed for core functionality</string>
     <string name="location_permission_denied_explanation">Permission was denied, but is needed for core functionality.</string>
