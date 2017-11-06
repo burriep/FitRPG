@@ -6,4 +6,8 @@
     <color name="orange">#f51</color>
     <color name="yellow">#e1de4e</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="gold">#D6D841</color>
+    <color name="cyan">#00E1DA</color>
+    <color name="red">#FF0000</color>
+    <color name="transparent">#00000000</color>
 </resources>

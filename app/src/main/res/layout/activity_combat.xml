@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.uwm.cs.fitrpg.CombatActivity">
+
+
+    <ImageView
+        android:id="@+id/CombatPlayerHealthBarEmpty"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="false"
+        android:contentDescription="Background of Player Health Bar"
+        android:cropToPadding="false"
+        android:scaleType="fitXY"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CombatPlayerHealthLabel"
+        app:srcCompat="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/CombatPlayerHealthBar"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="false"
+        android:contentDescription="Foreground of Player Health Bar"
+        android:cropToPadding="false"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatPlayerHealthLabel"
+        app:srcCompat="@android:color/holo_green_light" />
+
+    <TextView
+        android:id="@+id/CombatPlayerHealthLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/player_label" />
+
+    <TextView
+        android:id="@+id/CombatEnemyHealthLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/enemy_label" />
+
+    <TextView
+        android:id="@+id/CombatPlayerHealthValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="40/40"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintEnd_toEndOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintTop_toTopOf="@+id/CombatPlayerHealthBarEmpty" />
+
+    <ImageView
+        android:id="@+id/CombatEnemyHealthBarEmpty"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="false"
+        android:contentDescription="Background of Enemy Health Bar"
+        android:cropToPadding="false"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@+id/CombatEnemyHealthLabel"
+        app:srcCompat="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/CombatEnemyHealthBar"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="false"
+        android:contentDescription="Foreground of Enemy Health Bar"
+        android:cropToPadding="false"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatEnemyHealthLabel"
+        app:srcCompat="@android:color/holo_red_dark" />
+
+    <TextView
+        android:id="@+id/CombatEnemyHealthValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="40/40"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintEnd_toEndOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintTop_toTopOf="@+id/CombatEnemyHealthBarEmpty" />
+
+    <TextView
+        android:id="@+id/CombatPlayerStaminaAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatPlayerHealthBarEmpty" />
+
+    <TextView
+        android:id="@+id/CombatPlayerStrengthAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatPlayerStaminaAmount" />
+
+    <TextView
+        android:id="@+id/CombatPlayerEnduranceAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatPlayerStrengthAmount" />
+
+    <TextView
+        android:id="@+id/CombatPlayerDexterityAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatPlayerEnduranceAmount" />
+
+    <TextView
+        android:id="@+id/CombatPlayerSpeedAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatPlayerHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatPlayerDexterityAmount" />
+
+    <TextView
+        android:id="@+id/CombatEnemyStaminaAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatEnemyHealthBarEmpty" />
+
+    <TextView
+        android:id="@+id/CombatEnemyStrengthAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatEnemyStaminaAmount" />
+
+    <TextView
+        android:id="@+id/CombatEnemyEnduranceAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatEnemyStrengthAmount" />
+
+    <TextView
+        android:id="@+id/CombatEnemyDexterityAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatEnemyEnduranceAmount" />
+
+    <TextView
+        android:id="@+id/CombatEnemySpeedAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintStart_toStartOf="@+id/CombatEnemyHealthBarEmpty"
+        app:layout_constraintTop_toBottomOf="@+id/CombatEnemyDexterityAmount" />
+
+    <Button
+        android:id="@+id/CombatRunRoundButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:onClick="RunCombatRound"
+        android:text="@string/run_round_label"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/CombatLog"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Combat Start!"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/CombatRunRoundButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CombatPlayerSpeedAmount" />
+
+
+</android.support.constraint.ConstraintLayout>

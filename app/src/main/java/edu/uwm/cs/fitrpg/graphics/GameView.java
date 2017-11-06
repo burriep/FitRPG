@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import edu.uwm.cs.fitrpg.game.GameThread;
+//import edu.uwm.cs.fitrpg.game.GameThread;
 
 
 //import edu.uwm.cs.fitrpg.game.GameThread;

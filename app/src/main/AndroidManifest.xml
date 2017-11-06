@@ -24,7 +24,10 @@
         <activity android:name=".view.FitnessActivity" />
         <activity android:name=".HistoryList" />
         <activity android:name=".view.TrackFitnessActivity" />
-
+        <activity android:name=".CombatActivity"
+            android:parentActivityName=".view.HomeScreen"></activity>
+        <activity android:name=".MapActivity"
+            android:parentActivityName=".view.HomeScreen"></activity>
     </application>
 
 </manifest>

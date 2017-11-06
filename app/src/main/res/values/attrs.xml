@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MapView">
+        <attr name="MapNumOfNodes" format="integer" />
+        <attr name="MapStartingNode" format="integer" />
+        <attr name="MapBossNode" format="integer" />
+        <attr name="MapNodeSize" format="integer" />
+
+    </declare-styleable>
+</resources>
+

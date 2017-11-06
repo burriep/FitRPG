@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FitRPG.iml" filepath="$PROJECT_DIR$/FitRPG.iml" />
+      <module fileurl="file://C:\Users\ronik\Desktop\School\TestFitRPG\FitRPG.iml" filepath="C:\Users\ronik\Desktop\School\TestFitRPG\FitRPG.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TestFitRPG.iml" filepath="$PROJECT_DIR$/TestFitRPG.iml" />
+      <module fileurl="file://C:\Users\Ronike\Documents\FitRPG\TestFitRPG.iml" filepath="C:\Users\Ronike\Documents\FitRPG\TestFitRPG.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

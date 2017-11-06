@@ -1,5 +1,14 @@
 <resources>
     <string name="app_name">FitRPG</string>
+    <string name="stamina_label">Stamina Amount: </string>
+    <string name="strength_label">Strength Amount: </string>
+    <string name="endurance_label">Endurance Amount: </string>
+    <string name="dexterity_label">Dexterity Amount: </string>
+    <string name="speed_label">Speed Amount: </string>
+    <string name="combat_start_button">Run Combat!</string>
+    <string name="player_label">Player</string>
+    <string name="enemy_label">Enemy</string>
+    <string name="run_round_label">Attack!</string>
     <string name="title_activity_track_fitness">TrackFitnessActivity</string>
     <string name="activity_tracking_start_record">Start</string>
     <string name="activity_tracking_pause_record">Pause</string>

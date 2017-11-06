@@ -9,6 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+<<<<<<< HEAD
+=======
+import edu.uwm.cs.fitrpg.MapActivity;
+import edu.uwm.cs.fitrpg.view.GameActivity;
+>>>>>>> seaton
 import edu.uwm.cs.fitrpg.view.TrackFitnessActivity;
 import edu.uwm.cs.fitrpg.MainActivity;
 import edu.uwm.cs.fitrpg.R;
@@ -32,6 +37,10 @@ public class GotoGameFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(fragmentView.getContext(), MainActivity.class);
+
+                //PS Even on finding game activity, still not launching
+                //Intent intent = new Intent(fragmentView.getContext(), GameActivity.class);
+                Intent intent = new Intent(fragmentView.getContext(), MapActivity.class);
                 startActivity(intent);
             }
         });
