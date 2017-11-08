@@ -106,7 +106,7 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment BlankFragment.
+     * @return A new instance of fragment FitnessTrackDataFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static FitnessTrackDataFragment newInstance(String fitnessActivityType, FitnessActivity fa) {

@@ -10,11 +10,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
-import edu.uwm.cs.fitrpg.MainActivity;
 import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.CurrentLevelFragment;
-import edu.uwm.cs.fitrpg.fragments.GotoGameFragment;
 
 public class HomeScreen extends AppCompatActivity{
 
@@ -25,7 +23,6 @@ public class HomeScreen extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
 
-        // AvatarControlFragment Information
         TextView stamina, speed, strength, endurance, dexterity;
         stamina = (TextView) findViewById(R.id.tv_stamina);
         speed = (TextView) findViewById(R.id.tv_speed);
@@ -78,7 +75,6 @@ public class HomeScreen extends AppCompatActivity{
         String dexterityText = myDB.getDexterity();
         dexterity.setText(dexterityText);
 
-
         FragmentManager fragmentManager = getFragmentManager();
         if(fragmentManager.findFragmentById(R.id.ll_top_left) == null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -86,15 +82,6 @@ public class HomeScreen extends AppCompatActivity{
             transaction.add(R.id.ll_top_left, fragment);
             transaction.commit();
         }
-//
-//        FragmentManager fragmentManager2 = getFragmentManager();
-//        if(fragmentManager2.findFragmentById(R.id.advance) == null) {
-//            FragmentTransaction transaction = fragmentManager2.beginTransaction();
-//            GotoGameFragment fragment = new GotoGameFragment();
-//            transaction.add(R.id.advance, fragment);
-//            transaction.commit();
-//        }
-
     }
 
     public void gotoGame() {

@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import edu.uwm.cs.fitrpg.HistoryList;
-import edu.uwm.cs.fitrpg.MainActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessHistoryFragment;
@@ -51,14 +50,6 @@ public class FitnessActivity extends AppCompatActivity {
             public void onClick(View view) {
                 position = 3;
                 replaceFragment(position);
-            }
-        });
-
-        goToMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
             }
         });
     }

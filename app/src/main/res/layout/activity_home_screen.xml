@@ -5,166 +5,146 @@
     android:layout_height="match_parent"
     tools:context="edu.uwm.cs.fitrpg.view.HomeScreen">
 
-    <!--<fragment-->
-        <!--android:id="@+id/avatarView"-->
-        <!--android:name="edu.uwm.cs.fitrpg.fragments.AvatarControlFragment"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_weight="1"-->
-        <!--tools:layout="@layout/fragment_avatar" />-->
-
-    <!--<LinearLayout-->
-        <!--android:orientation="vertical"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_weight="1">-->
-
-        <!--<LinearLayout-->
-            <!--android:orientation="vertical"-->
-            <!--android:id="@+id/current_level"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_weight="4"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:background="@color/colorPrimaryDark"/>-->
-
-        <!--<LinearLayout-->
-            <!--android:orientation="vertical"-->
-            <!--android:id="@+id/advance"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_weight="1"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:background="@color/orange"/>-->
-
-    <!--</LinearLayout>-->
-
-
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="2"
-            android:layout_height="0dp">
+            android:orientation="horizontal">
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:id="@+id/ll_top_left"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
-            </LinearLayout>
+                android:layout_weight="1"
+                android:orientation="horizontal"></LinearLayout>
 
             <LinearLayout
-                android:orientation="vertical"
                 android:id="@+id/ll_top_right"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Stamina"/>
+                        android:layout_weight="1"
+                        android:text="Stamina" />
+
                     <TextView
                         android:id="@+id/tv_stamina"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="0"/>
+                        android:layout_weight="1"
+                        android:text="0" />
                 </LinearLayout>
+
                 <LinearLayout
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Strength"/>
+                        android:layout_weight="1"
+                        android:text="Strength" />
+
                     <TextView
                         android:id="@+id/tv_strength"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="0"/>
+                        android:layout_weight="1"
+                        android:text="0" />
                 </LinearLayout>
+
                 <LinearLayout
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Endurance"/>
+                        android:layout_weight="1"
+                        android:text="Endurance" />
+
                     <TextView
                         android:id="@+id/tv_endurance"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="0"/>
+                        android:layout_weight="1"
+                        android:text="0" />
                 </LinearLayout>
+
                 <LinearLayout
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Dexterity"/>
+                        android:layout_weight="1"
+                        android:text="Dexterity" />
+
                     <TextView
                         android:id="@+id/tv_dexterity"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="0"/>
+                        android:layout_weight="1"
+                        android:text="0" />
                 </LinearLayout>
+
                 <LinearLayout
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="Speed"/>
+                        android:layout_weight="1"
+                        android:text="Speed" />
+
                     <TextView
                         android:id="@+id/tv_speed"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:text="0"/>
+                        android:layout_weight="1"
+                        android:text="0" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_middle"
-            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="2"></LinearLayout>
+            android:layout_weight="2"
+            android:orientation="vertical"></LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:id="@+id/ll_bottom"
             android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_height="0dp">
+            android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/btn_go_to_game"
@@ -172,9 +152,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="50dp"
-                android:src="@drawable/ic_game"
                 android:backgroundTint="@color/colorPrimary"
-                />
+                android:src="@drawable/ic_game" />
 
             <ImageButton
                 android:id="@+id/btn_go_to_graphics"
@@ -182,8 +161,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="50dp"
-                android:src="@drawable/ic_graphics"
-                android:backgroundTint="@color/colorPrimary"/>
+                android:backgroundTint="@color/colorPrimary"
+                android:src="@drawable/ic_graphics" />
 
             <ImageButton
                 android:id="@+id/btn_go_to_fitness"
@@ -191,8 +170,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="50dp"
-                android:src="@drawable/ic_fitness"
-                android:backgroundTint="@color/colorPrimary"/>
+                android:backgroundTint="@color/colorPrimary"
+                android:src="@drawable/ic_fitness" />
 
         </LinearLayout>
     </LinearLayout>
