@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.View;
 
 /**
@@ -22,6 +23,8 @@ public class MapView extends View {
     private int travelProgress = 0;
     private int bossNode = 0;
     private int nodeSize = 0;
+    private Pair[] nodePositions;
+    private Pair screenDimensions = new Pair(1080, 1920);
 
     private Paint paint = new Paint();
     private Drawable[] mapNodeImage;
@@ -45,32 +48,45 @@ public class MapView extends View {
         paint.setStrokeWidth(5f);
 
         mapNodeImage = new Drawable[numOfNodes];
+        nodePositions = new Pair[numOfNodes];
+        double angle = 0;
+        int canvasCenterWidth = (int)screenDimensions.first/2;
+        int canvasCenterHeight = (int)screenDimensions.second/2;
+        int distanceFromCenterWidth = canvasCenterWidth/2;
+        int distanceFromCenterHeight = canvasCenterHeight/2;
+
         for(int i = 0; i < numOfNodes; i++)
         {
             mapNodeImage[i] = getResources().getDrawable(R.drawable.map_node);
-
+            angle = 2 * Math.PI * (i/(double)(numOfNodes));
+            nodePositions[i] = new Pair(canvasCenterWidth - (int)Math.round(distanceFromCenterWidth * Math.cos(angle)),
+                    canvasCenterHeight - (int)Math.round(distanceFromCenterHeight * Math.sin(angle)));
         }
 
+    }
+
+    public void ChangeNodePosition(int nodeToChangePos, Pair newPosition)
+    {
+        if(nodeToChangePos < numOfNodes)
+        {
+            nodePositions[nodeToChangePos] = new Pair(newPosition.first, newPosition.second);
+        }
     }
 
     protected void onDraw(Canvas canvas)
     {
         super.onDraw(canvas);
-        int canvasCenterWidth = canvas.getWidth()/2;
-        int canvasCenterHeight = canvas.getHeight()/2;
-        int distanceFromCenterWidth = canvasCenterWidth/2;
-        int distanceFromCenterHeight = canvasCenterHeight/2;
-        int[] nodePositions = new int[numOfNodes * 2];
-        double angle = 0;
         float progress = 0.0f;
         float startX, startY, endX, endY, midX, midY;
+        float adjustmentX = (float)canvas.getWidth()/(int)screenDimensions.first;
+        float adjustmentY = (float)canvas.getHeight()/(int)screenDimensions.second;
 
-        for(int i = 0; i < numOfNodes * 2; i += 2)
-        {
-            angle = 2 * Math.PI * (i/(double)(numOfNodes*2));
-            nodePositions[i] = canvasCenterWidth - (int)Math.round(distanceFromCenterWidth * Math.cos(angle));
-            nodePositions[i+1] = canvasCenterHeight - (int)Math.round(distanceFromCenterHeight * Math.sin(angle));
-        }
+        //for(int i = 0; i < numOfNodes * 2; i += 2)
+        //{
+        //    angle = 2 * Math.PI * (i/(double)(numOfNodes*2));
+        //    nodePositions[i] = canvasCenterWidth - (int)Math.round(distanceFromCenterWidth * Math.cos(angle));
+        //    nodePositions[i+1] = canvasCenterHeight - (int)Math.round(distanceFromCenterHeight * Math.sin(angle));
+        //}
 
         for(int i = 0; i < numOfNodes; i++)
         {
@@ -80,17 +96,17 @@ public class MapView extends View {
                 {
                     progress = travelProgress/100.0f;
                     if(i == currentNode) {
-                        startX = nodePositions[i * 2];
-                        startY = nodePositions[i * 2 + 1];
-                        endX = nodePositions[j * 2];
-                        endY = nodePositions[j * 2 + 1];
+                        startX = (int)nodePositions[i].first * adjustmentX;
+                        startY = (int)nodePositions[i].second * adjustmentY;
+                        endX = (int)nodePositions[j].first * adjustmentX;
+                        endY = (int)nodePositions[j].second * adjustmentY;
                     }
                     else
                     {
-                        startX = nodePositions[j * 2];
-                        startY = nodePositions[j * 2 + 1];
-                        endX = nodePositions[i * 2];
-                        endY = nodePositions[i * 2 + 1];
+                        startX = (int)nodePositions[j].first * adjustmentX;
+                        startY = (int)nodePositions[j].second * adjustmentY;
+                        endX = (int)nodePositions[i].first * adjustmentX;
+                        endY = (int)nodePositions[i].second * adjustmentY;
                     }
                     paint.setColor(Color.CYAN);
                     midX = ((endX - startX) * progress) + startX;
@@ -101,7 +117,8 @@ public class MapView extends View {
                 }
                 else
                 {
-                    canvas.drawLine(nodePositions[i * 2], nodePositions[i * 2 + 1], nodePositions[j * 2], nodePositions[j * 2 + 1], paint);
+                    canvas.drawLine((int)nodePositions[i].first * adjustmentX, (int)nodePositions[i].second * adjustmentY,
+                            (int)nodePositions[j].first * adjustmentX, (int)nodePositions[j].second * adjustmentY, paint);
                 }
             }
         }
@@ -119,7 +136,8 @@ public class MapView extends View {
             {
                 mapNodeImage[i].setColorFilter(getResources().getColor(R.color.gold), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
-            mapNodeImage[i].setBounds(nodePositions[i*2]-(nodeSize/2), nodePositions[i*2+1]-(nodeSize/2), nodePositions[i*2]+(nodeSize/2), nodePositions[i*2+1]+(nodeSize/2));
+            mapNodeImage[i].setBounds((int)((int)nodePositions[i].first * adjustmentX)-(nodeSize/2), (int)((int)nodePositions[i].second * adjustmentY)-(nodeSize/2),
+                    (int)((int)nodePositions[i].first * adjustmentX)+(nodeSize/2), (int)((int)nodePositions[i].second * adjustmentY)+(nodeSize/2));
             mapNodeImage[i].draw(canvas);
         }
     }

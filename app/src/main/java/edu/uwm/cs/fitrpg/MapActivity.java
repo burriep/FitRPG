@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -61,6 +62,7 @@ public class MapActivity extends AppCompatActivity {
         mapNodes[1] = findViewById(R.id.MapNodeButton1);
         mapNodes[2] = findViewById(R.id.MapNodeButton2);
         mapNodes[3] = findViewById(R.id.MapNodeButton3);
+
         //mapNodes = new View[mapView.getNumOfNodes()];
         //for(int i = 0; i < mapNodes.length; i++)
         //{
