@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Point;
+import android.util.Log;
+
 
 import java.util.ArrayList;
 
@@ -48,10 +51,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "reps INTEGER(3))");
 
         db.execSQL("create table fr_map (usr_id INTEGER(3) PRIMARY KEY, " +
-                "map_id INTEGER(2), " +
-                "nd_id INTEGER(2), " +
-                "nd_cmp INTEGER(1) DEFAULT 0)");
-                //"PRIMARY KEY(usr_id, map_id, nd_id)");
+                "map_id INTEGER(2) PRIMARY KEY, " +
+                "nd_id INTEGER(2) PRIMARY KEY, " +
+                "nd_cmp INTEGER(1) PRIMARY KEY DEFAULT 0, " +
+                "nd_x_pos INTEGER DEFAULT 0, "+
+                "nd_y_pos INTEGER DEFAULT 0)");
+
+        db.execSQL("create table fr_path (map_id INTEGER(2) PRIMARY KEY, " +
+                "nd_a INTEGER(2) PRIMARY KEY, " +
+                "nd_b INTEGER(2) PRIMARY KEY)");
+        //nd_a is the first node in the pair, b is the second
+
+
+        ContentValues values = new ContentValues();
+        values.put("map_id", 1);
+        values.put("nd_a", 33);
+        values.put("nd_b", 22);
+        Log.i("joopy", values.toString());
+       // db.insert("fr_path", null, values);
     }
 
     @Override
@@ -65,14 +82,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("drop table if exists fr_char");
         db.execSQL("drop table if exists fr_hst");
         db.execSQL("drop table if exists fr_map");
+        db.execSQL("drop table if exists fr_path");
 
         onCreate(db);
     }
 
-    public String getStamina() {
+    public String getStamina(int x) {
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_sta from fr_char";
-        sqlQuery += " where nd_pos = (SELECT MAX(nd_pos) from fr_char)";
+        sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
@@ -84,10 +102,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public String getSpeed() {
+    public String getName(int x) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select usr_nam from fr_char";
+        sqlQuery += " where usr_id = " + x + "";
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            db.close();
+            return c.getString(1);
+        }
+        else {
+            db.close();
+            return "" + 0;
+        }
+    }
+
+    public String getSpeed(int x) {
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_spd from fr_char";
-        sqlQuery += " where nd_pos = (SELECT MAX(nd_pos) from fr_char)";
+        sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
@@ -99,10 +132,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public String getStrength() {
+    public String getStrength(int x) {
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_str from fr_char";
-        sqlQuery += " where nd_pos = (SELECT MAX(nd_pos) from fr_char)";
+        sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
@@ -114,10 +147,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public String getEndurance() {
+    public String getEndurance(int x) {
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_end from fr_char";
-        sqlQuery += " where nd_pos = (SELECT MAX(nd_pos) from fr_char)";
+        sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
@@ -129,10 +162,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public String getDexterity() {
+    public String getDexterity(int x) {
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_dex from fr_char";
-        sqlQuery += " where nd_pos = (SELECT MAX(nd_pos) from fr_char)";
+        sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
@@ -161,6 +194,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public Point getNodeCoord(int m_id, int n_id, int u_id)
+    {
+        Point retCoord = new Point(0,0);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("fr_map", new String[]{"nd_x_pos","nd_y_pos"},"usr_id = " + u_id + " AND map_id = " + m_id +
+                                        " AND  nd_id = " + n_id,null,null,null,null );
+        if(cursor.moveToFirst())
+        {
+            db.close();
+            retCoord = new Point(cursor.getInt(0), cursor.getInt(1));
+            return retCoord;
+        }
+        else
+        {
+             db.close();
+             return null;
+        }
+    }
+
+    //todo
+//    public void setNodeCoord(Pair coord)
+//    {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        ContentValues values = new ContentValues();
+//        values.put("nd_x_pos", first(coord));
+//        db.update("fr_char", values, "usr_id = " + id + "", null);
+//        db.close();
+//    }
+
+
     public ArrayList<FitnessEntry> getFitnessHistory() {
         ArrayList<FitnessEntry> historyList = new ArrayList<FitnessEntry>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -187,5 +251,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         super.onDowngrade(db, oldVersion, newVersion);
+    }
+
+    public void setStrength(int str, int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("a_str", str);
+        db.update("fr_char", values, "usr_id = " + id + "", null);
+        db.close();
+
+    }
+
+    public void setSpeed(int spd, int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("a_spd", spd);
+        db.update("fr_char", values, "usr_id = " + id + "", null);
+        db.close();
+    }
+
+    public void setDexterity(int dex, int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("a_dex", dex);
+        db.update("fr_char", values, "usr_id = " + id + "", null);
+        db.close();
+    }
+
+    public void setEndurance(int end, int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("a_end", end);
+        db.update("fr_char", values, "usr_id = " + id + "", null);
+        db.close();
+    }
+
+    public void setStamina(int sta, int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("a_sta", sta);
+        db.update("fr_char", values, "usr_id = " + id + "", null);
+        db.close();
+    }
+
+    public void setCurrentNode(int nd, int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("nd_pos", nd);
+        db.update("fr_char", values, "usr_id = " + id + "", null);
+        db.close();
     }
 }
