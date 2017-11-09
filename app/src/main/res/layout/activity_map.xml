@@ -87,7 +87,7 @@
             android:layout_height="wrap_content"
             app:MapBossNode="2"
             app:MapNodeSize="100"
-            app:MapNumOfNodes="5"
+            app:MapNumOfNodes="4"
             app:MapStartingNode="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

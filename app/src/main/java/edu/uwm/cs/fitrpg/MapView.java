@@ -25,6 +25,7 @@ public class MapView extends View {
     private int nodeSize = 0;
     private Pair[] nodePositions;
     private Pair screenDimensions = new Pair(1080, 1920);
+    private Boolean[][] nodeConnections;
 
     private Paint paint = new Paint();
     private Drawable[] mapNodeImage;
@@ -49,6 +50,7 @@ public class MapView extends View {
 
         mapNodeImage = new Drawable[numOfNodes];
         nodePositions = new Pair[numOfNodes];
+        nodeConnections = new Boolean[numOfNodes][numOfNodes];
         double angle = 0;
         int canvasCenterWidth = (int)screenDimensions.first/2;
         int canvasCenterHeight = (int)screenDimensions.second/2;
@@ -61,8 +63,46 @@ public class MapView extends View {
             angle = 2 * Math.PI * (i/(double)(numOfNodes));
             nodePositions[i] = new Pair(canvasCenterWidth - (int)Math.round(distanceFromCenterWidth * Math.cos(angle)),
                     canvasCenterHeight - (int)Math.round(distanceFromCenterHeight * Math.sin(angle)));
+            for(int j = 0; j < numOfNodes; j++)
+            {
+                nodeConnections[i][j] = i != j;
+            }
         }
 
+    }
+
+    public void SetNodeConnection(int baseNode, int connectedNode, Boolean isConnected)
+    {
+        if(baseNode != connectedNode && baseNode < numOfNodes && connectedNode < numOfNodes)
+        {
+            nodeConnections[baseNode][connectedNode] = isConnected;
+            nodeConnections[connectedNode][baseNode] = isConnected;
+        }
+    }
+
+    public void ToggleNodeConnections(int baseNode, int connectedNode)
+    {
+        if(baseNode != connectedNode && baseNode < numOfNodes && connectedNode < numOfNodes)
+        {
+            nodeConnections[baseNode][connectedNode] = ! nodeConnections[baseNode][connectedNode];
+            nodeConnections[connectedNode][baseNode] = ! nodeConnections[connectedNode][baseNode];
+        }
+    }
+
+    public void SetMultipleNodeConnections(int baseNode, Pair[] nodeConnectionPairs)
+    {
+        for(int i = 0; i < nodeConnectionPairs.length; i++)
+        {
+            SetNodeConnection(baseNode, (int)nodeConnectionPairs[i].first, (boolean)nodeConnectionPairs[i].second);
+        }
+    }
+
+    public void SetAllNodeConnections(int baseNode, Boolean[] connections)
+    {
+        for(int i = 0; i < connections.length; i++)
+        {
+            SetNodeConnection(baseNode, i, connections[i]);
+        }
     }
 
     public void ChangeNodePosition(int nodeToChangePos, Pair newPosition)
@@ -81,44 +121,34 @@ public class MapView extends View {
         float adjustmentX = (float)canvas.getWidth()/(int)screenDimensions.first;
         float adjustmentY = (float)canvas.getHeight()/(int)screenDimensions.second;
 
-        //for(int i = 0; i < numOfNodes * 2; i += 2)
-        //{
-        //    angle = 2 * Math.PI * (i/(double)(numOfNodes*2));
-        //    nodePositions[i] = canvasCenterWidth - (int)Math.round(distanceFromCenterWidth * Math.cos(angle));
-        //    nodePositions[i+1] = canvasCenterHeight - (int)Math.round(distanceFromCenterHeight * Math.sin(angle));
-        //}
-
         for(int i = 0; i < numOfNodes; i++)
         {
             for(int j = i; j < numOfNodes; j++)
             {
-                if(isTraveling && ((i == currentNode && j == destinationNode) || (j == currentNode && i == destinationNode)))
-                {
-                    progress = travelProgress/100.0f;
-                    if(i == currentNode) {
-                        startX = (int)nodePositions[i].first * adjustmentX;
-                        startY = (int)nodePositions[i].second * adjustmentY;
-                        endX = (int)nodePositions[j].first * adjustmentX;
-                        endY = (int)nodePositions[j].second * adjustmentY;
+                if(i != j && nodeConnections[i][j]) {
+                    if (isTraveling && ((i == currentNode && j == destinationNode) || (j == currentNode && i == destinationNode))) {
+                        progress = travelProgress / 100.0f;
+                        if (i == currentNode) {
+                            startX = (int) nodePositions[i].first * adjustmentX;
+                            startY = (int) nodePositions[i].second * adjustmentY;
+                            endX = (int) nodePositions[j].first * adjustmentX;
+                            endY = (int) nodePositions[j].second * adjustmentY;
+                        } else {
+                            startX = (int) nodePositions[j].first * adjustmentX;
+                            startY = (int) nodePositions[j].second * adjustmentY;
+                            endX = (int) nodePositions[i].first * adjustmentX;
+                            endY = (int) nodePositions[i].second * adjustmentY;
+                        }
+                        paint.setColor(Color.CYAN);
+                        midX = ((endX - startX) * progress) + startX;
+                        midY = ((endY - startY) * progress) + startY;
+                        canvas.drawLine(startX, startY, midX, midY, paint);
+                        paint.setColor(Color.BLACK);
+                        canvas.drawLine(midX, midY, endX, endY, paint);
+                    } else {
+                        canvas.drawLine((int) nodePositions[i].first * adjustmentX, (int) nodePositions[i].second * adjustmentY,
+                                (int) nodePositions[j].first * adjustmentX, (int) nodePositions[j].second * adjustmentY, paint);
                     }
-                    else
-                    {
-                        startX = (int)nodePositions[j].first * adjustmentX;
-                        startY = (int)nodePositions[j].second * adjustmentY;
-                        endX = (int)nodePositions[i].first * adjustmentX;
-                        endY = (int)nodePositions[i].second * adjustmentY;
-                    }
-                    paint.setColor(Color.CYAN);
-                    midX = ((endX - startX) * progress) + startX;
-                    midY = ((endY - startY) * progress) + startY;
-                    canvas.drawLine(startX, startY, midX, midY, paint);
-                    paint.setColor(Color.BLACK);
-                    canvas.drawLine(midX, midY, endX, endY, paint);
-                }
-                else
-                {
-                    canvas.drawLine((int)nodePositions[i].first * adjustmentX, (int)nodePositions[i].second * adjustmentY,
-                            (int)nodePositions[j].first * adjustmentX, (int)nodePositions[j].second * adjustmentY, paint);
                 }
             }
         }
@@ -218,5 +248,10 @@ public class MapView extends View {
         nodeSize = val;
         invalidate();
         requestLayout();
+    }
+
+    public Boolean getConnectedToCurrentNode(int destinationNode)
+    {
+        return nodeConnections[currentNode][destinationNode];
     }
 }

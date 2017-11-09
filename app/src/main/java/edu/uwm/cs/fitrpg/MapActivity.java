@@ -56,6 +56,21 @@ public class MapActivity extends AppCompatActivity {
 
         isTraveling = false;
         mapView = (MapView)findViewById(R.id.MapViewCanvas);
+
+        //Boolean[] connections = new Boolean[3];
+        //connections[0]=false;
+        //connections[1]=true;
+        //connections[2]=false;
+        //connections[3]=false;
+        //mapView.SetAllNodeConnections(2, connections);
+
+        //Pair[] nodeConnectionPair = new Pair[2];
+        //nodeConnectionPair[0] = new Pair(0, false);
+        //nodeConnectionPair[1] = new Pair(3, true);
+        //mapView.SetMultipleNodeConnections(2, nodeConnectionPair);
+
+        mapView.ToggleNodeConnections(2, 0);
+        mapView.ToggleNodeConnections(1, 3);
         //PS TODO Remove this is a faked implementation for sprint 1 limited to 4 and only 4 nodes
         mapNodes = new View[4];
         mapNodes[0] = findViewById(R.id.MapNodeButton0);
@@ -91,7 +106,7 @@ public class MapActivity extends AppCompatActivity {
                     break;
                 }
             }
-            if(destinationNode != mapView.getCurrentNode()) {
+            if(destinationNode != mapView.getCurrentNode() && mapView.getConnectedToCurrentNode(destinationNode)) {
                 isTraveling = true;
                 mapView.setDestinationNode(destinationNode);
                 mapView.setIsTraveling(true);
