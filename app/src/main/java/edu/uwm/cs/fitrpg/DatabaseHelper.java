@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Point;
 import android.util.Log;
@@ -190,10 +191,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("t_spd", 0);
         values.put("sets", 0);
         values.put("reps", 0);
-        db.insert("fr_hst", null, values);
-        db.close();
+
+        try{
+            db.insert("fr_hst", null, values);
+            db.close();
+        }
+        catch(SQLiteException e)
+        {
+            db.close();
+            Log.e("Insert Error", "Error inserting into db");
+        }
     }
 
+    //get the screen x,y coordinates for the specified node from db
     public Point getNodeCoord(int m_id, int n_id, int u_id)
     {
         Point retCoord = new Point(0,0);
@@ -210,7 +220,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else
         {
              db.close();
-             return null;
+             return null; //error occurred
         }
     }
 
@@ -253,25 +263,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super.onDowngrade(db, oldVersion, newVersion);
     }
 
+    //db setter
     public void setStrength(int str, int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values = new ContentValues();
         values.put("a_str", str);
-        db.update("fr_char", values, "usr_id = " + id + "", null);
-        db.close();
+
+        try{
+            db.update("fr_char", values, "usr_id = " + id + "", null);
+            db.close();
+        }
+        catch(SQLiteException e)
+        {
+            db.close();
+            Log.e("Insert Error", "Error inserting into db");
+        }
 
     }
 
+    //db setter
     public void setSpeed(int spd, int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values = new ContentValues();
         values.put("a_spd", spd);
-        db.update("fr_char", values, "usr_id = " + id + "", null);
-        db.close();
+
+        try{
+            db.update("fr_char", values, "usr_id = " + id + "", null);
+            db.close();
+        }
+        catch(SQLiteException e)
+        {
+            db.close();
+            Log.e("Insert Error", "Error inserting into db");
+        }
     }
 
+    //db setter
     public void setDexterity(int dex, int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -281,30 +310,56 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    //db setter
     public void setEndurance(int end, int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values = new ContentValues();
         values.put("a_end", end);
-        db.update("fr_char", values, "usr_id = " + id + "", null);
-        db.close();
+
+        try{
+            db.update("fr_char", values, "usr_id = " + id + "", null);
+            db.close();
+        }
+        catch(SQLiteException e)
+        {
+            db.close();
+            Log.e("Insert Error", "Error inserting into db");
+        }
     }
 
+    //db setter
     public void setStamina(int sta, int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values = new ContentValues();
         values.put("a_sta", sta);
-        db.update("fr_char", values, "usr_id = " + id + "", null);
-        db.close();
+        try{
+            db.update("fr_char", values, "usr_id = " + id + "", null);
+            db.close();
+        }
+        catch(SQLiteException e)
+        {
+            db.close();
+            Log.e("Insert Error", "Error inserting into db");
+        }
     }
 
+    //this updates the character's current node postition in the db
     public void setCurrentNode(int nd, int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values = new ContentValues();
         values.put("nd_pos", nd);
-        db.update("fr_char", values, "usr_id = " + id + "", null);
-        db.close();
+        try{
+            db.update("fr_char", values, "usr_id = " + id + "", null);
+            db.close();
+        }
+        catch(SQLiteException e)
+        {
+            db.close();
+            Log.e("Insert Error", "Error inserting into db");
+
+        }
     }
 }
