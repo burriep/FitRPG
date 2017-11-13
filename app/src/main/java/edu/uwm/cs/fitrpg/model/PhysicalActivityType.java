@@ -1,9 +1,11 @@
 package edu.uwm.cs.fitrpg.model;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class PhysicalActivityType {
@@ -16,8 +18,7 @@ public class PhysicalActivityType {
     private int muscleStrengthImpact;
     private int boneStrengthImpact;
 
-    public PhysicalActivityType() {
-    }
+    public PhysicalActivityType() {}
 
     public PhysicalActivityType(int id, String name, String description, PhysicalActivityTrackingMode mode, int aerobicImpact, int flexibilityImpact, int muscleStrengthImpact, int boneStrengthImpact) {
         this.id = id;
@@ -27,6 +28,70 @@ public class PhysicalActivityType {
         this.aerobicImpact = aerobicImpact;
         this.flexibilityImpact = flexibilityImpact;
         this.muscleStrengthImpact = muscleStrengthImpact;
+        this.boneStrengthImpact = boneStrengthImpact;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public PhysicalActivityTrackingMode getMode() {
+        return mode;
+    }
+
+    public void setMode(PhysicalActivityTrackingMode mode) {
+        this.mode = mode;
+    }
+
+    public int getAerobicImpact() {
+        return aerobicImpact;
+    }
+
+    public void setAerobicImpact(int aerobicImpact) {
+        this.aerobicImpact = aerobicImpact;
+    }
+
+    public int getFlexibilityImpact() {
+        return flexibilityImpact;
+    }
+
+    public void setFlexibilityImpact(int flexibilityImpact) {
+        this.flexibilityImpact = flexibilityImpact;
+    }
+
+    public int getMuscleStrengthImpact() {
+        return muscleStrengthImpact;
+    }
+
+    public void setMuscleStrengthImpact(int muscleStrengthImpact) {
+        this.muscleStrengthImpact = muscleStrengthImpact;
+    }
+
+    public int getBoneStrengthImpact() {
+        return boneStrengthImpact;
+    }
+
+    public void setBoneStrengthImpact(int boneStrengthImpact) {
         this.boneStrengthImpact = boneStrengthImpact;
     }
 
@@ -70,23 +135,71 @@ public class PhysicalActivityType {
         return id > 0;
     }
 
-    public PhysicalActivityType get(int id) {
-/*
-create table fr_act (
-act_id INTEGER(2) PRIMARY KEY,
-act_nam VARCHAR(13),
-act_dsc VARCHAR(50),
-act_mode INTEGER(1),
-act_aero INTEGER(2),
-act_flex INTEGER(2),
-act_musc INTEGER(2),
-act_bone INTEGER(2)
-)
-*/
-        return null;
+    public static PhysicalActivityType get(SQLiteDatabase db, int id) {
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                "act_id",
+                "act_nam",
+                "act_dsc",
+                "act_mode",
+                "act_aero",
+                "act_flex",
+                "act_musc",
+                "act_bone"
+        };
+        String selection = "act_id = ?";
+        String[] selectionArgs = {Integer.toString(id)};
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder = "act_id DESC";
+        Cursor cursor = db.query("fr_act", projection, selection, selectionArgs, null, null, sortOrder);
+        PhysicalActivityType pat = null;
+        while (cursor.moveToNext()) {
+            pat = new PhysicalActivityType();
+            pat.id = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
+            pat.name = cursor.getString(cursor.getColumnIndexOrThrow("act_nam"));
+            pat.description = cursor.getString(cursor.getColumnIndexOrThrow("act_dsc"));
+            pat.mode = PhysicalActivityTrackingMode.values()[cursor.getInt(cursor.getColumnIndexOrThrow("act_mode"))];
+            pat.aerobicImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_aero"));
+            pat.flexibilityImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_flex"));
+            pat.muscleStrengthImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_musc"));
+            pat.boneStrengthImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_bone"));
+        }
+        cursor.close();
+        return pat;
     }
 
-    public PhysicalActivityType getAll() {
-        return null;
+    public static List<PhysicalActivityType> getAll(SQLiteDatabase db) {
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                "act_id",
+                "act_nam",
+                "act_dsc",
+                "act_mode",
+                "act_aero",
+                "act_flex",
+                "act_musc",
+                "act_bone"
+        };
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder = "act_id ASC";
+        Cursor cursor = db.query("fr_act", projection, "", null, null, null, sortOrder);
+        List<PhysicalActivityType> types = new LinkedList<>();
+        while (cursor.moveToNext()) {
+            PhysicalActivityType pat = new PhysicalActivityType();
+            pat.id = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
+            pat.name = cursor.getString(cursor.getColumnIndexOrThrow("act_nam"));
+            pat.description = cursor.getString(cursor.getColumnIndexOrThrow("act_dsc"));
+            pat.mode = PhysicalActivityTrackingMode.values()[cursor.getInt(cursor.getColumnIndexOrThrow("act_mode"))];
+            pat.aerobicImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_aero"));
+            pat.flexibilityImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_flex"));
+            pat.muscleStrengthImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_musc"));
+            pat.boneStrengthImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_bone"));
+            types.add(pat);
+        }
+        cursor.close();
+        return types;
     }
 }
