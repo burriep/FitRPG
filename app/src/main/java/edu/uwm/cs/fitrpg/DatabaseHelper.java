@@ -8,13 +8,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
-/**
- * Created by Jason on 10/24/17.
- */
+import edu.uwm.cs.fitrpg.model.PhysicalActivityType;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "fitrpg.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 5;
 
 
     public DatabaseHelper(Context context) {
@@ -24,14 +22,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table fr_act (" +
-                "act_id INTEGER(2) PRIMARY KEY, " +
-                "act_nam VARCHAR(13), " +
+                "act_id INTEGER PRIMARY KEY, " +
+                "act_nam VARCHAR(13) UNIQUE, " +
                 "act_dsc VARCHAR(50), " +
                 "act_mode INTEGER(1), " +
                 "act_aero INTEGER(2), " +
                 "act_flex INTEGER(2), " +
                 "act_musc INTEGER(2), " +
                 "act_bone INTEGER(2))");
+
+        PhysicalActivityType.init(db);
 
         db.execSQL("create table fr_char (usr_id INTEGER(3) PRIMARY KEY, " +
                 "usr_nam VARCHAR(13), " +
@@ -42,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "a_dex INTEGER(2), " +
                 "a_end INTEGER(2))");
 
-        db.execSQL("create table fr_hst (act_num INTEGER(4) PRIMARY KEY, " +
+        db.execSQL("create table fr_hst (act_num INTEGER PRIMARY KEY, " +
                 "act_id INTEGER(2) NOT NULL, " +
                 "usr_id INTEGER(3) NOT NULL, " +
                 "act_type TEXT, " +

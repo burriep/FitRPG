@@ -19,16 +19,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.LocationRequest;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
+import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.Utils;
+import edu.uwm.cs.fitrpg.model.PhysicalActivityTrackingMode;
+import edu.uwm.cs.fitrpg.model.PhysicalActivityType;
 import edu.uwm.cs.fitrpg.services.LocationUpdatesService;
 
 
@@ -71,33 +77,11 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
             mBound = false;
         }
     };
-
-
-    /**
-     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
-     */
-    private static final long UPDATE_INTERVAL = 5000; // Every 5 seconds.
-
-    /**
-     * The fastest rate for active location updates. Updates will never be more frequent than this value, but they may be less frequent.
-     */
-    private static final long FASTEST_UPDATE_INTERVAL = 1000; // Every 1 second
-
-    /**
-     * The max time before batched results are delivered by location services. Results may be delivered sooner than this interval.
-     */
-    private static final long MAX_WAIT_TIME = 60000; // Every 1 minute.
-
-    /**
-     * Stores parameters for requests to the FusedLocationProviderApi.
-     */
-    private LocationRequest mLocationRequest;
-
     private static final String ARG_CURRENT_FITNESS_ACTIVITY_TYPE = "param1";
 
-    private boolean needsLocation;
     private static FitnessActivity currentActivity;
     private boolean isRecording;
+    private int activityTypeId;
 
     public FitnessTrackDataFragment() {
     }
@@ -106,25 +90,15 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
+     * @param physicalActivityTypeId The ID of the chosen physical activity type.
      * @return A new instance of fragment FitnessTrackDataFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static FitnessTrackDataFragment newInstance(String fitnessActivityType, FitnessActivity fa) {
+    public static FitnessTrackDataFragment newInstance(int physicalActivityTypeId) {
         FitnessTrackDataFragment fragment = new FitnessTrackDataFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_CURRENT_FITNESS_ACTIVITY_TYPE, fitnessActivityType);
-        currentActivity = fa;
+        args.putInt(ARG_CURRENT_FITNESS_ACTIVITY_TYPE, physicalActivityTypeId);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        myReceiver = new MyReceiver();
-        if (getArguments() != null) {
-            String fitnessActivityType = getArguments().getString(ARG_CURRENT_FITNESS_ACTIVITY_TYPE);
-        }
     }
 
     @Override
@@ -138,13 +112,74 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        myReceiver = new MyReceiver();
+        Bundle args = getArguments();
+        if (args != null) {
+            activityTypeId = args.getInt(ARG_CURRENT_FITNESS_ACTIVITY_TYPE);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_fitness_track_data, container, false);
+        elapsedTimeText = view.findViewById(R.id.elapsed_time_text);
+        distanceText = view.findViewById(R.id.distance_text);
+        averageSpeedText = view.findViewById(R.id.average_speed_text);
+        topSpeedText = view.findViewById(R.id.top_speed_text);
+        fitnessContinuePauseRecord = view.findViewById(R.id.fitness_continue_pause_record);
+        fitnessCancel = view.findViewById(R.id.fitness_cancel);
+        fitnessStop = view.findViewById(R.id.fitness_stop);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final PhysicalActivityType type = PhysicalActivityType.get(new DatabaseHelper(getContext()).getReadableDatabase(), activityTypeId);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        currentActivity = new FitnessActivity();
+                        currentActivity.setType(type);
+                        fitnessContinuePauseRecord.setEnabled(true);
+                    }
+                });
+            }
+        }).run();
+
+        fitnessContinuePauseRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recordFitnessActivity(view);
+            }
+        });
+        fitnessCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelFitnessActivity(view);
+            }
+        });
+        fitnessStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopFitnessActivity(view);
+            }
+        });
+        return view;
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
 
-        // Bind to the service. If the service is in foreground mode, this signals to the service
-        // that since this activity is in the foreground, the service can exit foreground mode.
-        getContext().bindService(new Intent(getContext(), LocationUpdatesService.class), mServiceConnection, Context.BIND_AUTO_CREATE);
+        PhysicalActivityType type = currentActivity.getType();
+        PhysicalActivityTrackingMode mode = type == null ? null : type.getMode();
+        if (mode == PhysicalActivityTrackingMode.DISTANCE || mode == PhysicalActivityTrackingMode.DISTANCE_REPS || mode == PhysicalActivityTrackingMode.TIME_DISTANCE || mode == PhysicalActivityTrackingMode.TIME_DISTANCE_REPS) {
+            // Bind to the service. If the service is in foreground mode, this signals to the service
+            // that since this activity is in the foreground, the service can exit foreground mode.
+            getContext().bindService(new Intent(getContext(), LocationUpdatesService.class), mServiceConnection, Context.BIND_AUTO_CREATE);
+        }
     }
 
     @Override
@@ -152,16 +187,11 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
         super.onResume();
 
         isRecording = currentActivity != null && currentActivity.isTracking();
-        fitnessContinuePauseRecord.setEnabled(true);
 
         updateClockHandler.removeCallbacks(updateClockTask);
-        updateClockHandler.postDelayed(updateClockTask, 100);
+        updateClockHandler.postDelayed(updateClockTask, 1000);
 
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(myReceiver, new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
-
-        if (currentActivity == null) {
-            currentActivity = new FitnessActivity();
-        }
     }
 
     @Override
@@ -181,42 +211,6 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
         }
         PreferenceManager.getDefaultSharedPreferences(getContext()).unregisterOnSharedPreferenceChangeListener(this);
         super.onStop();
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        elapsedTimeText = view.findViewById(R.id.elapsed_time_text);
-        distanceText = view.findViewById(R.id.distance_text);
-        averageSpeedText = view.findViewById(R.id.average_speed_text);
-        topSpeedText = view.findViewById(R.id.top_speed_text);
-        fitnessContinuePauseRecord = view.findViewById(R.id.fitness_continue_pause_record);
-        fitnessCancel = view.findViewById(R.id.fitness_cancel);
-        fitnessStop = view.findViewById(R.id.fitness_stop);
-        fitnessContinuePauseRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                recordFitnessActivity(view);
-            }
-        });
-        fitnessCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cancelFitnessActivity(view);
-            }
-        });
-        fitnessStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopFitnessActivity(view);
-            }
-        });
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_fitness_track_data, container, false);
     }
 
     private Handler updateClockHandler = new Handler();
@@ -244,12 +238,16 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
         } else {
             startTrackingFitness();
         }
+        fitnessStop.setEnabled(true);
     }
 
     public void cancelFitnessActivity(View view) {
         if (isRecording) {
             stopTrackingFitness();
         }
+        fitnessContinuePauseRecord.setEnabled(false);
+        fitnessStop.setEnabled(false);
+        fitnessCancel.setEnabled(false);
         mListener.onCancelTrackingFitnessActivity();
     }
 
@@ -257,11 +255,25 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
         if (isRecording) {
             stopTrackingFitness();
         }
+        fitnessContinuePauseRecord.setEnabled(false);
+        fitnessStop.setEnabled(false);
+        fitnessCancel.setEnabled(false);
         if (currentActivity != null) {
-            // TODO: save in a background thread / async
-            currentActivity.create(getContext());
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    currentActivity.create(new DatabaseHelper(getContext()).getWritableDatabase());
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mListener.onStopTrackingFitnessActivity();
+                        }
+                    });
+                }
+            }).run();
+        } else {
+            mListener.onStopTrackingFitnessActivity();
         }
-        mListener.onStopTrackingFitnessActivity();
     }
 
     private void startTrackingFitness() {
@@ -269,9 +281,8 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
         currentActivity.start();
         isRecording = true;
         updateClockHandler.removeCallbacks(updateClockTask);
-        updateClockHandler.postDelayed(updateClockTask, 100);
+        updateClockHandler.postDelayed(updateClockTask, 1000);
         fitnessContinuePauseRecord.setText(R.string.activity_tracking_pause_record);
-        // TODO: re-check for location permission before starting again
         if (mService != null) {
             mService.requestLocationUpdates();
         }
@@ -315,14 +326,21 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
-        if (s.equals(KEY_LOCATION_UPDATES_RESULT_TOP_SPEED)) {
-            topSpeedText.setText(sp.getString(KEY_LOCATION_UPDATES_RESULT_TOP_SPEED, ""));
-        } else if (s.equals(KEY_LOCATION_UPDATES_RESULT_AVG_SPEED)) {
-            averageSpeedText.setText(sp.getString(KEY_LOCATION_UPDATES_RESULT_AVG_SPEED, ""));
-        } else if (s.equals(KEY_LOCATION_UPDATES_RESULT_DISTANCE)) {
-            distanceText.setText(sp.getString(KEY_LOCATION_UPDATES_RESULT_DISTANCE, ""));
-        } else if (s.equals(KEY_LOCATION_UPDATES_REQUESTED)) {
-            boolean requestingUpdates = sp.getBoolean(KEY_LOCATION_UPDATES_REQUESTED, false);
+        switch (s) {
+            case KEY_LOCATION_UPDATES_RESULT_TOP_SPEED:
+                topSpeedText.setText(sp.getString(KEY_LOCATION_UPDATES_RESULT_TOP_SPEED, ""));
+                break;
+            case KEY_LOCATION_UPDATES_RESULT_AVG_SPEED:
+                averageSpeedText.setText(sp.getString(KEY_LOCATION_UPDATES_RESULT_AVG_SPEED, ""));
+                break;
+            case KEY_LOCATION_UPDATES_RESULT_DISTANCE:
+                distanceText.setText(sp.getString(KEY_LOCATION_UPDATES_RESULT_DISTANCE, ""));
+                break;
+            case KEY_LOCATION_UPDATES_REQUESTED:
+//                boolean requestingUpdates = sp.getBoolean(KEY_LOCATION_UPDATES_REQUESTED, false);
+                break;
+            default:
+                break;
         }
     }
 
@@ -338,6 +356,7 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
      */
     public interface OnFragmentInteractionListener {
         void onStopTrackingFitnessActivity();
+
         void onCancelTrackingFitnessActivity();
     }
 }

@@ -18,7 +18,8 @@ public class PhysicalActivityType {
     private int muscleStrengthImpact;
     private int boneStrengthImpact;
 
-    public PhysicalActivityType() {}
+    public PhysicalActivityType() {
+    }
 
     public PhysicalActivityType(int id, String name, String description, PhysicalActivityTrackingMode mode, int aerobicImpact, int flexibilityImpact, int muscleStrengthImpact, int boneStrengthImpact) {
         this.id = id;

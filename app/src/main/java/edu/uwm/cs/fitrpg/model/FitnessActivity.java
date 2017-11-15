@@ -1,7 +1,6 @@
 package edu.uwm.cs.fitrpg.model;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
@@ -9,14 +8,11 @@ import android.location.Location;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-
-import edu.uwm.cs.fitrpg.DatabaseHelper;
 
 public class FitnessActivity implements Serializable {
     private static final int NS_IN_MS = 1000000;
@@ -143,6 +139,10 @@ public class FitnessActivity implements Serializable {
 
     public void setSets(int sets) {
         this.sets = sets;
+    }
+
+    public PhysicalActivityType getType() {
+        return type;
     }
 
     public PhysicalActivityType getType(SQLiteDatabase db) {

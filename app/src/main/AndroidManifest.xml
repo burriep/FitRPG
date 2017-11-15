@@ -27,6 +27,9 @@
             android:parentActivityName=".view.HomeScreen"></activity>
         <activity android:name=".MapActivity"
             android:parentActivityName=".view.HomeScreen"></activity>
+        <service
+            android:name=".services.LocationUpdatesService"
+            android:enabled="true" />
     </application>
 
 </manifest>

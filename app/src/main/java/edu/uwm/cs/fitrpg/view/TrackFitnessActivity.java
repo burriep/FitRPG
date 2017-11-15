@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.FitnessActivitySelectionFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessTrackDataFragment;
+import edu.uwm.cs.fitrpg.model.PhysicalActivityType;
 
 public class TrackFitnessActivity extends AppCompatActivity implements FitnessActivitySelectionFragment.OnFragmentInteractionListener, FitnessTrackDataFragment.OnFragmentInteractionListener {
     @Override
@@ -58,14 +59,11 @@ public class TrackFitnessActivity extends AppCompatActivity implements FitnessAc
     }
 
     @Override
-    public void onStartTrackingFitnessActivity(String activity) {
+    public void onStartTrackingFitnessActivity(PhysicalActivityType activity) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.findFragmentById(R.id.track_fitness_container) != null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            FitnessTrackDataFragment fragment = FitnessTrackDataFragment.newInstance(activity, null);
-            Bundle args = new Bundle();
-//            args.putInt(ArticleFragment.ARG_POSITION, position);
-            fragment.setArguments(args);
+            FitnessTrackDataFragment fragment = FitnessTrackDataFragment.newInstance(activity.getId());
             // Replace whatever is in the fragment_container view with this fragment, and add the transaction to the back stack so the user can navigate back
             transaction.replace(R.id.track_fitness_container, fragment);
 //            transaction.addToBackStack(null);

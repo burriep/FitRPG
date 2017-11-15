@@ -15,11 +15,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import edu.uwm.cs.fitrpg.BuildConfig;
+import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.Utils;
+import edu.uwm.cs.fitrpg.model.PhysicalActivityType;
 
 
 /**
@@ -35,6 +42,7 @@ public class FitnessActivitySelectionFragment extends Fragment {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 6923;
     private Button activityStartButton;
     private RadioGroup activityType;
+    private Map<String, PhysicalActivityType> activityTypes;
 
     public FitnessActivitySelectionFragment() {
         // Required empty public constructor
@@ -87,6 +95,28 @@ public class FitnessActivitySelectionFragment extends Fragment {
             }
         });
         activityType = view.findViewById(R.id.activity_type);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final List<PhysicalActivityType> types = PhysicalActivityType.getAll(new DatabaseHelper(getContext()).getReadableDatabase());
+                activityType.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        addActivityTypes(types);
+                    }
+                });
+            }
+        }).run();
+    }
+
+    private void addActivityTypes(List<PhysicalActivityType> types) {
+        activityTypes = new HashMap<>();
+        for (PhysicalActivityType type : types) {
+            activityTypes.put(type.getName(), type);
+            RadioButton rb = new RadioButton(getContext());
+            rb.setText(type.getName());
+            activityType.addView(rb);
+        }
     }
 
     @Override
@@ -142,29 +172,21 @@ public class FitnessActivitySelectionFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        void onStartTrackingFitnessActivity(String activity);
+        void onStartTrackingFitnessActivity(PhysicalActivityType activity);
     }
-
 
     public void startTrackingActivity(View view) {
         if (mListener != null) {
             int activityId = activityType.getCheckedRadioButtonId();
-            String activity;
-            switch (activityId) {
-                case R.id.activity_type_walking:
-                    activity = "walking";
-                    break;
-                case R.id.activity_type_treadmill_walking:
-                    activity = "treadmill_walking";
-                    break;
-                default:
-                    activity = "";
-                    break;
+            RadioButton rb = activityType.findViewById(activityId);
+            String activity = null;
+            if (rb != null) {
+                activity = rb.getText().toString();
             }
-            mListener.onStartTrackingFitnessActivity(activity);
+            PhysicalActivityType type = activityTypes.get(activity);
+            mListener.onStartTrackingFitnessActivity(type);
         }
     }
-
 
     /**
      * Return the current state of the permissions needed.
