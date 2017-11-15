@@ -312,11 +312,14 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
                 FitnessActivity activity = currentActivity;
                 if (activity != null) {
                     activity.addLocation(location);
+                    String topSpeedText = String.format(Locale.ENGLISH, "%s: %.2f%s", getString(R.string.activity_top_speed_label), currentActivity.getTopSpeed(), getString(R.string.activity_speed_unit_metric));
+                    String avgSpeedText = String.format(Locale.ENGLISH, "%s: %.2f%s", getString(R.string.activity_average_speed_label), currentActivity.getAverageSpeed(), getString(R.string.activity_speed_unit_metric));
+                    String distanceText = String.format(Locale.ENGLISH, "%s: %.2f%s", getString(R.string.activity_distance_label), currentActivity.getDistance(), getString(R.string.activity_distance_unit_short_metric));
                     PreferenceManager.getDefaultSharedPreferences(context)
                             .edit()
-                            .putString(KEY_LOCATION_UPDATES_RESULT_TOP_SPEED, String.format(Locale.ENGLISH, "%s: %.2f%s", R.string.activity_top_speed_label, currentActivity.getTopSpeed(), R.string.activity_speed_unit_metric))
-                            .putString(KEY_LOCATION_UPDATES_RESULT_AVG_SPEED, String.format(Locale.ENGLISH, "%s: %.2f%s", R.string.activity_top_speed_label, currentActivity.getAverageSpeed(), R.string.activity_speed_unit_metric))
-                            .putString(KEY_LOCATION_UPDATES_RESULT_DISTANCE, String.format(Locale.ENGLISH, "%s: %.2f%s", R.string.activity_top_speed_label, currentActivity.getDistance(), R.string.activity_distance_unit_short_metric))
+                            .putString(KEY_LOCATION_UPDATES_RESULT_TOP_SPEED, topSpeedText)
+                            .putString(KEY_LOCATION_UPDATES_RESULT_AVG_SPEED, avgSpeedText)
+                            .putString(KEY_LOCATION_UPDATES_RESULT_DISTANCE, distanceText)
                             .apply();
                 }
             }

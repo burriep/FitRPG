@@ -24,11 +24,11 @@
         <item quantity="one">One location reported</item>
         <item quantity="other">%d locations reported</item>
     </plurals>
-    <string name="activity_distance_label">Distance:</string>
+    <string name="activity_distance_label">Distance</string>
     <string name="activity_distance_unit_short_metric">m</string>
     <string name="activity_distance_unit_long_metric">km</string>
-    <string name="activity_average_speed_label">Average Speed:</string>
-    <string name="activity_top_speed_label">Top Speed:</string>
+    <string name="activity_average_speed_label">Average Speed</string>
+    <string name="activity_top_speed_label">Top Speed</string>
     <string name="activity_speed_unit_metric">m/s</string>
 
     <string name="launch_activity">Launch activity</string>
