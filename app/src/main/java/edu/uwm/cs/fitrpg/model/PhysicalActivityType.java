@@ -12,7 +12,9 @@ public class PhysicalActivityType {
     private int id;
     private String name;
     private String description;
-    private PhysicalActivityTrackingMode mode;
+    private boolean hasTime;
+    private boolean hasDistance;
+    private boolean hasReps;
     private int aerobicImpact;
     private int flexibilityImpact;
     private int muscleStrengthImpact;
@@ -21,10 +23,12 @@ public class PhysicalActivityType {
     public PhysicalActivityType() {
     }
 
-    public PhysicalActivityType(int id, String name, String description, PhysicalActivityTrackingMode mode, int aerobicImpact, int flexibilityImpact, int muscleStrengthImpact, int boneStrengthImpact) {
+    public PhysicalActivityType(int id, String name, String description, boolean hasTime, boolean hasDistance, boolean hasReps, int aerobicImpact, int flexibilityImpact, int muscleStrengthImpact, int boneStrengthImpact) {
         this.id = id;
         this.name = name;
-        this.mode = mode;
+        this.hasTime = hasTime;
+        this.hasDistance = hasDistance;
+        this.hasReps = hasReps;
         this.description = description;
         this.aerobicImpact = aerobicImpact;
         this.flexibilityImpact = flexibilityImpact;
@@ -48,20 +52,24 @@ public class PhysicalActivityType {
         this.name = name;
     }
 
+    public boolean tracksTime() {
+        return hasTime;
+    }
+
+    public boolean tracksDistance() {
+        return hasDistance;
+    }
+
+    public boolean tracksReps() {
+        return hasReps;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public PhysicalActivityTrackingMode getMode() {
-        return mode;
-    }
-
-    public void setMode(PhysicalActivityTrackingMode mode) {
-        this.mode = mode;
     }
 
     public int getAerobicImpact() {
@@ -98,24 +106,24 @@ public class PhysicalActivityType {
 
     public static void init(SQLiteDatabase db) {
         List<PhysicalActivityType> acts = new ArrayList<>(10);
-        acts.add(new PhysicalActivityType(0, "running", "", PhysicalActivityTrackingMode.TIME_DISTANCE, 2, 0, 0, 1));
-        acts.add(new PhysicalActivityType(0, "walking", "", PhysicalActivityTrackingMode.TIME_DISTANCE, 2, 0, 0, 1));
-        acts.add(new PhysicalActivityType(0, "swimming", "", PhysicalActivityTrackingMode.TIME_DISTANCE, 1, 0, 0, 0));
-        acts.add(new PhysicalActivityType(0, "bicycling", "", PhysicalActivityTrackingMode.TIME_DISTANCE, 1, 0, 0, 0));
-        acts.add(new PhysicalActivityType(0, "dancing", "", PhysicalActivityTrackingMode.TIME, 2, 0, 0, 1));
-        acts.add(new PhysicalActivityType(0, "tennis", "", PhysicalActivityTrackingMode.TIME, 1, 0, 0, 0));
-        acts.add(new PhysicalActivityType(0, "racquetball", "", PhysicalActivityTrackingMode.TIME, 1, 0, 0, 0));
-        acts.add(new PhysicalActivityType(0, "basketball", "", PhysicalActivityTrackingMode.TIME, 2, 0, 0, 1));
-        acts.add(new PhysicalActivityType(0, "soccer", "", PhysicalActivityTrackingMode.TIME, 2, 0, 0, 1));
-        acts.add(new PhysicalActivityType(0, "jumping jacks", "", PhysicalActivityTrackingMode.TIME_REPS, 2, 0, 0, 1));
-        acts.add(new PhysicalActivityType(0, "stretches", "", PhysicalActivityTrackingMode.TIME, 0, 1, 0, 0));
-        acts.add(new PhysicalActivityType(0, "yoga", "", PhysicalActivityTrackingMode.TIME, 0, 1, 0, 0));
-        acts.add(new PhysicalActivityType(0, "pilates", "", PhysicalActivityTrackingMode.TIME, 0, 1, 0, 0));
-        acts.add(new PhysicalActivityType(0, "jumping rope", "", PhysicalActivityTrackingMode.TIME, 1, 0, 0, 1));
-        acts.add(new PhysicalActivityType(0, "pushups", "", PhysicalActivityTrackingMode.TIME, 0, 0, 1, 0));
-        acts.add(new PhysicalActivityType(0, "situps", "", PhysicalActivityTrackingMode.TIME, 0, 0, 1, 0));
-        acts.add(new PhysicalActivityType(0, "lifting weights", "", PhysicalActivityTrackingMode.TIME, 0, 0, 1, 1));
-        acts.add(new PhysicalActivityType(0, "climbing stairs", "", PhysicalActivityTrackingMode.TIME, 1, 0, 1, 0));
+        acts.add(new PhysicalActivityType(0, "running", "", true, true, false, 2, 0, 0, 1));
+        acts.add(new PhysicalActivityType(0, "walking", "", true, true, false, 2, 0, 0, 1));
+        acts.add(new PhysicalActivityType(0, "swimming", "", true, true, false, 1, 0, 0, 0));
+        acts.add(new PhysicalActivityType(0, "bicycling", "", true, true, false, 1, 0, 0, 0));
+        acts.add(new PhysicalActivityType(0, "dancing", "", true, false, false, 2, 0, 0, 1));
+        acts.add(new PhysicalActivityType(0, "tennis", "", true, false, false, 1, 0, 0, 0));
+        acts.add(new PhysicalActivityType(0, "racquetball", "", true, false, false, 1, 0, 0, 0));
+        acts.add(new PhysicalActivityType(0, "basketball", "", true, false, false, 2, 0, 0, 1));
+        acts.add(new PhysicalActivityType(0, "soccer", "", true, false, false, 2, 0, 0, 1));
+        acts.add(new PhysicalActivityType(0, "jumping jacks", "", true, false, true, 2, 0, 0, 1));
+        acts.add(new PhysicalActivityType(0, "stretches", "", true, false, false, 0, 1, 0, 0));
+        acts.add(new PhysicalActivityType(0, "yoga", "", true, false, false, 0, 1, 0, 0));
+        acts.add(new PhysicalActivityType(0, "pilates", "", true, false, false, 0, 1, 0, 0));
+        acts.add(new PhysicalActivityType(0, "jumping rope", "", true, false, false, 1, 0, 0, 1));
+        acts.add(new PhysicalActivityType(0, "pushups", "", true, false, false, 0, 0, 1, 0));
+        acts.add(new PhysicalActivityType(0, "situps", "", true, false, false, 0, 0, 1, 0));
+        acts.add(new PhysicalActivityType(0, "lifting weights", "", true, false, false, 0, 0, 1, 1));
+        acts.add(new PhysicalActivityType(0, "climbing stairs", "", true, false, false, 1, 0, 1, 0));
         for (PhysicalActivityType type : acts) {
             if (!type.create(db)) {
                 break;
@@ -127,7 +135,7 @@ public class PhysicalActivityType {
         ContentValues values = new ContentValues();
         values.put("act_nam", name);
         values.put("act_dsc", description);
-        values.put("act_mode", mode.getValue());
+        values.put("act_mode", modeBooleanToInt(hasTime, hasDistance, hasReps));
         values.put("act_aero", aerobicImpact);
         values.put("act_flex", flexibilityImpact);
         values.put("act_musc", muscleStrengthImpact);
@@ -161,7 +169,7 @@ public class PhysicalActivityType {
             pat.id = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
             pat.name = cursor.getString(cursor.getColumnIndexOrThrow("act_nam"));
             pat.description = cursor.getString(cursor.getColumnIndexOrThrow("act_dsc"));
-            pat.mode = PhysicalActivityTrackingMode.values()[cursor.getInt(cursor.getColumnIndexOrThrow("act_mode"))];
+            setModeBooleansFromInt(pat, cursor.getInt(cursor.getColumnIndexOrThrow("act_mode")));
             pat.aerobicImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_aero"));
             pat.flexibilityImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_flex"));
             pat.muscleStrengthImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_musc"));
@@ -169,6 +177,20 @@ public class PhysicalActivityType {
         }
         cursor.close();
         return pat;
+    }
+
+    private static int modeBooleanToInt(boolean hasTime, boolean hasDistance, boolean hasReps) {
+        int mode = 0;
+        mode += hasTime ? 1 : 0;
+        mode += hasDistance ? 2 : 0;
+        mode += hasReps ? 4 : 0;
+        return mode;
+    }
+
+    private static void setModeBooleansFromInt(PhysicalActivityType type, int mode) {
+        type.hasTime = (mode & 1) > 0;
+        type.hasDistance = (mode & 2) > 0;
+        type.hasReps = (mode & 4) > 0;
     }
 
     public static List<PhysicalActivityType> getAll(SQLiteDatabase db) {
@@ -193,7 +215,7 @@ public class PhysicalActivityType {
             pat.id = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
             pat.name = cursor.getString(cursor.getColumnIndexOrThrow("act_nam"));
             pat.description = cursor.getString(cursor.getColumnIndexOrThrow("act_dsc"));
-            pat.mode = PhysicalActivityTrackingMode.values()[cursor.getInt(cursor.getColumnIndexOrThrow("act_mode"))];
+            setModeBooleansFromInt(pat, cursor.getInt(cursor.getColumnIndexOrThrow("act_mode")));
             pat.aerobicImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_aero"));
             pat.flexibilityImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_flex"));
             pat.muscleStrengthImpact = cursor.getInt(cursor.getColumnIndexOrThrow("act_musc"));

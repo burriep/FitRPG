@@ -19,21 +19,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.LocationRequest;
-
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.Utils;
-import edu.uwm.cs.fitrpg.model.PhysicalActivityTrackingMode;
 import edu.uwm.cs.fitrpg.model.PhysicalActivityType;
 import edu.uwm.cs.fitrpg.services.LocationUpdatesService;
 
@@ -174,8 +168,7 @@ public class FitnessTrackDataFragment extends Fragment implements SharedPreferen
         PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(this);
 
         PhysicalActivityType type = currentActivity.getType();
-        PhysicalActivityTrackingMode mode = type == null ? null : type.getMode();
-        if (mode == PhysicalActivityTrackingMode.DISTANCE || mode == PhysicalActivityTrackingMode.DISTANCE_REPS || mode == PhysicalActivityTrackingMode.TIME_DISTANCE || mode == PhysicalActivityTrackingMode.TIME_DISTANCE_REPS) {
+        if (type != null && type.tracksDistance()) {
             // Bind to the service. If the service is in foreground mode, this signals to the service
             // that since this activity is in the foreground, the service can exit foreground mode.
             getContext().bindService(new Intent(getContext(), LocationUpdatesService.class), mServiceConnection, Context.BIND_AUTO_CREATE);

@@ -75,6 +75,9 @@ public class FitnessActivity implements Serializable {
         if (!isTracking()) {
             throw new IllegalStateException();
         }
+        if (!type.tracksDistance()) {
+            return;
+        }
         // Location.getElapsedRealtimeNanos() is used because it is guaranteed to be monotonically non-decreasing, unlike Location.getTime()
         long locationTimestamp = l.getElapsedRealtimeNanos() / NS_IN_MS;
         // only consider location updates during the activity.
