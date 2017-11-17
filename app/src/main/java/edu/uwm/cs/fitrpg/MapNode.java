@@ -1,5 +1,6 @@
 package edu.uwm.cs.fitrpg;
 import edu.uwm.cs.fitrpg.DatabaseHelper;
+import edu.uwm.cs.fitrpg.view.HomeScreen;
 
 import android.graphics.Point;
 
@@ -15,44 +16,71 @@ public class MapNode {
     private int nodeComplete;
     private DatabaseHelper db;
 
-    public void MapNode(int id, int map, int x, int y)
+    public MapNode(int id, int map,int cmp, int x, int y)
     {
-        this.nodeID = id;
-        this.mapID = map;
-        this.x = x;
-        this.y = y;
-        this.nodeComplete = 0;
+        try
+        {
+            this.mapID = map;
+            this.nodeID = id;
+            dbPull();
+        }
+        catch(Exception e)
+        {
+            this.nodeID = id;
+            this.mapID = map;
+            this.x = x;
+            this.y = y;
+            this.nodeComplete = 0;
+            db = new DatabaseHelper(HomeScreen.appCon);
+            dbPush();
+        }
     }
 
     public int getX()
     {
+
         return this.x;
     }
 
     public int getY()
     {
+
         return this.y;
     }
 
     public void setX(int x)
     {
+
         this.x = x;
     }
 
     public void setY(int y)
     {
+
         this.y= y;
     }
 
     public int getNodeStatus()
     {
+
         return this.nodeComplete;
     }
 
     //1 for complete, 0 for playable
     public void setNodeStatus(int x)
     {
+
         this.nodeComplete = x;
+    }
+
+    public int getMapId()
+    {
+        return this.mapID;
+    }
+
+    public int getNodeId()
+    {
+        return this.nodeID;
     }
 
     public void dbPull()
@@ -66,6 +94,7 @@ public class MapNode {
     public void dbPush()
     {
         db.setNodeCoord(new Point(this.x,this.y), this.mapID, this.nodeID, 1);
+        db.changeNodeStatus(this.nodeComplete, this.mapID, this.nodeID, 1);
     }
 
 

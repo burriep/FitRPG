@@ -19,10 +19,14 @@ import java.util.ArrayList;
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "fitrpg.db";
     private static final int DATABASE_VERSION = 3;
+    public static Context x;
 
 
     public DatabaseHelper(Context context) {
+
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.x = context;
+
     }
 
     @Override
@@ -51,25 +55,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "sets INTEGER(3) NOT NULL, " +
                 "reps INTEGER(3))");
 
-        db.execSQL("create table fr_map (usr_id INTEGER(3) PRIMARY KEY, " +
-                "map_id INTEGER(2) PRIMARY KEY, " +
-                "nd_id INTEGER(2) PRIMARY KEY, " +
-                "nd_cmp INTEGER(1) PRIMARY KEY DEFAULT 0, " +
+        db.execSQL("create table fr_map (usr_id INTEGER(3), " +
+                "map_id INTEGER(2), " +
+                "nd_id INTEGER(2), " +
+                "nd_cmp INTEGER(1) DEFAULT 0, " +
                 "nd_x_pos INTEGER DEFAULT 0, "+
-                "nd_y_pos INTEGER DEFAULT 0)");
+                "nd_y_pos INTEGER DEFAULT 0, PRIMARY KEY(usr_id,map_id,nd_id))");
 
-        db.execSQL("create table fr_path (map_id INTEGER(2) PRIMARY KEY, " +
-                "nd_a INTEGER(2) PRIMARY KEY, " +
-                "nd_b INTEGER(2) PRIMARY KEY)");
+        db.execSQL("create table fr_path (map_id INTEGER(2), " +
+                "nd_a INTEGER(2), " +
+                "nd_b INTEGER(2), PRIMARY KEY(map_id,nd_a,nd_b))");
         //nd_a is the first node in the pair, b is the second
-
-
-        ContentValues values = new ContentValues();
-        values.put("map_id", 1);
-        values.put("nd_a", 33);
-        values.put("nd_b", 22);
-        Log.i("joopy", values.toString());
-       // db.insert("fr_path", null, values);
     }
 
     @Override
@@ -95,7 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
-            return "" + c.getInt(5);
+            return "" + c.getInt(0);
         }
         else {
             db.close();
@@ -110,7 +106,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
-            return c.getString(1);
+            return c.getString(0);
         }
         else {
             db.close();
@@ -125,7 +121,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
-            return "" + c.getInt(4);
+            return "" + c.getInt(0);
         }
         else {
             db.close();
@@ -137,10 +133,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_str from fr_char";
         sqlQuery += " where usr_id = " + x + "";
+
+        Log.d("SQLString", sqlQuery);
+
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
-            return "" + c.getInt(3);
+            return "" + c.getInt(0);
         }
         else {
             db.close();
@@ -155,7 +154,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
-            return "" + c.getInt(7);
+            return "" + c.getInt(0);
         }
         else {
             db.close();
@@ -170,7 +169,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
             db.close();
-            return "" + c.getInt(6);
+            return "" + c.getInt(0);
         }
         else {
             db.close();
@@ -210,7 +209,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query("fr_map", new String[]{"nd_x_pos","nd_y_pos"},"usr_id = " + u_id + " AND map_id = " + m_id +
-                                        " AND  nd_id = " + n_id,null,null,null,null );
+                                        " AND  nd_id = " + n_id + "",null,null,null,null );
         if(cursor.moveToFirst())
         {
             db.close();
@@ -224,16 +223,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    //todo
-//    public void setNodeCoord(Pair coord)
-//    {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        ContentValues values = new ContentValues();
-//        values.put("nd_x_pos", first(coord));
-//        db.update("fr_char", values, "usr_id = " + id + "", null);
-//        db.close();
-//    }
 
+    public void setNodeCoord(Point coord, int map_id, int nd_id, int z)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("nd_x_pos", coord.x);
+        values.put("nd_y_pos", coord.y);
+        db.update("fr_map", values, "usr_id = " + z + " and map_id = " + map_id + " and nd_id = " + nd_id + "", null);
+        db.close();
+    }
+
+    public void changeNodeStatus(int status, int map_id, int nd_id, int z)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("nd_cmp", status);
+        db.update("fr_map", values, "usr_id = " + z + " and map_id = " + map_id + " and nd_id = " + nd_id + "", null);
+        db.close();
+    }
 
     public ArrayList<FitnessEntry> getFitnessHistory() {
         ArrayList<FitnessEntry> historyList = new ArrayList<FitnessEntry>();
@@ -270,9 +278,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("a_str", str);
 
+        Log.d("Values are:", "str: " + str + ", id: " + id);
         try{
-            db.update("fr_char", values, "usr_id = " + id + "", null);
+          int jason =  db.update("fr_char", values, "usr_id = " + id + "", null);
+            Log.d("rows", ""+jason);
             db.close();
+
         }
         catch(SQLiteException e)
         {
@@ -345,7 +356,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    //this updates the character's current node postition in the db
+    //this updates the RpgChar's current node postition in the db
     public void setCurrentNode(int nd, int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -361,5 +372,119 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.e("Insert Error", "Error inserting into db");
 
         }
+    }
+
+    public void createChar(int usrId, int nd_pos, String usrName, int a_str, int a_spd, int a_dex, int a_end, int a_sta)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("usr_id", usrId);
+        values.put("usr_nam", usrName);
+        values.put("nd_pos", nd_pos);
+        values.put("a_str", a_str);
+        values.put("a_spd", a_spd);
+        values.put("a_dex", a_dex);
+        values.put("a_end", a_end);
+        values.put("a_sta", a_sta);
+
+        try{
+            db.insert("fr_char", null, values);
+            db.close();
+        }
+        catch(SQLiteException e)
+        {
+            db.close();
+            Log.e("Insert Error", "Error inserting into db");
+        }
+    }
+
+    public void createNode(int usr_id, int map_id, int nd_id, int nd_cmp, int nd_x_pos, int nd_y_pos)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("usr_id", usr_id);
+        values.put("map_id", map_id);
+        values.put("nd_id", nd_id);
+        values.put("nd_cmp", nd_cmp);
+        values.put("nd_x_pos", nd_x_pos);
+        values.put("nd_y_pos", nd_y_pos);
+
+        try{
+            db.insert("fr_map", null, values);
+            db.close();
+        }
+        catch(SQLiteException e)
+        {
+            db.close();
+            Log.e("Insert Error", "Error inserting into db");
+        }
+    }
+
+    public void updateNode(int id, int map_id, int nd_id, int nd_cmp, int nd_x_pos, int nd_y_pos)
+    {
+        try
+        {
+            SQLiteDatabase db = this.getReadableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("usr_id", id);
+            values.put("map_id", map_id);
+            values.put("nd_id", nd_id);
+            values.put("nd_cmp", nd_cmp);
+            values.put("nd_x_pos", nd_x_pos);
+            values.put("nd_y_pos", nd_y_pos);
+
+            db.update("fr_map", values, "usr_id = " + id + " and map_id = " + map_id + " and nd_id = " + nd_id + "", null);
+            db.close();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Error updating db");
+        }
+    }
+
+    public ArrayList<int[]> getMapData(int id, int map_id)
+    {
+        try
+        {
+            SQLiteDatabase db = this.getReadableDatabase();
+            String sqlQuery = "select * from fr_map";
+            sqlQuery += " where usr_id = " + id + " and map_id = " + map_id + "";
+
+            Cursor c = db.rawQuery(sqlQuery, null);
+            ArrayList<int[]> ret = new ArrayList<int[]>();
+            db.close();
+            if(c.moveToFirst()) {
+                while(!c.isAfterLast())
+                {
+                    int rowData[] = new int[5];
+
+                    rowData[0] = c.getInt(0);       //map_id
+                    rowData[1] = c.getInt(1);       //node_id
+                    rowData[2] = c.getInt(2);       //nd_complete
+                    rowData[3] = c.getInt(3);       //node x pos
+                    rowData[4] = c.getInt(4);       //node y pos
+
+                    ret.add(rowData);
+
+                    c.moveToNext();
+                }
+
+                return ret;
+            }
+            else {
+                return null;
+            }
+        }
+        catch(Exception e)
+        {
+            return null;
+        }
+    }
+
+
+
+    public Context getContext()
+    {
+        return this.x;
     }
 }
