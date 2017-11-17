@@ -24,6 +24,7 @@ public class MapView extends View {
     private int bossNode = 0;
     private int nodeSize = 0;
     private Pair[] nodePositions;
+    private Pair[] adjustedNodePositions;
     private Pair screenDimensions = new Pair(1080, 1920);
     private Boolean[][] nodeConnections;
 
@@ -50,6 +51,7 @@ public class MapView extends View {
 
         mapNodeImage = new Drawable[numOfNodes];
         nodePositions = new Pair[numOfNodes];
+        adjustedNodePositions = new Pair[numOfNodes];
         nodeConnections = new Boolean[numOfNodes][numOfNodes];
         double angle = 0;
         int canvasCenterWidth = (int)screenDimensions.first/2;
@@ -63,6 +65,7 @@ public class MapView extends View {
             angle = 2 * Math.PI * (i/(double)(numOfNodes));
             nodePositions[i] = new Pair(canvasCenterWidth - (int)Math.round(distanceFromCenterWidth * Math.cos(angle)),
                     canvasCenterHeight - (int)Math.round(distanceFromCenterHeight * Math.sin(angle)));
+            adjustedNodePositions[i] = new Pair(50,0);
             for(int j = 0; j < numOfNodes; j++)
             {
                 nodeConnections[i][j] = i != j;
@@ -110,6 +113,7 @@ public class MapView extends View {
         if(nodeToChangePos < numOfNodes)
         {
             nodePositions[nodeToChangePos] = new Pair(newPosition.first, newPosition.second);
+
         }
     }
 
@@ -166,10 +170,21 @@ public class MapView extends View {
             {
                 mapNodeImage[i].setColorFilter(getResources().getColor(R.color.gold), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
-            mapNodeImage[i].setBounds((int)((int)nodePositions[i].first * adjustmentX)-(nodeSize/2), (int)((int)nodePositions[i].second * adjustmentY)-(nodeSize/2),
-                    (int)((int)nodePositions[i].first * adjustmentX)+(nodeSize/2), (int)((int)nodePositions[i].second * adjustmentY)+(nodeSize/2));
+            adjustedNodePositions[i] = new Pair((int)((int)nodePositions[i].first * adjustmentX), (int)((int)nodePositions[i].second * adjustmentY));
+            mapNodeImage[i].setBounds((int)adjustedNodePositions[i].first-(nodeSize/2), (int)adjustedNodePositions[i].second-(nodeSize/2),
+                    (int)adjustedNodePositions[i].first +(nodeSize/2), (int)adjustedNodePositions[i].second +(nodeSize/2));
             mapNodeImage[i].draw(canvas);
         }
+    }
+
+    public Pair getNodePosition(int nodeNum)
+    {
+        return nodePositions[nodeNum];
+    }
+
+    public Pair getAdjustedNodePosition(int nodeNum)
+    {
+        return adjustedNodePositions[nodeNum];
     }
 
     public int getNumOfNodes()

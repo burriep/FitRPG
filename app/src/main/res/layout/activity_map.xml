@@ -8,72 +8,15 @@
     tools:context="edu.uwm.cs.fitrpg.MapActivity">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/buttonLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/MapNodeButton0"
-            style="@android:style/Widget.DeviceDefault.ImageButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="40dp"
-            android:contentDescription="starting node"
-            android:onClick="MoveCharacter"
-            android:visibility="visible"
-            android:background="@color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/MapNodeButton2"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+    </android.support.constraint.ConstraintLayout>
 
-        <ImageButton
-            android:id="@+id/MapNodeButton1"
-            style="@android:style/Widget.DeviceDefault.ImageButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="75dp"
-            android:contentDescription="empty node"
-            android:onClick="MoveCharacter"
-            android:visibility="visible"
-            android:background="@color/transparent"
-            app:layout_constraintBottom_toTopOf="@+id/MapNodeButton3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <ImageButton
-            android:id="@+id/MapNodeButton2"
-            style="@android:style/Widget.DeviceDefault.ImageButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="40dp"
-            android:contentDescription="empty node"
-            android:onClick="MoveCharacter"
-            android:visibility="visible"
-            android:background="@color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/MapNodeButton0"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <ImageButton
-            android:id="@+id/MapNodeButton3"
-            style="@android:style/Widget.Holo.ImageButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="50dp"
-            android:contentDescription="battle node"
-            android:onClick="MoveCharacter"
-            android:visibility="visible"
-            android:background="@color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/MapNodeButton1"/>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     </android.support.constraint.ConstraintLayout>
 
@@ -87,10 +30,11 @@
             android:layout_height="wrap_content"
             app:MapBossNode="2"
             app:MapNodeSize="100"
-            app:MapNumOfNodes="4"
+            app:MapNumOfNodes="6"
             app:MapStartingNode="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
