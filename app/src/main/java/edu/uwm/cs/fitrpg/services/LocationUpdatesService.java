@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -65,18 +64,17 @@ import edu.uwm.cs.fitrpg.Utils;
 public class LocationUpdatesService extends Service {
 
     private static final String PACKAGE_NAME = "edu.uwm.cs.fitrpg";
-    private static final String TAG = LocationUpdatesService.class.getSimpleName();
     public static final String ACTION_BROADCAST = PACKAGE_NAME + ".broadcast";
     public static final String EXTRA_LOCATION = PACKAGE_NAME + ".location";
+    private static final String TAG = LocationUpdatesService.class.getSimpleName();
     private static final String EXTRA_STARTED_FROM_NOTIFICATION = PACKAGE_NAME + ".started_from_notification";
-    private final IBinder mBinder = new LocalBinder();
     /** The desired interval for location updates. Inexact. Updates may be more or less frequent. */
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     /** The fastest rate for active location updates. Updates will never be more frequent than this value. */
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = UPDATE_INTERVAL_IN_MILLISECONDS / 2;
     /** The identifier for the notification displayed for the foreground service. */
     private static final int NOTIFICATION_ID = 12345678;
-
+    private final IBinder mBinder = new LocalBinder();
     /** Used to check whether the bound activity has really gone away and not unbound as part of an orientation change. We create a foreground service notification only if the former takes place. */
     private boolean mChangingConfiguration = false;
     private NotificationManager mNotificationManager;
@@ -289,16 +287,6 @@ public class LocationUpdatesService extends Service {
     }
 
     /**
-     * Class used for the client Binder.  Since this service runs in the same process as its
-     * clients, we don't need to deal with IPC.
-     */
-    public class LocalBinder extends Binder {
-        public LocationUpdatesService getService() {
-            return LocationUpdatesService.this;
-        }
-    }
-
-    /**
      * Returns true if this is a foreground service.
      *
      * @param context The {@link Context}.
@@ -315,5 +303,15 @@ public class LocationUpdatesService extends Service {
             }
         }
         return false;
+    }
+
+    /**
+     * Class used for the client Binder.  Since this service runs in the same process as its
+     * clients, we don't need to deal with IPC.
+     */
+    public class LocalBinder extends Binder {
+        public LocationUpdatesService getService() {
+            return LocationUpdatesService.this;
+        }
     }
 }
