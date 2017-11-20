@@ -28,6 +28,7 @@ public class MapView extends View {
     private Pair screenDimensions = new Pair(1080, 1920);
     private Boolean[][] nodeConnections;
 
+
     private Paint paint = new Paint();
     private Drawable[] mapNodeImage;
 

@@ -41,7 +41,11 @@
     <string name="request_location_updates">Request location updates</string>
     <string name="remove_location_updates">Remove location updates</string>
 
-
+    <string name = "confirm_button_string">Confirm</string>
+    <string name = "cancel_button_string">Cancel</string>
+    <string name = "complete_button_string">Complete</string>
+    <string name = "confirm_movement_title_string">Confirm Movement</string>
+    <string name = "node_activities_title_string">Node Activities</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
