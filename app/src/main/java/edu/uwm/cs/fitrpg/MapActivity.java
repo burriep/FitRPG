@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 
 public class MapActivity extends AppCompatActivity {
@@ -38,6 +39,13 @@ public class MapActivity extends AppCompatActivity {
     private Context passedContext;
     private double buttonScale = 1.5;
 
+    private boolean menuIsVisible = false;
+    private View menuLayout;
+    private TextView menuTopBarText;
+    private TextView menuBodyText;
+    private Button menuLeftButton;
+    private Button menuRightButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +68,14 @@ public class MapActivity extends AppCompatActivity {
         loop = intent.getIntExtra("edu.uwm.cs.fitrpg.loopCount", 1);
 
         isTraveling = false;
+
+        menuLayout = findViewById((R.id.MapMenuLayout));
+        menuLayout.setVisibility(View.INVISIBLE);
+        menuIsVisible = false;
+        menuTopBarText = (TextView)findViewById(R.id.MapMenuTopBarText);
+        menuBodyText = (TextView)findViewById(R.id.MapMenuBodyText);
+        menuLeftButton = (Button)findViewById(R.id.MapMenuLeftButton);
+        menuRightButton = (Button)findViewById(R.id.MapMenuRightButton);
         mapView = (MapView)findViewById(R.id.MapViewCanvas);
 
         //Boolean[] connections = new Boolean[3];
@@ -100,7 +116,7 @@ public class MapActivity extends AppCompatActivity {
                     myButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            MoveCharacter((v));
+                            ClickNode((v));
                         }
                     });
 
@@ -136,6 +152,66 @@ public class MapActivity extends AppCompatActivity {
         mapView.setTravelProgress(0);
         loop = passedLoop;
     }
+
+    public void ClickNode(View view)
+    {
+        if(!menuIsVisible) {
+            if(!isTraveling) {
+                destinationNode = 3;
+                mapNodes[0].setVisibility(View.VISIBLE);
+                for (int i = 0; i < mapNodes.length; i++) {
+                    if (mapNodes[i] == view) {
+                        destinationNode = i;
+                        break;
+                    }
+                }
+                menuLayout.setVisibility(View.VISIBLE);
+                menuIsVisible = true;
+                final View passedView = view;
+                if(destinationNode == mapView.getCurrentNode()) {
+                    menuTopBarText.setText("Current Node");
+                    menuBodyText.setText( "This is your current location (PS TODO: Add fitness activities here)");
+                    menuLeftButton.setVisibility(View.GONE);
+                }
+                else if (mapView.getConnectedToCurrentNode(destinationNode))
+                {
+                    menuTopBarText.setText(getResources().getString(R.string.confirm_movement_title_string));
+                    menuBodyText.setText( "Travel to this node will take " + Integer.toString(travelDuration/100) + " seconds\n" +
+                            "Confirm Travel?");
+                    menuLeftButton.setVisibility(View.VISIBLE);
+                    menuLeftButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            MoveCharacter((passedView));
+                            CloseMenu();
+                        }
+                    });
+                }
+                else
+                {
+                    menuTopBarText.setText("Node is Too Far!");
+                    menuBodyText.setText( "This node is not connected to your current location");
+                    menuLeftButton.setVisibility(View.GONE);
+                }
+                menuRightButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        CloseMenu();
+                    }
+                });
+            }
+        }
+    }
+
+    public void CloseMenu()
+    {
+        if(menuIsVisible)
+        {
+            menuLayout.setVisibility(View.INVISIBLE);
+            menuIsVisible = false;
+        }
+    }
+
 
     public void MoveCharacter(View view)
     {
