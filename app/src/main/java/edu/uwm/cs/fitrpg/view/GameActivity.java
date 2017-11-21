@@ -1,27 +1,16 @@
 package edu.uwm.cs.fitrpg.view;
 
 import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.support.v4.view.MotionEventCompat;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 
 import edu.uwm.cs.fitrpg.R;
-import edu.uwm.cs.fitrpg.graphics.AnimatedSprite;
-import edu.uwm.cs.fitrpg.graphics.Particle;
-import edu.uwm.cs.fitrpg.graphics.Scene;
+import edu.uwm.cs.fitrpg.game.CombatUnit;
 import edu.uwm.cs.fitrpg.graphics.GameView;
 
 public class GameActivity extends Activity {
@@ -36,7 +25,7 @@ public class GameActivity extends Activity {
 
         gv = new GameView(this);
 
-        setUpScene(gv);
+        setUpScene(gv, getIntent());
 
         setContentView(gv);
     }
@@ -56,10 +45,35 @@ public class GameActivity extends Activity {
 
 
 
-    private void setUpScene(GameView gv)
+    private void setUpScene(GameView gv, Intent intent)
     {
         gv.getScene().setBackground(Color.parseColor("#4B0082"));
+
+        gv.getScene().setBackground(R.drawable.dark_grass1, 128, 32);
+
+        int loop = intent.getIntExtra("edu.uwm.cs.fitrpg.mapLoop", 1);
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.player_ss_test);
+        bm = Bitmap.createScaledBitmap(bm, 576, 384,false);
+
+
+        // Build the player
+        gv.getScene().spawnPlayerCombatUnit(bm, intent.getIntExtra("edu.uwm.cs.fitrpg.playerStamina", 10),
+                intent.getIntExtra("edu.uwm.cs.fitrpg.playerStrength", 5),
+                intent.getIntExtra("edu.uwm.cs.fitrpg.playerEndurance", 5),
+                intent.getIntExtra("edu.uwm.cs.fitrpg.playerDexterity", 5),
+                intent.getIntExtra("edu.uwm.cs.fitrpg.playerSpeed", 5));
+
+        // Build the enemy
+       gv.getScene().spawnEnemyCombatUnit(bm,intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStamina", 10) * loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStrength", 5)* loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyEndurance", 5)* loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemyDexterity", 5)* loop,
+                intent.getIntExtra("edu.uwm.cs.fitrpg.enemySpeed", 5)* loop);
+
+
+
+
+      /*  Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.player_ss_test);
         bm = Bitmap.createScaledBitmap(bm, 576, 384,false);
         gv.getScene().spawnNewSprite(bm,64,64, 9,true,0,0);
         gv.getScene().spawnNewSprite(bm,64,64,9,true,250,250);
@@ -69,9 +83,9 @@ public class GameActivity extends Activity {
         gv.getScene().getSpriteByIndex(0).setSpriteSheetRow(5);
         gv.getScene().getSpriteByIndex(0).setNumFrames(6);
         gv.getScene().getSpriteByIndex(1).translate(200, 200, 1);
-        gv.getScene().writeText("Click Me!", Color.WHITE, 500, 500, 64, true);
+        gv.getScene().writeText("Click Me!", Color.WHITE, 500, 500, 64, Text.Behavior.RISING);
        //gv.getScene().removeSprite(gv.getScene().getSpriteByIndex(0));
-
+*/
 
 
     }
