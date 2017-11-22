@@ -17,11 +17,13 @@ import edu.uwm.cs.fitrpg.fragments.CurrentLevelFragment;
 public class HomeScreen extends AppCompatActivity{
 
     ImageButton ibGame, ibFitness, ibGraphics;
+    public static Context appCon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
+        appCon = this.getApplicationContext();
 
         TextView stamina, speed, strength, endurance, dexterity;
         stamina = (TextView) findViewById(R.id.tv_stamina);
