@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -27,8 +28,10 @@ import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.Utils;
 import edu.uwm.cs.fitrpg.fragments.FitnessTrackingDistanceFragment;
+import edu.uwm.cs.fitrpg.fragments.FitnessTrackingRealtimeFragment;
 import edu.uwm.cs.fitrpg.fragments.PhysicalActivityTypeFragment;
 import edu.uwm.cs.fitrpg.model.*;
+import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.services.LocationUpdatesService;
 
 public class TrackFitnessActivity extends AppCompatActivity implements PhysicalActivityTypeFragment.OnListFragmentInteractionListener {
@@ -119,7 +122,9 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver, new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
+        // TODO: fix this
+        if (hasLocationPermission())
+            LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver, new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
     }
 
     @Override
@@ -147,7 +152,7 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
 
     public void startTrackingActivity(View view) {
         if (currentActivity == null) {
-            FitnessTrackingDistanceFragment fragment = new FitnessTrackingDistanceFragment();
+            Fragment fragment = FitnessTrackingRealtimeFragment.newInstance(activityType);
             // Replace whatever is in the fragment_container view with this fragment.
             getSupportFragmentManager().beginTransaction().replace(R.id.track_fitness_top_frame, fragment).commit();
 
@@ -163,6 +168,9 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
                     stopFitnessActivity(view);
                 }
             });
+            currentActivity = new FitnessActivity();
+            currentActivity.setType(activityType);
+            currentActivity.start();
         } else {
             if (currentActivity.isTracking()) {
                 stopTrackingFitness();
