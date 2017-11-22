@@ -89,6 +89,7 @@ public class GameView extends SurfaceView
         switch(action)
         {
             case MotionEvent.ACTION_DOWN:
+                sfx.playSound(R.raw.hit);
                 x = e.getX();
                 y = e.getY();
                 scene.handleClick(x,y, sfx);
