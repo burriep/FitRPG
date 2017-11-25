@@ -94,10 +94,11 @@ public class MapActivity extends AppCompatActivity {
         mapView.ToggleNodeConnections(1, 3);
         passedContext = this;
 
-        mapView.ChangeNodePosition(0, new Pair(50,1900));
-        mapView.ChangeNodePosition(1, new Pair(50,50));
-        mapView.ChangeNodePosition(2, new Pair(500,1000));
-        mapView.ChangeNodePosition(3, new Pair(1000,1900));
+        //PS Example of how to change node position
+        //mapView.ChangeNodePosition(0, new Pair(50,1900));
+        //mapView.ChangeNodePosition(1, new Pair(50,50));
+        //mapView.ChangeNodePosition(2, new Pair(500,1000));
+        //mapView.ChangeNodePosition(3, new Pair(1000,1900));
 
         mapNodes = new View[mapView.getNumOfNodes()];
 

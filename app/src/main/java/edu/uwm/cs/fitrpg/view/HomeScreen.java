@@ -59,23 +59,27 @@ public class HomeScreen extends AppCompatActivity{
             }
         });
 
+        //PS Check database for a user with ID 0, otherwise create one
+        if(myDB.getStamina(0) == "-1") {
+            myDB.createChar(0, 0, "Defaultio", 10, 10, 10, 10, 10);
+        }
         //These setText calls would eventually collect the stat info
         // from database or character class
         //ToDo
         //stamina.setText("" + 0);
-        String staminaText = myDB.getStamina();
+        String staminaText = myDB.getStamina(0);
         stamina.setText(staminaText);
         //speed.setText("" + 0);
-        String speedText = myDB.getSpeed();
+        String speedText = myDB.getSpeed(0);
         speed.setText(speedText);
         //strength.setText("" + 0);
-        String strengthText = myDB.getStrength();
+        String strengthText = myDB.getStrength(0);
         strength.setText(strengthText);
         //endurance.setText("" + 0);
-        String enduranceText = myDB.getEndurance();
+        String enduranceText = myDB.getEndurance(0);
         endurance.setText(enduranceText);
         //dexterity.setText("" + 0);
-        String dexterityText = myDB.getDexterity();
+        String dexterityText = myDB.getDexterity(0);
         dexterity.setText(dexterityText);
 
         FragmentManager fragmentManager = getFragmentManager();
