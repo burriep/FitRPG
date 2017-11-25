@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
-import edu.uwm.cs.fitrpg.model.PhysicalActivityType;
+import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "fitrpg.db";
@@ -31,7 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "act_musc INTEGER(2), " +
                 "act_bone INTEGER(2))");
 
-        PhysicalActivityType.init(db);
+        FitnessActivityType.init(db);
 
         db.execSQL("create table fr_char (usr_id INTEGER(3) PRIMARY KEY, " +
                 "usr_nam VARCHAR(13), " +
@@ -166,29 +166,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("reps", 0);
         db.insert("fr_hst", null, values);
         db.close();
-    }
-
-    public ArrayList<FitnessEntry> getFitnessHistory() {
-        ArrayList<FitnessEntry> historyList = new ArrayList<FitnessEntry>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String sqlQuery = "select * from fr_hst";
-
-        FitnessEntry fe = null;
-
-        Cursor c = db.rawQuery(sqlQuery, null);
-        if(c.moveToFirst()) {
-            do {
-                fe = new FitnessEntry(c.getString(3));
-                fe.setStartTime(c.getString(4));
-                fe.setEndTime(c.getString(5));
-                fe.setDistance(c.getFloat(6));
-                fe.setReps(c.getInt(10));
-                historyList.add(fe);
-            } while(c.moveToNext());
-        }
-
-        return historyList;
     }
 
     @Override

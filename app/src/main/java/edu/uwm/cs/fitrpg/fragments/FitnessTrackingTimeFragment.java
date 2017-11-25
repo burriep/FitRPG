@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import edu.uwm.cs.fitrpg.R;
-import edu.uwm.cs.fitrpg.Utils;
+import edu.uwm.cs.fitrpg.util.Utils;
 
 public class FitnessTrackingTimeFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     private TextView elapsedTimeText;
@@ -21,7 +21,9 @@ public class FitnessTrackingTimeFragment extends Fragment implements SharedPrefe
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_fitness_tracking_time, container, false);
+        View view = inflater.inflate(R.layout.fragment_fitness_tracking_time, container, false);
+        elapsedTimeText = view.findViewById(R.id.elapsed_time_text);
+        return view;
     }
 
     @Override

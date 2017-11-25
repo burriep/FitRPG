@@ -1,4 +1,4 @@
-package edu.uwm.cs.fitrpg.view;
+package edu.uwm.cs.fitrpg.activity;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -26,17 +26,17 @@ import android.widget.Button;
 import edu.uwm.cs.fitrpg.BuildConfig;
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
-import edu.uwm.cs.fitrpg.Utils;
-import edu.uwm.cs.fitrpg.fragments.FitnessTrackingDistanceFragment;
+import edu.uwm.cs.fitrpg.util.Utils;
 import edu.uwm.cs.fitrpg.fragments.FitnessTrackingRealtimeFragment;
-import edu.uwm.cs.fitrpg.fragments.PhysicalActivityTypeFragment;
+import edu.uwm.cs.fitrpg.fragments.FitnessActivityTypeFragment;
 import edu.uwm.cs.fitrpg.model.*;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
-import edu.uwm.cs.fitrpg.services.LocationUpdatesService;
+import edu.uwm.cs.fitrpg.service.LocationUpdatesService;
+import edu.uwm.cs.fitrpg.view.HomeScreen;
 
-public class TrackFitnessActivity extends AppCompatActivity implements PhysicalActivityTypeFragment.OnListFragmentInteractionListener {
+public class FitnessActivityTracking extends AppCompatActivity implements FitnessActivityTypeFragment.OnListFragmentInteractionListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 6923;
-    PhysicalActivityType activityType;
+    FitnessActivityType activityType;
     edu.uwm.cs.fitrpg.model.FitnessActivity currentActivity;
     Button continuePauseButton, cancelButton, stopButton;
 
@@ -68,7 +68,7 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
     private Handler updateClockHandler = new Handler();
     private Runnable updateClockTask = new Runnable() {
         public void run() {
-            PreferenceManager.getDefaultSharedPreferences(TrackFitnessActivity.this).edit().putLong(Utils.SP_KEY_DURATION_SECONDS_UPDATES, currentActivity.getDuration()).apply();
+            PreferenceManager.getDefaultSharedPreferences(FitnessActivityTracking.this).edit().putLong(Utils.SP_KEY_DURATION_SECONDS_UPDATES, currentActivity.getDuration()).apply();
             updateClockHandler.postDelayed(updateClockTask, 1000);
         }
     };
@@ -89,7 +89,7 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
             // TODO: if the user is currently tracking an activity, go to that fragment instead of the selection fragment.
         } else {
             // Create a new Fragment to be placed in the activity layout
-            PhysicalActivityTypeFragment topFragment = PhysicalActivityTypeFragment.newInstance();
+            FitnessActivityTypeFragment topFragment = FitnessActivityTypeFragment.newInstance();
             // In case this activity was started with special instructions from an Intent, pass the Intent's extras to the fragment as arguments
 //            topFragment.setArguments(getIntent().getExtras());
             // Add the fragment to the 'fragment_container' FrameLayout
@@ -102,20 +102,34 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
                 startTrackingActivity(view);
             }
         });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cancelFitnessActivity(view);
+            }
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        // Bind to the service. If the service is in foreground mode, this signals to the service
-        // that since this activity is in the foreground, the service can exit foreground mode.
-        bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection, Context.BIND_AUTO_CREATE);
-
         boolean hasLocationPermissions = hasLocationPermission();
         updateButtonState();
-        if (!hasLocationPermissions) {
+        if (hasLocationPermission()) {
+            if (activityType != null && activityType.tracksDistance()) {
+                bindLocationService();
+            }
+        } else {
             requestLocationPermission();
+        }
+    }
+
+    private void bindLocationService() {
+        if (!mBound) {
+            // Bind to the service. If the service is in foreground mode, this signals to the service
+            // that since this activity is in the foreground, the service can exit foreground mode.
+            bindService(new Intent(this, LocationUpdatesService.class), mServiceConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
@@ -136,6 +150,10 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
     @Override
     protected void onStop() {
         super.onStop();
+        unbindLocationService();
+    }
+
+    private void unbindLocationService() {
         if (mBound) {
             // Unbind from the service. This signals to the service that this activity is no longer
             // in the foreground, and the service can respond by promoting itself to a foreground
@@ -155,13 +173,6 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
             Fragment fragment = FitnessTrackingRealtimeFragment.newInstance(activityType);
             // Replace whatever is in the fragment_container view with this fragment.
             getSupportFragmentManager().beginTransaction().replace(R.id.track_fitness_top_frame, fragment).commit();
-
-            cancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    cancelFitnessActivity(view);
-                }
-            });
             stopButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -170,7 +181,8 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
             });
             currentActivity = new FitnessActivity();
             currentActivity.setType(activityType);
-            currentActivity.start();
+            startTrackingFitness();
+            stopButton.setEnabled(true);
         } else {
             if (currentActivity.isTracking()) {
                 stopTrackingFitness();
@@ -213,7 +225,7 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
     }
 
     @Override
-    public void onListFragmentInteraction(PhysicalActivityType item) {
+    public void onListFragmentInteraction(FitnessActivityType item) {
         activityType = item;
         updateButtonState();
     }
@@ -251,7 +263,7 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
     }
 
     public void cancelFitnessActivity(View view) {
-        if (currentActivity.isTracking()) {
+        if (currentActivity != null && currentActivity.isTracking()) {
             stopTrackingFitness();
         }
         continuePauseButton.setEnabled(false);
@@ -272,8 +284,8 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    currentActivity.create(new DatabaseHelper(TrackFitnessActivity.this).getWritableDatabase());
-                    TrackFitnessActivity.this.runOnUiThread(new Runnable() {
+                    currentActivity.create(new DatabaseHelper(FitnessActivityTracking.this).getWritableDatabase());
+                    FitnessActivityTracking.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
@@ -294,6 +306,9 @@ public class TrackFitnessActivity extends AppCompatActivity implements PhysicalA
         updateClockHandler.removeCallbacks(updateClockTask);
         updateClockHandler.postDelayed(updateClockTask, 1000);
         continuePauseButton.setText(R.string.activity_tracking_pause_record);
+        if (activityType.tracksDistance()) {
+            bindLocationService();
+        }
         if (mService != null) {
             mService.requestLocationUpdates();
         }

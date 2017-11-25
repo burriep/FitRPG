@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.SplashScreen">
+        <activity android:name=".view.HomeScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,10 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.GameActivity" />
-        <activity android:name=".view.HomeScreen" />
         <activity android:name=".view.FitnessActivity" />
-        <activity android:name=".HistoryList" />
-        <activity android:name=".view.TrackFitnessActivity" />
+        <activity android:name=".activity.FitnessActivityTracking" />
         <activity
             android:name=".CombatActivity"
             android:parentActivityName=".view.HomeScreen" />
@@ -31,9 +29,10 @@
             android:parentActivityName=".view.HomeScreen" />
 
         <service
-            android:name=".services.LocationUpdatesService"
+            android:name=".service.LocationUpdatesService"
             android:enabled="true" />
 
+        <activity android:name=".activity.FitnessActivityHistory" />
     </application>
 
 </manifest>

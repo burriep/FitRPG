@@ -16,7 +16,7 @@
  * Changes to the sample code from Google have been made to customize it to the needs of this app.
  */
 
-package edu.uwm.cs.fitrpg;
+package edu.uwm.cs.fitrpg.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -29,6 +29,8 @@ import android.view.View;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import edu.uwm.cs.fitrpg.R;
 
 public class Utils {
     public final static String SP_KEY_LOCATION_UPDATES_REQUESTED = "edu.uwm.cs.fitrpg.shared-preferences-location-updates-requested";
@@ -51,9 +53,9 @@ public class Utils {
      * Shows a {@link Snackbar}.
      *
      * @param view
-     * @param mainText      The id for the string resource for the Snackbar text.
-     * @param actionText    The text of the action item.
-     * @param listener      The listener associated with the Snackbar action.
+     * @param mainText   The id for the string resource for the Snackbar text.
+     * @param actionText The text of the action item.
+     * @param listener   The listener associated with the Snackbar action.
      */
     public static void showSnackbar(@NonNull View view, final String mainText, final String actionText, View.OnClickListener listener) {
         Snackbar.make(view, mainText, Snackbar.LENGTH_INDEFINITE)
@@ -93,6 +95,7 @@ public class Utils {
 
     /**
      * Stores the location updates state in SharedPreferences.
+     *
      * @param requestingLocationUpdates The location updates state.
      */
     public static void setRequestingLocationUpdates(Context context, boolean requestingLocationUpdates) {
@@ -104,7 +107,8 @@ public class Utils {
 
     /**
      * Returns the {@code location} object as a human readable string.
-     * @param location  The {@link Location}.
+     *
+     * @param location The {@link Location}.
      */
     public static String getLocationText(Location location) {
         return location == null ? "Unknown location" :

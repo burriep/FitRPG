@@ -13,9 +13,9 @@ import java.util.Locale;
 
 import edu.uwm.cs.fitrpg.R;
 
-import static edu.uwm.cs.fitrpg.Utils.SP_KEY_AVG_SPEED_UPDATES;
-import static edu.uwm.cs.fitrpg.Utils.SP_KEY_DISTANCE_UPDATES;
-import static edu.uwm.cs.fitrpg.Utils.SP_KEY_TOP_SPEED_UPDATES;
+import static edu.uwm.cs.fitrpg.util.Utils.SP_KEY_AVG_SPEED_UPDATES;
+import static edu.uwm.cs.fitrpg.util.Utils.SP_KEY_DISTANCE_UPDATES;
+import static edu.uwm.cs.fitrpg.util.Utils.SP_KEY_TOP_SPEED_UPDATES;
 
 public class FitnessTrackingDistanceFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     private TextView distanceText, averageSpeedText, topSpeedText;

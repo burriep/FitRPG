@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import edu.uwm.cs.fitrpg.R;
-import edu.uwm.cs.fitrpg.model.PhysicalActivityType;
+import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,15 +33,15 @@ public class FitnessTrackingRealtimeFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param physicalActivityType The physical activity type which is being tracked
+     * @param fitnessActivityType The physical activity type which is being tracked
      * @return A new instance of fragment FitnessTrackingRealtimeFragment.
      */
-    public static FitnessTrackingRealtimeFragment newInstance(PhysicalActivityType physicalActivityType) {
+    public static FitnessTrackingRealtimeFragment newInstance(FitnessActivityType fitnessActivityType) {
         FitnessTrackingRealtimeFragment fragment = new FitnessTrackingRealtimeFragment();
         Bundle args = new Bundle();
-        args.putBoolean(ARG_HAS_TIME, physicalActivityType.tracksTime());
-        args.putBoolean(ARG_HAS_DISTANCE, physicalActivityType.tracksDistance());
-        args.putBoolean(ARG_HAS_REPS, physicalActivityType.tracksReps());
+        args.putBoolean(ARG_HAS_TIME, fitnessActivityType.tracksTime());
+        args.putBoolean(ARG_HAS_DISTANCE, fitnessActivityType.tracksDistance());
+        args.putBoolean(ARG_HAS_REPS, fitnessActivityType.tracksReps());
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,25 +54,24 @@ public class FitnessTrackingRealtimeFragment extends Fragment {
             hasDistance = getArguments().getBoolean(ARG_HAS_DISTANCE);
             hasReps = getArguments().getBoolean(ARG_HAS_REPS);
         }
+        if (savedInstanceState == null) {
+            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+            if (hasTime) {
+                Fragment fragment = new FitnessTrackingTimeFragment();
+                ft.add(R.id.fitness_tracking_realtime_time_layout, fragment, "time");
+            }
+            if (hasDistance) {
+                Fragment fragment = new FitnessTrackingDistanceFragment();
+                ft.add(R.id.fitness_tracking_realtime_distance_layout, fragment, "distance");
+            }
+            // TODO: if hasReps, redirect the user to enter the rep-based activity
+            ft.commit();
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        if (hasTime) {
-            Fragment fragment = new FitnessTrackingTimeFragment();
-            ft.add(R.id.fitness_tracking_realtime_time_layout, fragment, "time");
-        }
-        if (hasDistance) {
-            Fragment fragment = new FitnessTrackingDistanceFragment();
-            ft.add(R.id.fitness_tracking_realtime_distance_layout, fragment, "distance");
-        }
-        if (hasReps) {
-            // TODO:
-            // instead of doing this here, just redirect the user to enter the rep-based activity
-        }
-        ft.commit();
     }
 
     @Override

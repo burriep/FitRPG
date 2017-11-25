@@ -1,6 +1,5 @@
 package edu.uwm.cs.fitrpg.fragments;
 
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.icu.text.SimpleDateFormat;
@@ -27,14 +26,11 @@ import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.view.FitnessActivity;
 
-
 public class FitnessEntryFragment extends Fragment {
-    public FitnessEntryFragment() {
-    }
-
     RadioGroup rpgActivities;
     Calendar myCalendar;
-
+    public FitnessEntryFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,7 +41,6 @@ public class FitnessEntryFragment extends Fragment {
         super.onStart();
         View fragmentView = getView();
         int position = getArguments().getInt("Position");
-
 
         rpgActivities = (RadioGroup) fragmentView.findViewById(R.id.radioGroup_fitness_activities);
         final TextView tvActivity = fragmentView.findViewById(R.id.tv_top_title);
@@ -128,7 +123,7 @@ public class FitnessEntryFragment extends Fragment {
                 etMiddle.setText("");
                 etBottom.setText("");
 
-                if(i == R.id.rb_time_based) {
+                if (i == R.id.rb_time_based) {
                     tvActivity.setText("Activity");
                     tvMiddle.setText("Start Time");
                     tvBottom.setText("End Time");
@@ -141,7 +136,7 @@ public class FitnessEntryFragment extends Fragment {
                     etBottom.setHint("");
                     etBottom.setVisibility(View.VISIBLE);
 
-                    if(etMiddle != null) {
+                    if (etMiddle != null) {
                         etMiddle.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -155,7 +150,7 @@ public class FitnessEntryFragment extends Fragment {
                         });
                     }
 
-                    if(etBottom != null) {
+                    if (etBottom != null) {
                         etBottom.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -169,7 +164,7 @@ public class FitnessEntryFragment extends Fragment {
                         });
                     }
                 }
-                if(i == R.id.rb_rep_based) {
+                if (i == R.id.rb_rep_based) {
                     tvActivity.setText("Activity");
                     tvMiddle.setText("Number of Sets");
                     tvBottom.setText("Number of Reps");
@@ -181,7 +176,7 @@ public class FitnessEntryFragment extends Fragment {
                     etBottom.setHint("");
                     etBottom.setVisibility(View.VISIBLE);
 
-                    if(etMiddle != null) {
+                    if (etMiddle != null) {
                         etMiddle.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -189,7 +184,7 @@ public class FitnessEntryFragment extends Fragment {
                             }
                         });
                     }
-                    if(etBottom != null) {
+                    if (etBottom != null) {
                         etBottom.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -198,7 +193,7 @@ public class FitnessEntryFragment extends Fragment {
                         });
                     }
                 }
-                if(i == R.id.rb_distance_based) {
+                if (i == R.id.rb_distance_based) {
                     tvActivity.setText("Activity");
                     tvMiddle.setText("Duration");
                     tvBottom.setText("Distnace");
@@ -210,7 +205,7 @@ public class FitnessEntryFragment extends Fragment {
                     etBottom.setHint("In miles");
                     etBottom.setVisibility(View.VISIBLE);
 
-                    if(etMiddle != null) {
+                    if (etMiddle != null) {
                         etMiddle.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -218,7 +213,7 @@ public class FitnessEntryFragment extends Fragment {
                             }
                         });
                     }
-                    if(etBottom != null) {
+                    if (etBottom != null) {
                         etBottom.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -241,6 +236,7 @@ public class FitnessEntryFragment extends Fragment {
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             DatabaseHelper db = new DatabaseHelper(getContext());
+
             @Override
             public void onClick(View view) {
                 db.addTimeBasedData(etActivity.getText().toString(), etMiddle.getText().toString(), etBottom.getText().toString());
@@ -248,7 +244,7 @@ public class FitnessEntryFragment extends Fragment {
                 etActivity.setText("");
                 etMiddle.setText("");
                 etBottom.setText("");
-               // Toast.makeText(Fitne, "Data Saved", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(Fitne, "Data Saved", Toast.LENGTH_SHORT).show();
             }
         });
     }

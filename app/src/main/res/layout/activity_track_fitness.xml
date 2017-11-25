@@ -5,7 +5,7 @@
     android:id="@+id/activity_track_fitness"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.uwm.cs.fitrpg.view.TrackFitnessActivity">
+    tools:context="edu.uwm.cs.fitrpg.activity.FitnessActivityTracking">
 
     <FrameLayout
         android:id="@+id/track_fitness_top_frame"

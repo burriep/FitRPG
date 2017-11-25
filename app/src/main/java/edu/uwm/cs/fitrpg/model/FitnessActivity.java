@@ -20,7 +20,7 @@ public class FitnessActivity implements Serializable {
     public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private int act_num;
     private int act_id;
-    private PhysicalActivityType type;
+    private FitnessActivityType type;
     private int usr_id;
     private Date startDate;
     private Date stopDate;
@@ -144,22 +144,30 @@ public class FitnessActivity implements Serializable {
         this.sets = sets;
     }
 
-    public PhysicalActivityType getType() {
+    public FitnessActivityType getType() {
         return type;
     }
 
-    public PhysicalActivityType getType(SQLiteDatabase db) {
+    public FitnessActivityType getType(SQLiteDatabase db) {
         if (type == null && act_id > 0) {
-            type = PhysicalActivityType.get(db, act_id);
+            type = FitnessActivityType.get(db, act_id);
         }
         return type;
     }
 
-    public void setType(PhysicalActivityType type) {
+    public void setType(FitnessActivityType type) {
         this.type = type;
         if (this.type != null) {
             act_id = this.type.getId();
         }
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getStopDate() {
+        return stopDate;
     }
 
     public static FitnessActivity get(SQLiteDatabase db, int id) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package edu.uwm.cs.fitrpg.services;
+package edu.uwm.cs.fitrpg.service;
 
 import android.app.ActivityManager;
 import android.app.Notification;
@@ -44,8 +44,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import edu.uwm.cs.fitrpg.R;
-import edu.uwm.cs.fitrpg.view.TrackFitnessActivity;
-import edu.uwm.cs.fitrpg.Utils;
+import edu.uwm.cs.fitrpg.activity.FitnessActivityTracking;
+import edu.uwm.cs.fitrpg.util.Utils;
 
 /**
  * A bound and started service that is promoted to a foreground service when location updates have
@@ -226,7 +226,7 @@ public class LocationUpdatesService extends Service {
 
         // The PendingIntent to launch activity.
         PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, TrackFitnessActivity.class), 0);
+                new Intent(this, FitnessActivityTracking.class), 0);
 
         return new NotificationCompat.Builder(this)
                 .addAction(R.drawable.ic_launch, getString(R.string.launch_activity),
