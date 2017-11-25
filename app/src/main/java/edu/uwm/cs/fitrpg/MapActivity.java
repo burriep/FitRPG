@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -43,6 +44,8 @@ public class MapActivity extends AppCompatActivity {
     private View menuLayout;
     private TextView menuTopBarText;
     private TextView menuBodyText;
+    private ProgressBar menuTravelProgressBar;
+    private TextView menuTravelFitnessLog;
     private Button menuLeftButton;
     private Button menuRightButton;
 
@@ -81,6 +84,9 @@ public class MapActivity extends AppCompatActivity {
         menuIsVisible = false;
         menuTopBarText = (TextView)findViewById(R.id.MapMenuTopBarText);
         menuBodyText = (TextView)findViewById(R.id.MapMenuBodyText);
+        menuTravelFitnessLog = (TextView)findViewById(R.id.MapMenuTravelFitnessActivities);
+        menuTravelProgressBar = (ProgressBar)findViewById(R.id.MapMenuTravelProgress);
+        menuTravelProgressBar.setMax(100);
         menuLeftButton = (Button)findViewById(R.id.MapMenuLeftButton);
         menuRightButton = (Button)findViewById(R.id.MapMenuRightButton);
         mapView = (MapView)findViewById(R.id.MapViewCanvas);
@@ -167,7 +173,6 @@ public class MapActivity extends AppCompatActivity {
         if(!menuIsVisible) {
             if(!isTraveling) {
                 destinationNode = 3;
-                mapNodes[0].setVisibility(View.VISIBLE);
                 for (int i = 0; i < mapNodes.length; i++) {
                     if (mapNodes[i] == view) {
                         destinationNode = i;
@@ -175,6 +180,9 @@ public class MapActivity extends AppCompatActivity {
                     }
                 }
                 menuLayout.setVisibility(View.VISIBLE);
+                menuTravelProgressBar.setVisibility(View.GONE);
+                menuTravelFitnessLog.setVisibility(View.GONE);
+                menuRightButton.setVisibility(View.VISIBLE);
                 menuIsVisible = true;
                 final View passedView = view;
                 if(destinationNode == mapView.getCurrentNode()) {
@@ -192,7 +200,6 @@ public class MapActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             MoveCharacter((passedView));
-                            CloseMenu();
                         }
                     });
                 }
@@ -237,6 +244,10 @@ public class MapActivity extends AppCompatActivity {
                 isTraveling = true;
                 mapView.setDestinationNode(destinationNode);
                 mapView.setIsTraveling(true);
+                menuTravelProgressBar.setVisibility(View.VISIBLE);
+                menuTravelFitnessLog.setVisibility(View.VISIBLE);
+                menuLeftButton.setVisibility(View.GONE);
+                menuRightButton.setVisibility(View.GONE);
                 //PS TODO Add DB calls telling that we are moving now
                 StartMoving();
             }
@@ -250,6 +261,7 @@ public class MapActivity extends AppCompatActivity {
             public void run() {
                 travelProgress += 200;
                 mapView.setTravelProgress((travelProgress*100)/travelDuration);
+                menuTravelProgressBar.setProgress((int)((travelProgress*100)/travelDuration));
                 if (travelProgress < travelDuration) {
                     mapTravelHandler.postDelayed(this, 200);
                 }
@@ -266,14 +278,45 @@ public class MapActivity extends AppCompatActivity {
         isTraveling = false;
         mapView.setCurrentNode(destinationNode);
         playerChar.setCurrentNode(destinationNode);
+        //PS TODO Move to travel complete
         playerChar.dbPush();
         mapView.setIsTraveling(false);
         mapView.setTravelProgress(0);
+        menuTravelProgressBar.setProgress(0);
         travelProgress = 0;
+        TravelComplete();
+    }
+
+    private void TravelComplete()
+    {
+        final int strengthGain = 0, staminaGain = 0, dexterityGain = 0, speedGain = 0, enduranceGain = 0;
+        menuBodyText.setText("Travel Complete!\nGains: Sta +" + staminaGain + " Spd +" + speedGain + " Str +" + strengthGain + " End +" + enduranceGain + " Dex +" + dexterityGain);
+        //PS TODO calculate gains
+        menuLeftButton.setVisibility(View.VISIBLE);
         if(destinationNode == mapView.getBossNode())
         {
-            LaunchCombat();
+            menuLeftButton.setText(getResources().getString(R.string.combat_start_button));
         }
+        menuLeftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playerChar.setStamina(playerChar.getStamina() + staminaGain);
+                playerChar.setStrength(playerChar.getStrength() + strengthGain);
+                playerChar.setSpeed(playerChar.getSpeed() + speedGain);
+                playerChar.setEndurance(playerChar.getEndurance() + enduranceGain);
+                playerChar.setDexterity(playerChar.getDexterity() + dexterityGain);
+                playerChar.dbPush();
+                if(destinationNode == mapView.getBossNode())
+                {
+                    menuLeftButton.setText(getResources().getString(R.string.confirm_button_string));
+                    LaunchCombat();
+                }
+                else {
+                    CloseMenu();
+                }
+            }
+        });
+
     }
 
     public void LaunchCombat()

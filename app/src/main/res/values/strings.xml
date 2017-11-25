@@ -5,7 +5,7 @@
     <string name="endurance_label">Endurance Amount: </string>
     <string name="dexterity_label">Dexterity Amount: </string>
     <string name="speed_label">Speed Amount: </string>
-    <string name="combat_start_button">Run Combat!</string>
+    <string name="combat_start_button">Begin Combat!</string>
     <string name="player_label">Player</string>
     <string name="enemy_label">Enemy</string>
     <string name="run_round_label">Attack!</string>
