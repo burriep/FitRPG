@@ -17,14 +17,12 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Locale;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
-import edu.uwm.cs.fitrpg.view.FitnessActivity;
 
 public class FitnessEntryFragment extends Fragment {
     RadioGroup rpgActivities;
@@ -40,7 +38,7 @@ public class FitnessEntryFragment extends Fragment {
     public void onStart() {
         super.onStart();
         View fragmentView = getView();
-        int position = getArguments().getInt("Position");
+        int position = 2;
 
         rpgActivities = (RadioGroup) fragmentView.findViewById(R.id.radioGroup_fitness_activities);
         final TextView tvActivity = fragmentView.findViewById(R.id.tv_top_title);

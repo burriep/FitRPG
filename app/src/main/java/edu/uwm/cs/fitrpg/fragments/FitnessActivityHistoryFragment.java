@@ -1,10 +1,9 @@
 package edu.uwm.cs.fitrpg.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,11 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
-import edu.uwm.cs.fitrpg.activity.FitnessActivityHistory;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.util.FitnessActivityRecyclerViewAdapter;
 
@@ -71,18 +70,23 @@ public class FitnessActivityHistoryFragment extends Fragment {
             final Context context = view.getContext();
             final RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            final List<FitnessActivity> items = new LinkedList<>();
+            final FitnessActivityRecyclerViewAdapter adapter = new FitnessActivityRecyclerViewAdapter(items, mListener);
+            recyclerView.setAdapter(adapter);
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-                    final List<FitnessActivity> items = FitnessActivity.getAllByDate(db, startDate, endDate);
-                    for (FitnessActivity fa : items) {
+                    final List<FitnessActivity> newItems = FitnessActivity.getAllByDate(db, startDate, endDate);
+                    for (FitnessActivity fa : newItems) {
                         fa.getType(db);
                     }
                     recyclerView.post(new Runnable() {
                         @Override
                         public void run() {
-                            recyclerView.setAdapter(new FitnessActivityRecyclerViewAdapter(items, mListener));
+                            items.addAll(newItems);
+                            adapter.notifyDataSetChanged();
                         }
                     });
                 }

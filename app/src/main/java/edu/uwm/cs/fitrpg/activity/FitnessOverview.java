@@ -1,4 +1,4 @@
-package edu.uwm.cs.fitrpg.view;
+package edu.uwm.cs.fitrpg.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,12 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import edu.uwm.cs.fitrpg.R;
-import edu.uwm.cs.fitrpg.activity.FitnessActivityHistory;
-import edu.uwm.cs.fitrpg.activity.FitnessActivityTracking;
-import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
+import java.util.Calendar;
+import java.util.Date;
 
-public class FitnessActivity extends AppCompatActivity {
+import edu.uwm.cs.fitrpg.R;
+import edu.uwm.cs.fitrpg.fragments.FitnessActivityHistoryFragment;
+import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
+import edu.uwm.cs.fitrpg.model.FitnessActivity;
+
+public class FitnessOverview extends AppCompatActivity implements FitnessActivityHistoryFragment.OnListFragmentInteractionListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,8 +28,13 @@ public class FitnessActivity extends AppCompatActivity {
         history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(FitnessActivity.this, FitnessActivityHistory.class);
-                startActivity(intent);
+                Calendar calendar = Calendar.getInstance();
+                Date now = calendar.getTime();
+                calendar.add(Calendar.DATE, -1);
+                Date yesterday = calendar.getTime();
+
+                FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
             }
         });
 
@@ -41,9 +49,14 @@ public class FitnessActivity extends AppCompatActivity {
         trackData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(FitnessActivity.this, FitnessActivityTracking.class);
+                Intent intent = new Intent(FitnessOverview.this, FitnessActivityTracking.class);
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onListFragmentInteraction(FitnessActivity item) {
+
     }
 }

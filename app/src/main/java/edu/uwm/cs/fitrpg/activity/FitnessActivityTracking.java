@@ -32,7 +32,6 @@ import edu.uwm.cs.fitrpg.fragments.FitnessActivityTypeFragment;
 import edu.uwm.cs.fitrpg.model.*;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.service.LocationUpdatesService;
-import edu.uwm.cs.fitrpg.view.HomeScreen;
 
 public class FitnessActivityTracking extends AppCompatActivity implements FitnessActivityTypeFragment.OnListFragmentInteractionListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 6923;
@@ -269,7 +268,7 @@ public class FitnessActivityTracking extends AppCompatActivity implements Fitnes
         continuePauseButton.setEnabled(false);
         stopButton.setEnabled(false);
         cancelButton.setEnabled(false);
-        Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+        Intent intent = new Intent(getApplicationContext(), Home.class);
         startActivity(intent);
     }
 
@@ -288,14 +287,14 @@ public class FitnessActivityTracking extends AppCompatActivity implements Fitnes
                     FitnessActivityTracking.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+                            Intent intent = new Intent(getApplicationContext(), Home.class);
                             startActivity(intent);
                         }
                     });
                 }
             }).run();
         } else {
-            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+            Intent intent = new Intent(getApplicationContext(), Home.class);
             startActivity(intent);
         }
     }
