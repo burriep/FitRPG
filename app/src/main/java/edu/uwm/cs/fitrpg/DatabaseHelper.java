@@ -108,7 +108,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         else {
             db.close();
-            Log.d("ERR", "Error getting stamina from db - returning 0");
+            Log.d("ERR", "Error getting stamina from db - returning -1");
             return "-1";
         }
     }
@@ -124,7 +124,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         else {
             db.close();
-            Log.d("ERR", "Error getting name from db - returning 0");
+            Log.d("ERR", "Error getting name from db - returning null");
             return null;
         }
     }
@@ -140,7 +140,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         else {
             db.close();
-            Log.d("ERR", "Error getting speed from db - returning 0");
+            Log.d("ERR", "Error getting speed from db - returning -1");
             return "-1";
         }
     }
@@ -159,7 +159,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         else {
             db.close();
-            Log.d("ERR", "Error getting strength from db - returning 0");
+            Log.d("ERR", "Error getting strength from db - returning -1");
             return "-1";
         }
     }
@@ -175,7 +175,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         else {
             db.close();
-            Log.d("ERR", "Error getting endurance from db - returning 0");
+            Log.d("ERR", "Error getting endurance from db - returning -1");
             return "-1";
         }
     }
@@ -191,10 +191,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         else {
             db.close();
-            Log.d("ERR", "Error getting dexterity from db - returning 0");
+            Log.d("ERR", "Error getting dexterity from db - returning -1");
             return "-1";
         }
     }
+
+    public String getNodePosition(int x) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select nd_pos from fr_char";
+        sqlQuery += " where usr_id = " + x + "";
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            db.close();
+            return "" + c.getInt(0);
+        }
+        else {
+            db.close();
+            Log.d("ERR", "Error getting node pos from db - returning -1");
+            return "-1";
+        }
+    }
+
 
     public void addTimeBasedData(String type, String start, String end){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -464,6 +481,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values = new ContentValues();
         values.put("nd_pos", nd);
+        Log.d("Values are:", "nd: " + nd + ", id: " + id);
         try{
             db.update("fr_char", values, "usr_id = " + id + "", null);
             db.close();

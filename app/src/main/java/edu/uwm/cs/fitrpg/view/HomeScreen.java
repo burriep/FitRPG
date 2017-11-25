@@ -20,6 +20,8 @@ public class HomeScreen extends AppCompatActivity{
     ImageButton ibGame, ibFitness, ibGraphics;
     public static Context appCon;
 
+    private int userID = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,26 +62,26 @@ public class HomeScreen extends AppCompatActivity{
         });
 
         //PS Check database for a user with ID 0, otherwise create one
-        if(myDB.getStamina(0) == "-1") {
-            myDB.createChar(0, 0, "Defaultio", 10, 10, 10, 10, 10);
+        if(myDB.getStamina(userID) == "-1") {
+            myDB.createChar(userID, 0, "Defaultio", 10, 10, 10, 10, 10);
         }
         //These setText calls would eventually collect the stat info
         // from database or character class
         //ToDo
         //stamina.setText("" + 0);
-        String staminaText = myDB.getStamina(0);
+        String staminaText = myDB.getStamina(userID);
         stamina.setText(staminaText);
         //speed.setText("" + 0);
-        String speedText = myDB.getSpeed(0);
+        String speedText = myDB.getSpeed(userID);
         speed.setText(speedText);
         //strength.setText("" + 0);
-        String strengthText = myDB.getStrength(0);
+        String strengthText = myDB.getStrength(userID);
         strength.setText(strengthText);
         //endurance.setText("" + 0);
-        String enduranceText = myDB.getEndurance(0);
+        String enduranceText = myDB.getEndurance(userID);
         endurance.setText(enduranceText);
         //dexterity.setText("" + 0);
-        String dexterityText = myDB.getDexterity(0);
+        String dexterityText = myDB.getDexterity(userID);
         dexterity.setText(dexterityText);
 
         FragmentManager fragmentManager = getFragmentManager();

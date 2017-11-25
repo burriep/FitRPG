@@ -34,23 +34,31 @@ public class CombatActivity extends AppCompatActivity {
 
     private Button combatButton;
 
+    private Boolean isTransferring = false;
+
+    DatabaseHelper myDB;
+    RpgChar playerChar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_combat);
+        isTransferring = false;
 
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
+        myDB = new DatabaseHelper(this);
+        playerChar = new RpgChar();
 
-        //PS TODO Replace extracting these values from an intent by extracting them from DB
-        playerUnit = new CombatUnit(intent.getIntExtra("edu.uwm.cs.fitrpg.playerStamina", 10),
-               intent.getIntExtra("edu.uwm.cs.fitrpg.playerStrength", 5),
-                intent.getIntExtra("edu.uwm.cs.fitrpg.playerEndurance", 5),
-                intent.getIntExtra("edu.uwm.cs.fitrpg.playerDexterity", 5),
-                intent.getIntExtra("edu.uwm.cs.fitrpg.playerSpeed", 5));
+        playerUnit = new CombatUnit(playerChar.getStamina(),
+                playerChar.getStrength(),
+                playerChar.getEndurance(),
+                playerChar.getDexterity(),
+                playerChar.getSpeed());
 
         SetPlayerDisplay();
 
+        //PS TODO Get from database
         loop = intent.getIntExtra("edu.uwm.cs.fitrpg.loopCount", 1);
 
         //PS TODO Generate enemy types or something for DB and pull stats from there rather than intent?
@@ -131,30 +139,30 @@ public class CombatActivity extends AppCompatActivity {
         }
         else
         {
-            Intent intent = new Intent(this, MapActivity.class);
-            intent.putExtra("edu.uwm.cs.fitrpg.playerStamina", playerUnit.GetStamina());
-            intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", enemyUnit.GetStamina()/loop);
+            if(!isTransferring) {
+                isTransferring = true;
+                playerChar.setCurrentNode(0);
+                playerChar.dbPush();
+                Intent intent = new Intent(this, MapActivity.class);
+                intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", enemyUnit.GetStamina() / loop);
 
-            intent.putExtra("edu.uwm.cs.fitrpg.playerStrength", playerUnit.GetStrength());
-            intent.putExtra("edu.uwm.cs.fitrpg.enemyStrength", enemyUnit.GetStrength()/loop);
+                intent.putExtra("edu.uwm.cs.fitrpg.enemyStrength", enemyUnit.GetStrength() / loop);
 
-            intent.putExtra("edu.uwm.cs.fitrpg.playerEndurance", playerUnit.GetEndurance());
-            intent.putExtra("edu.uwm.cs.fitrpg.enemyEndurance", enemyUnit.GetEndurance()/loop);
+                intent.putExtra("edu.uwm.cs.fitrpg.enemyEndurance", enemyUnit.GetEndurance() / loop);
 
-            intent.putExtra("edu.uwm.cs.fitrpg.playerDexterity", playerUnit.GetDexterity());
-            intent.putExtra("edu.uwm.cs.fitrpg.enemyDexterity", enemyUnit.GetDexterity()/loop);
+                intent.putExtra("edu.uwm.cs.fitrpg.enemyDexterity", enemyUnit.GetDexterity() / loop);
 
-            intent.putExtra("edu.uwm.cs.fitrpg.playerSpeed", playerUnit.GetSpeed());
-            intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", enemyUnit.GetSpeed()/loop);
+                intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", enemyUnit.GetSpeed() / loop);
 
-            if (playerUnit.GetCurrentHP() > 0)
-            {
-                loop++;
+                if (playerUnit.GetCurrentHP() > 0) {
+                    //PS TODO set DB loop
+                    loop++;
+                }
+                finish();
+
+                intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);
+                startActivity(intent);
             }
-            finish();
-
-            intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);
-            startActivity(intent);
         }
     }
 

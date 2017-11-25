@@ -46,18 +46,22 @@ public class MapActivity extends AppCompatActivity {
     private Button menuLeftButton;
     private Button menuRightButton;
 
+    DatabaseHelper myDB;
+    RpgChar playerChar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
         Intent intent = getIntent();
+        playerChar = new RpgChar();
 
-        basePlayerStamina = intent.getIntExtra("edu.uwm.cs.fitrpg.playerStamina", basePlayerStamina);
-        basePlayerStrength = intent.getIntExtra("edu.uwm.cs.fitrpg.playerStrength", basePlayerStrength);
-        basePlayerEndurance = intent.getIntExtra("edu.uwm.cs.fitrpg.playerEndurance", basePlayerEndurance);
-        basePlayerDexterity = intent.getIntExtra("edu.uwm.cs.fitrpg.playerDexterity", basePlayerDexterity);
-        basePlayerSpeed = intent.getIntExtra("edu.uwm.cs.fitrpg.playerSpeed", basePlayerSpeed);
+        basePlayerStamina = playerChar.getStamina();
+        basePlayerStrength = playerChar.getStrength();
+        basePlayerEndurance = playerChar.getEndurance();
+        basePlayerDexterity = playerChar.getDexterity();
+        basePlayerSpeed = playerChar.getSpeed();
 
         baseEnemyStamina = intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStamina", baseEnemyStamina);
         baseEnemyStrength = intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStrength", baseEnemyStrength);
@@ -65,7 +69,10 @@ public class MapActivity extends AppCompatActivity {
         baseEnemyDexterity = intent.getIntExtra("edu.uwm.cs.fitrpg.enemyDexterity", baseEnemyDexterity);
         baseEnemySpeed = intent.getIntExtra("edu.uwm.cs.fitrpg.enemySpeed", baseEnemySpeed);
 
+        myDB = new DatabaseHelper(this);
+        //PS TODO Get loop from DB
         loop = intent.getIntExtra("edu.uwm.cs.fitrpg.loopCount", 1);
+
 
         isTraveling = false;
 
@@ -77,6 +84,7 @@ public class MapActivity extends AppCompatActivity {
         menuLeftButton = (Button)findViewById(R.id.MapMenuLeftButton);
         menuRightButton = (Button)findViewById(R.id.MapMenuRightButton);
         mapView = (MapView)findViewById(R.id.MapViewCanvas);
+        mapView.setCurrentNode(playerChar.getCurrentNode());
 
         //Boolean[] connections = new Boolean[3];
         //connections[0]=false;
@@ -229,7 +237,7 @@ public class MapActivity extends AppCompatActivity {
                 isTraveling = true;
                 mapView.setDestinationNode(destinationNode);
                 mapView.setIsTraveling(true);
-
+                //PS TODO Add DB calls telling that we are moving now
                 StartMoving();
             }
         }
@@ -257,6 +265,8 @@ public class MapActivity extends AppCompatActivity {
     {
         isTraveling = false;
         mapView.setCurrentNode(destinationNode);
+        playerChar.setCurrentNode(destinationNode);
+        playerChar.dbPush();
         mapView.setIsTraveling(false);
         mapView.setTravelProgress(0);
         travelProgress = 0;
@@ -269,19 +279,15 @@ public class MapActivity extends AppCompatActivity {
     public void LaunchCombat()
     {
         Intent intent = new Intent(this, CombatActivity.class);
-        intent.putExtra("edu.uwm.cs.fitrpg.playerStamina", basePlayerStamina);
+
         intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", baseEnemyStamina);
 
-        intent.putExtra("edu.uwm.cs.fitrpg.playerStrength", basePlayerStrength);
         intent.putExtra("edu.uwm.cs.fitrpg.enemyStrength", baseEnemyStrength);
 
-        intent.putExtra("edu.uwm.cs.fitrpg.playerEndurance", basePlayerEndurance);
         intent.putExtra("edu.uwm.cs.fitrpg.enemyEndurance", baseEnemyEndurance);
 
-        intent.putExtra("edu.uwm.cs.fitrpg.playerDexterity", basePlayerDexterity);
         intent.putExtra("edu.uwm.cs.fitrpg.enemyDexterity", baseEnemyDexterity);
 
-        intent.putExtra("edu.uwm.cs.fitrpg.playerSpeed", basePlayerSpeed);
         intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", baseEnemySpeed);
 
         intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);

@@ -74,6 +74,7 @@ public class RpgChar {
         this.endurance = Integer.parseInt(db.getEndurance(id));
         this.speed = Integer.parseInt(db.getSpeed(id));
         this.dexterity = Integer.parseInt(db.getDexterity(id));
+        this.currentNode = Integer.parseInt(db.getNodePosition(id));
         this.id = id;
 
         if (this.name != null) {
@@ -181,7 +182,7 @@ public class RpgChar {
         return this.currentHealth;
     }
 
-    public String getNme() {
+    public String getName() {
         return this.name;
     }
 
