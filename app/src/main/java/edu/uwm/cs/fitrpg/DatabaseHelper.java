@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table fr_act (" +
-                "act_id INTEGER PRIMARY KEY, " +
+                "_id INTEGER PRIMARY KEY, " +
                 "act_nam VARCHAR(13) UNIQUE, " +
                 "act_dsc VARCHAR(50), " +
                 "act_mode INTEGER(1), " +
@@ -42,7 +42,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "a_dex INTEGER(2), " +
                 "a_end INTEGER(2))");
 
-        db.execSQL("create table fr_hst (act_num INTEGER PRIMARY KEY, " +
+        db.execSQL("create table fr_hst (" +
+                "_id INTEGER PRIMARY KEY, " +
                 "act_id INTEGER(2) NOT NULL, " +
                 "usr_id INTEGER(3) NOT NULL, " +
                 "act_type TEXT, " +
@@ -149,23 +150,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
             return "" + 0;
         }
-    }
-
-    public void addTimeBasedData(String type, String start, String end){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("act_id", 1);
-        values.put("usr_id", 1);
-        values.put("act_type", type);
-        values.put("s_tme", start);
-        values.put("e_tme", end);
-        values.put("dist", 0);
-        values.put("dur", 0);
-        values.put("t_spd", 0);
-        values.put("sets", 0);
-        values.put("reps", 0);
-        db.insert("fr_hst", null, values);
-        db.close();
     }
 
     @Override

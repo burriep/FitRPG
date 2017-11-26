@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class FitnessActivityType {
-    private int id;
+    private int _id;
     private String name;
     private String description;
     private boolean hasTime;
@@ -24,7 +24,7 @@ public class FitnessActivityType {
     }
 
     public FitnessActivityType(int id, String name, String description, boolean hasTime, boolean hasDistance, boolean hasReps, int aerobicImpact, int flexibilityImpact, int muscleStrengthImpact, int boneStrengthImpact) {
-        this.id = id;
+        this._id = id;
         this.name = name;
         this.hasTime = hasTime;
         this.hasDistance = hasDistance;
@@ -37,11 +37,11 @@ public class FitnessActivityType {
     }
 
     public int getId() {
-        return id;
+        return _id;
     }
 
     public void setId(int id) {
-        this.id = id;
+        this._id = id;
     }
 
     public String getName() {
@@ -106,24 +106,24 @@ public class FitnessActivityType {
 
     public static void init(SQLiteDatabase db) {
         List<FitnessActivityType> acts = new ArrayList<>(10);
-        acts.add(new FitnessActivityType(0, "running", "", true, true, false, 2, 0, 0, 1));
-        acts.add(new FitnessActivityType(0, "walking", "", true, true, false, 2, 0, 0, 1));
-        acts.add(new FitnessActivityType(0, "swimming", "", true, true, false, 1, 0, 0, 0));
-        acts.add(new FitnessActivityType(0, "bicycling", "", true, true, false, 1, 0, 0, 0));
-        acts.add(new FitnessActivityType(0, "dancing", "", true, false, false, 2, 0, 0, 1));
-        acts.add(new FitnessActivityType(0, "tennis", "", true, false, false, 1, 0, 0, 0));
-        acts.add(new FitnessActivityType(0, "racquetball", "", true, false, false, 1, 0, 0, 0));
-        acts.add(new FitnessActivityType(0, "basketball", "", true, false, false, 2, 0, 0, 1));
-        acts.add(new FitnessActivityType(0, "soccer", "", true, false, false, 2, 0, 0, 1));
-        acts.add(new FitnessActivityType(0, "jumping jacks", "", true, false, true, 2, 0, 0, 1));
-        acts.add(new FitnessActivityType(0, "stretches", "", true, false, false, 0, 1, 0, 0));
-        acts.add(new FitnessActivityType(0, "yoga", "", true, false, false, 0, 1, 0, 0));
-        acts.add(new FitnessActivityType(0, "pilates", "", true, false, false, 0, 1, 0, 0));
-        acts.add(new FitnessActivityType(0, "jumping rope", "", true, false, false, 1, 0, 0, 1));
-        acts.add(new FitnessActivityType(0, "pushups", "", true, false, false, 0, 0, 1, 0));
-        acts.add(new FitnessActivityType(0, "situps", "", true, false, false, 0, 0, 1, 0));
-        acts.add(new FitnessActivityType(0, "lifting weights", "", true, false, false, 0, 0, 1, 1));
-        acts.add(new FitnessActivityType(0, "climbing stairs", "", true, false, false, 1, 0, 1, 0));
+        acts.add(new FitnessActivityType(0, "Running", "", true, true, false, 2, 0, 0, 1));
+        acts.add(new FitnessActivityType(0, "Walking", "", true, true, false, 2, 0, 0, 1));
+        acts.add(new FitnessActivityType(0, "Swimming", "", true, true, false, 1, 0, 0, 0));
+        acts.add(new FitnessActivityType(0, "Bicycling", "", true, true, false, 1, 0, 0, 0));
+        acts.add(new FitnessActivityType(0, "Dancing", "", true, false, false, 2, 0, 0, 1));
+        acts.add(new FitnessActivityType(0, "Tennis", "", true, false, false, 1, 0, 0, 0));
+        acts.add(new FitnessActivityType(0, "Racquetball", "", true, false, false, 1, 0, 0, 0));
+        acts.add(new FitnessActivityType(0, "Basketball", "", true, false, false, 2, 0, 0, 1));
+        acts.add(new FitnessActivityType(0, "Soccer", "", true, false, false, 2, 0, 0, 1));
+        acts.add(new FitnessActivityType(0, "Jumping jacks", "", true, false, true, 2, 0, 0, 1));
+        acts.add(new FitnessActivityType(0, "Stretches", "", true, false, false, 0, 1, 0, 0));
+        acts.add(new FitnessActivityType(0, "Yoga", "", true, false, false, 0, 1, 0, 0));
+        acts.add(new FitnessActivityType(0, "Pilates", "", true, false, false, 0, 1, 0, 0));
+        acts.add(new FitnessActivityType(0, "Jumping rope", "", true, false, true, 1, 0, 0, 1));
+        acts.add(new FitnessActivityType(0, "Pushups", "", true, false, true, 0, 0, 1, 0));
+        acts.add(new FitnessActivityType(0, "Situps", "", true, false, true, 0, 0, 1, 0));
+        acts.add(new FitnessActivityType(0, "Lifting weights", "", true, false, true, 0, 0, 1, 1));
+        acts.add(new FitnessActivityType(0, "Climbing stairs", "", true, false, true, 1, 0, 1, 0));
         for (FitnessActivityType type : acts) {
             if (!type.create(db)) {
                 break;
@@ -140,15 +140,15 @@ public class FitnessActivityType {
         values.put("act_flex", flexibilityImpact);
         values.put("act_musc", muscleStrengthImpact);
         values.put("act_bone", boneStrengthImpact);
-        id = (int) db.insert("fr_act", null, values);
-        return id > 0;
+        _id = (int) db.insert("fr_act", null, values);
+        return _id > 0;
     }
 
     public static FitnessActivityType get(SQLiteDatabase db, int id) {
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
-                "act_id",
+                "_id",
                 "act_nam",
                 "act_dsc",
                 "act_mode",
@@ -157,16 +157,16 @@ public class FitnessActivityType {
                 "act_musc",
                 "act_bone"
         };
-        String selection = "act_id = ?";
+        String selection = "_id = ?";
         String[] selectionArgs = {Integer.toString(id)};
 
         // How you want the results sorted in the resulting Cursor
-        String sortOrder = "act_id DESC";
+        String sortOrder = "_id DESC";
         Cursor cursor = db.query("fr_act", projection, selection, selectionArgs, null, null, sortOrder);
         FitnessActivityType pat = null;
         while (cursor.moveToNext()) {
             pat = new FitnessActivityType();
-            pat.id = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
+            pat._id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
             pat.name = cursor.getString(cursor.getColumnIndexOrThrow("act_nam"));
             pat.description = cursor.getString(cursor.getColumnIndexOrThrow("act_dsc"));
             setModeBooleansFromInt(pat, cursor.getInt(cursor.getColumnIndexOrThrow("act_mode")));
@@ -197,7 +197,7 @@ public class FitnessActivityType {
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
-                "act_id",
+                "_id",
                 "act_nam",
                 "act_dsc",
                 "act_mode",
@@ -207,12 +207,12 @@ public class FitnessActivityType {
                 "act_bone"
         };
         // How you want the results sorted in the resulting Cursor
-        String sortOrder = "act_id ASC";
+        String sortOrder = "_id ASC";
         Cursor cursor = db.query("fr_act", projection, "", null, null, null, sortOrder);
         List<FitnessActivityType> types = new LinkedList<>();
         while (cursor.moveToNext()) {
             FitnessActivityType pat = new FitnessActivityType();
-            pat.id = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
+            pat._id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
             pat.name = cursor.getString(cursor.getColumnIndexOrThrow("act_nam"));
             pat.description = cursor.getString(cursor.getColumnIndexOrThrow("act_dsc"));
             setModeBooleansFromInt(pat, cursor.getInt(cursor.getColumnIndexOrThrow("act_mode")));
@@ -224,5 +224,29 @@ public class FitnessActivityType {
         }
         cursor.close();
         return types;
+    }
+
+    /**
+     * Get a cursor to read all fitness activity types.
+     * @param db
+     * @return
+     */
+    public static Cursor getCursorWithAll(SQLiteDatabase db) {
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                "_id",
+                "act_nam",
+                "act_dsc",
+                "act_mode",
+                "act_aero",
+                "act_flex",
+                "act_musc",
+                "act_bone"
+        };
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder = "_id ASC";
+        Cursor cursor = db.query("fr_act", projection, "", null, null, null, sortOrder);
+        return cursor;
     }
 }

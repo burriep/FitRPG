@@ -20,6 +20,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -225,6 +226,7 @@ public class FitnessActivityTracking extends AppCompatActivity implements Fitnes
 
     @Override
     public void onListFragmentInteraction(FitnessActivityType item) {
+        Log.i("FitnessActivityTracking", "ActivityType selected: " + item.getName());
         activityType = item;
         updateButtonState();
     }

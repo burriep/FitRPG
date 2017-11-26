@@ -10,4 +10,6 @@
     android:layout_marginRight="0dp"
     app:layoutManager="LinearLayoutManager"
     tools:context="edu.uwm.cs.fitrpg.fragments.FitnessActivityTypeFragment"
-    tools:listitem="@layout/fragment_fitness_activity_type" />
+    tools:listitem="@layout/fragment_fitness_activity_type" >
+
+</android.support.v7.widget.RecyclerView>

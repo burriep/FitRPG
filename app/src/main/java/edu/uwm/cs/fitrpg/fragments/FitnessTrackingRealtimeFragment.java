@@ -58,11 +58,11 @@ public class FitnessTrackingRealtimeFragment extends Fragment {
             FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
             if (hasTime) {
                 Fragment fragment = new FitnessTrackingTimeFragment();
-                ft.add(R.id.fitness_tracking_realtime_time_layout, fragment, "time");
+                ft.replace(R.id.fitness_tracking_realtime_time_layout, fragment);
             }
             if (hasDistance) {
                 Fragment fragment = new FitnessTrackingDistanceFragment();
-                ft.add(R.id.fitness_tracking_realtime_distance_layout, fragment, "distance");
+                ft.replace(R.id.fitness_tracking_realtime_distance_layout, fragment);
             }
             // TODO: if hasReps, redirect the user to enter the rep-based activity
             ft.commit();

@@ -25,6 +25,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -118,5 +120,33 @@ public class Utils {
     public static String getLocationTitle(Context context) {
         return context.getString(R.string.location_updated,
                 DateFormat.getDateTimeInstance().format(new Date()));
+    }
+
+    public static int getIntegerField(EditText field, int defaultValue) {
+        int value = defaultValue;
+        CharSequence chars = field.getText();
+        String text = chars == null ? "" : chars.toString().trim();
+        if (text.length() > 0) {
+            try {
+                value = Integer.parseInt(text);
+            } catch (NumberFormatException e) {
+                // TODO: handle error
+            }
+        }
+        return value;
+    }
+
+    public static double getDoubleField(EditText field, double defaultValue) {
+        double value = defaultValue;
+        CharSequence chars = field.getText();
+        String text = chars == null ? "" : chars.toString().trim();
+        if (text.length() > 0) {
+            try {
+                value = Double.parseDouble(text);
+            } catch (NumberFormatException e) {
+                // TODO: handle error
+            }
+        }
+        return value;
     }
 }

@@ -10,6 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.model.FitnessActivityType;
@@ -48,11 +51,27 @@ public class FitnessActivityTypeFragment extends Fragment {
 
         // Set the adapter
         if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            final Context context = view.getContext();
+            final RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            SQLiteDatabase db = new DatabaseHelper(view.getContext()).getReadableDatabase();
-            recyclerView.setAdapter(new FitnessActivityTypeRecyclerViewAdapter(FitnessActivityType.getAll(db), mListener));
+            final List<FitnessActivityType> items = new LinkedList<>();
+            final FitnessActivityTypeRecyclerViewAdapter adapter = new FitnessActivityTypeRecyclerViewAdapter(items, mListener);
+            recyclerView.setAdapter(adapter);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    SQLiteDatabase db = new DatabaseHelper(recyclerView.getContext()).getReadableDatabase();
+                    final List<FitnessActivityType> newItems = FitnessActivityType.getAll(db);
+                    recyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            items.addAll(newItems);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }).run();
         }
         return view;
     }
@@ -80,7 +99,6 @@ public class FitnessActivityTypeFragment extends Fragment {
      * activity.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onListFragmentInteraction(FitnessActivityType item);
     }
 }
