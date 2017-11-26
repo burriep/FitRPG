@@ -79,9 +79,6 @@ public class FitnessActivityHistoryFragment extends Fragment {
                 public void run() {
                     SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
                     final List<FitnessActivity> newItems = FitnessActivity.getAllByDate(db, startDate, endDate);
-                    for (FitnessActivity fa : newItems) {
-                        fa.getType(db);
-                    }
                     recyclerView.post(new Runnable() {
                         @Override
                         public void run() {

@@ -125,6 +125,10 @@ public class FitnessActivity implements Serializable {
             activities.add(fa);
         }
         cursor.close();
+        // get they activity type as well.
+        for (FitnessActivity activity : activities) {
+            activity.getType(db);
+        }
         return activities;
     }
 

@@ -1,9 +1,14 @@
 package edu.uwm.cs.fitrpg;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.util.Pair;
+
+import java.util.Date;
+import java.util.List;
 
 import edu.uwm.cs.fitrpg.activity.Home;
+import edu.uwm.cs.fitrpg.model.FitnessActivity;
+import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 
 
 /**
@@ -196,5 +201,43 @@ public class RpgChar {
     }
 
     /*/////////////////////////////////////////////////////////////////////////////////////////////*/
-}
 
+    public void updateStatsFromActivities(Date startDate, Date endDate) {
+        // TODO: care about the userId for the activities
+        SQLiteDatabase readDb = db.getReadableDatabase();
+        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, startDate, endDate);
+        updateStatsFromActivities(activities);
+    }
+
+    public void updateStatsFromActivities(List<FitnessActivity> activities) {
+        for (FitnessActivity activity : activities) {
+            FitnessActivityType type = activity.getType();
+            // TODO: improve this calculation
+            strength += type.getMuscleStrengthImpact();
+            endurance += type.getAerobicImpact();
+            dexterity += type.getFlexibilityImpact();
+            speed += type.getBoneStrengthImpact();
+        }
+    }
+
+    public void updateStaminaFromActivities(Date startDate, Date endDate) {
+        // TODO: care about the userId for the activities
+        SQLiteDatabase readDb = db.getReadableDatabase();
+        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, startDate, endDate);
+        updateStaminaFromActivities(activities);
+    }
+
+    public void updateStaminaFromActivities(List<FitnessActivity> activities) {
+        int muscleStrength = 0, aerobic = 0, flexibility = 0, boneStrength = 0;
+        for (FitnessActivity activity : activities) {
+            FitnessActivityType type = activity.getType();
+            muscleStrength += type.getMuscleStrengthImpact();
+            aerobic += type.getAerobicImpact();
+            flexibility += type.getFlexibilityImpact();
+            boneStrength += type.getBoneStrengthImpact();
+        }
+        boolean variety = muscleStrength > 0 && aerobic > 0 && flexibility > 0 && boneStrength > 0;
+        // TODO: improve this calculation
+        stamina += 1;
+    }
+}
