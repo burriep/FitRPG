@@ -1,6 +1,6 @@
 package edu.uwm.cs.fitrpg;
 import edu.uwm.cs.fitrpg.DatabaseHelper;
-import edu.uwm.cs.fitrpg.view.HomeScreen;
+import edu.uwm.cs.fitrpg.activity.Home;
 
 import android.graphics.Point;
 import android.util.Log;
@@ -19,7 +19,7 @@ public class MapNode {
 
     public MapNode(int id, int map,int cmp, int x, int y)
     {
-        db = new DatabaseHelper(HomeScreen.appCon);
+        db = new DatabaseHelper(Home.appCon);
 
         this.mapID = map;
         this.nodeID = id;

@@ -12,13 +12,11 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-/**
- * Created by Jason on 10/24/17.
- */
+import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "fitrpg.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 6;
     public static Context x;
 
 
@@ -31,8 +29,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table fr_act (act_id INTEGER(2) PRIMARY KEY, " +
-                "act_dsc VARCHAR(50))");
+        db.execSQL("create table fr_act (" +
+                "_id INTEGER PRIMARY KEY, " +
+                "act_nam VARCHAR(13) UNIQUE, " +
+                "act_dsc VARCHAR(50), " +
+                "act_mode INTEGER(1), " +
+                "act_aero INTEGER(2), " +
+                "act_flex INTEGER(2), " +
+                "act_musc INTEGER(2), " +
+                "act_bone INTEGER(2))");
+
+        FitnessActivityType.init(db);
 
         db.execSQL("create table fr_char (usr_id INTEGER(3) PRIMARY KEY, " +
                 "usr_nam VARCHAR(13), " +
@@ -43,7 +50,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "a_dex INTEGER(2), " +
                 "a_end INTEGER(2))");
 
-        db.execSQL("create table fr_hst (act_num INTEGER(4) PRIMARY KEY, " +
+        db.execSQL("create table fr_hst (" +
+                "_id INTEGER PRIMARY KEY, " +
                 "act_id INTEGER(2) NOT NULL, " +
                 "usr_id INTEGER(3) NOT NULL, " +
                 "act_type TEXT, " +
@@ -212,33 +220,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-
-    public void addTimeBasedData(String type, String start, String end){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("act_id", 1);
-        values.put("usr_id", 1);
-        values.put("act_type", type);
-        values.put("s_tme", start);
-        values.put("e_tme", end);
-        values.put("dist", 0);
-        values.put("dur", 0);
-        values.put("t_spd", 0);
-        values.put("sets", 0);
-        values.put("reps", 0);
-
-        try{
-            db.insertOrThrow("fr_hst", null, values);
-            db.close();
-        }
-        catch(SQLiteException e)
-        {
-            db.close();
-            Log.d("ERR", "Error inserting into db");
-            Log.d("SYSMSG", e.getMessage());
-        }
-    }
-
     //get the screen x,y coordinates for the specified node from db
     public Point getNodeCoord(int m_id, int n_id, int u_id)
     {
@@ -328,29 +309,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d("ERR", "Error getting map info - returning null");
             return null;
         }
-    }
-
-    public ArrayList<FitnessEntry> getFitnessHistory() {
-        ArrayList<FitnessEntry> historyList = new ArrayList<FitnessEntry>();
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String sqlQuery = "select * from fr_hst";
-
-        FitnessEntry fe = null;
-
-        Cursor c = db.rawQuery(sqlQuery, null);
-        if(c.moveToFirst()) {
-            do {
-                fe = new FitnessEntry(c.getString(3));
-                fe.setStartTime(c.getString(4));
-                fe.setEndTime(c.getString(5));
-                fe.setDistance(c.getFloat(6));
-                fe.setReps(c.getInt(10));
-                historyList.add(fe);
-            } while(c.moveToNext());
-        }
-
-        return historyList;
     }
 
     @Override

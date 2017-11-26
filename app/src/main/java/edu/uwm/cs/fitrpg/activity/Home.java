@@ -1,4 +1,4 @@
-package edu.uwm.cs.fitrpg.view;
+package edu.uwm.cs.fitrpg.activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -14,8 +14,9 @@ import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.CurrentLevelFragment;
+import edu.uwm.cs.fitrpg.view.GameActivity;
 
-public class HomeScreen extends AppCompatActivity{
+public class Home extends AppCompatActivity{
 
     ImageButton ibGame, ibFitness, ibGraphics;
     public static Context appCon;
@@ -100,7 +101,7 @@ public class HomeScreen extends AppCompatActivity{
     }
 
     public void gotoFitness() {
-        Intent intent = new Intent(this, FitnessActivity.class);
+        Intent intent = new Intent(this, FitnessOverview.class);
         startActivity(intent);
     }
 

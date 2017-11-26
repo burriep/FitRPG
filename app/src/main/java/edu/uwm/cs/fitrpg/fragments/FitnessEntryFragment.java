@@ -1,282 +1,198 @@
 package edu.uwm.cs.fitrpg.fragments;
 
-
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.icu.text.SimpleDateFormat;
-import android.support.annotation.IdRes;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.util.Calendar;
-import java.util.Locale;
+import java.util.List;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
-import edu.uwm.cs.fitrpg.view.FitnessActivity;
+import edu.uwm.cs.fitrpg.model.FitnessActivity;
+import edu.uwm.cs.fitrpg.model.FitnessActivityType;
+import edu.uwm.cs.fitrpg.util.Utils;
 
+public class FitnessEntryFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
-public class FitnessEntryFragment extends Fragment {
+    private Spinner typeSpinner;
+    private FitnessActivityType activityType;
+    private FitnessEntryTimeFragment timeFragment;
+    private FitnessEntryDistanceFragment distanceFragment;
+    private FitnessEntryRepsFragment repsFragment;
+    private List<FitnessActivityType> fitnessActivityTypes;
+    private Button saveButton, clearButton;
+
     public FitnessEntryFragment() {
     }
 
-    RadioGroup rpgActivities;
-    Calendar myCalendar;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
+    private void updateFragments(boolean forceReplace) {
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        if (activityType != null && activityType.tracksTime()) {
+            if (timeFragment == null || forceReplace) {
+                timeFragment = new FitnessEntryTimeFragment();
+                ft.replace(R.id.fitness_entry_time_layout, timeFragment);
+            }
+        } else if (timeFragment != null) {
+            ft.remove(timeFragment);
+            timeFragment = null;
+        }
+        if (activityType != null && activityType.tracksDistance()) {
+            if (distanceFragment == null || forceReplace) {
+                distanceFragment = new FitnessEntryDistanceFragment();
+                ft.replace(R.id.fitness_entry_distance_layout, distanceFragment);
+            }
+        } else if (distanceFragment != null) {
+            ft.remove(distanceFragment);
+            distanceFragment = null;
+        }
+        if (activityType != null && activityType.tracksReps()) {
+            if (repsFragment == null || forceReplace) {
+                repsFragment = new FitnessEntryRepsFragment();
+                ft.replace(R.id.fitness_entry_reps_layout, repsFragment);
+            }
+        } else if (repsFragment != null) {
+            ft.remove(repsFragment);
+            repsFragment = null;
+        }
+        ft.commit();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_fitness_entry, container, false);
+        View view = inflater.inflate(R.layout.fragment_fitness_entry, container, false);
+        typeSpinner = view.findViewById(R.id.fitness_entry_type_spinner);
+        final Context context = getContext();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
+                final List<FitnessActivityType> list = FitnessActivityType.getAll(db);
+                typeSpinner.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        fitnessActivityTypes = list;
+                        typeSpinner.setAdapter(new MyFitnessActivityTypeAdapter());
+                        if (!fitnessActivityTypes.isEmpty()) {
+                            activityType = fitnessActivityTypes.get(0);
+                        }
+                        updateFragments(false);
+                    }
+                });
+            }
+        }).run();
+        typeSpinner.setOnItemSelectedListener(FitnessEntryFragment.this);
+
+        saveButton = view.findViewById(R.id.btn_fitness_entry_save);
+        clearButton = view.findViewById(R.id.btn_fitness_entry_clear);
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveActivity(v);
+            }
+        });
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearForm(v);
+            }
+        });
+
+        return view;
+    }
+
+    private void saveActivity(final View view) {
+        // get the data
+        final FitnessActivity activity = new FitnessActivity();
+        activity.setType(activityType);
+        if (timeFragment != null)
+            timeFragment.getData(activity);
+        if (distanceFragment != null)
+            distanceFragment.getData(activity);
+        if (repsFragment != null)
+            repsFragment.getData(activity);
+        // save the data
+        final Context context = getContext();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                activity.create(new DatabaseHelper(context).getWritableDatabase());
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Activity Saved", Toast.LENGTH_SHORT).show();
+                        clearForm(view);
+                    }
+                });
+            }
+        }).run();
+    }
+
+    private void clearForm(View view) {
+        updateFragments(true);
     }
 
     public void onStart() {
         super.onStart();
-        View fragmentView = getView();
-        int position = getArguments().getInt("Position");
+    }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if (position >= 0 && position < fitnessActivityTypes.size()) {
+            FitnessActivityType type = fitnessActivityTypes.get(position);
+            activityType = type;
+            updateFragments(false);
+        }
+    }
 
-        rpgActivities = (RadioGroup) fragmentView.findViewById(R.id.radioGroup_fitness_activities);
-        final TextView tvActivity = fragmentView.findViewById(R.id.tv_top_title);
-        final EditText etActivity = fragmentView.findViewById(R.id.et_activity_type);
-        final TextView tvMiddle = fragmentView.findViewById(R.id.tv_middle_title);
-        final EditText etMiddle = fragmentView.findViewById(R.id.et_middle_entry);
-        final TextView tvBottom = fragmentView.findViewById(R.id.tv_bottom_title);
-        final EditText etBottom = fragmentView.findViewById(R.id.et_bottom_entry);
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // nothing to do
+    }
 
-        Button btnClear = fragmentView.findViewById(R.id.btn_fitness_entry_clear);
-        Button btnSave = fragmentView.findViewById(R.id.btn_fitness_entry_save);
-
-        myCalendar = Calendar.getInstance();
-
-        if (position == 2) { // Record Data
-            btnClear.setText("Clear");
-            btnSave.setText("Save");
-            //tvData.setText("Manually recorded data fragment here");
-
-            FragmentManager fragmentManager = getFragmentManager();
-            if (fragmentManager.findFragmentById(R.id.ll_entry_middle) == null) {
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                FitnessRecordDataFragment fragment = new FitnessRecordDataFragment();
-                transaction.add(R.id.ll_entry_middle, fragment);
-                transaction.commit();
-            }
-        } else if (position == 3) { // Track Data
-            btnClear.setText("Cancel");
-            btnSave.setText("Start");
-            //tvData.setText("Tracking fragment here");
-
-            FragmentManager fragmentManager = getFragmentManager();
-            if (fragmentManager.findFragmentById(R.id.ll_entry_middle) == null) {
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                FitnessTrackDataFragment fragment = new FitnessTrackDataFragment();
-                transaction.replace(R.id.ll_entry_middle, fragment);
-                transaction.commit();
-            }
-        } else {
-            FragmentManager fragmentManager = getFragmentManager();
-            if (fragmentManager.findFragmentById(R.id.ll_entry_middle) == null) {
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                FitnessTrackDataFragment fragment = new FitnessTrackDataFragment();
-                transaction.replace(R.id.ll_entry_middle, fragment);
-                transaction.commit();
-            }
+    private class MyFitnessActivityTypeAdapter extends BaseAdapter {
+        @Override
+        public int getCount() {
+            return fitnessActivityTypes.size();
         }
 
-        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                //updateLabel(etMiddle);
+        @Override
+        public String getItem(int position) {
+            return fitnessActivityTypes.get(position).getName();
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return fitnessActivityTypes.get(position).getId();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup container) {
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(android.R.layout.simple_spinner_dropdown_item, container, false);
             }
-        };
-
-        final TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                myCalendar.set(Calendar.MINUTE, minute);
-            }
-        };
-
-//        if(etMiddle != null) {
-//            etMiddle.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    //new DatePickerDialog(getContext(), date, myCalendar.get(Calendar.YEAR),
-//                    //    myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-//                    new TimePickerDialog(getContext(), time, myCalendar.get(Calendar.HOUR),
-//                            myCalendar.get(Calendar.MINUTE), true).show();
-//                    updateLabel(etMiddle);
-//
-//                }
-//            });
-//        }
-//
-//        if(etBottom != null) {
-//            etMiddle.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    //new DatePickerDialog(getContext(), date, myCalendar.get(Calendar.YEAR),
-//                    //    myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-//                    new TimePickerDialog(getContext(), time, myCalendar.get(Calendar.HOUR),
-//                            myCalendar.get(Calendar.MINUTE), true).show();
-//                    updateLabel(etBottom);
-//
-//                }
-//            });
-//        }
-
-
-        rpgActivities.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
-                etActivity.setText("");
-                etMiddle.setText("");
-                etBottom.setText("");
-
-                if(i == R.id.rb_time_based) {
-                    tvActivity.setText("Activity");
-                    tvMiddle.setText("Start Time");
-                    tvBottom.setText("End Time");
-
-                    etActivity.setHint("i.e. Running");
-                    etActivity.setVisibility(View.VISIBLE);
-                    etMiddle.setHint("");
-                    etMiddle.setVisibility(View.VISIBLE);
-
-                    etBottom.setHint("");
-                    etBottom.setVisibility(View.VISIBLE);
-
-                    if(etMiddle != null) {
-                        etMiddle.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //new DatePickerDialog(getContext(), date, myCalendar.get(Calendar.YEAR),
-                                //    myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-                                new TimePickerDialog(getContext(), time, myCalendar.get(Calendar.HOUR),
-                                        myCalendar.get(Calendar.MINUTE), true).show();
-                                updateLabel(etMiddle);
-
-                            }
-                        });
-                    }
-
-                    if(etBottom != null) {
-                        etBottom.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //new DatePickerDialog(getContext(), date, myCalendar.get(Calendar.YEAR),
-                                //    myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-                                new TimePickerDialog(getContext(), time, myCalendar.get(Calendar.HOUR),
-                                        myCalendar.get(Calendar.MINUTE), true).show();
-                                updateLabel(etBottom);
-
-                            }
-                        });
-                    }
-                }
-                if(i == R.id.rb_rep_based) {
-                    tvActivity.setText("Activity");
-                    tvMiddle.setText("Number of Sets");
-                    tvBottom.setText("Number of Reps");
-
-                    etActivity.setHint("i.e. push-ups");
-                    etActivity.setVisibility(View.VISIBLE);
-                    etMiddle.setHint("");
-                    etMiddle.setVisibility(View.VISIBLE);
-                    etBottom.setHint("");
-                    etBottom.setVisibility(View.VISIBLE);
-
-                    if(etMiddle != null) {
-                        etMiddle.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                etMiddle.setText(etMiddle.getText());
-                            }
-                        });
-                    }
-                    if(etBottom != null) {
-                        etBottom.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                etBottom.setText(etBottom.getText());
-                            }
-                        });
-                    }
-                }
-                if(i == R.id.rb_distance_based) {
-                    tvActivity.setText("Activity");
-                    tvMiddle.setText("Duration");
-                    tvBottom.setText("Distnace");
-
-                    etActivity.setHint("i.e. walking");
-                    etActivity.setVisibility(View.VISIBLE);
-                    etMiddle.setHint("In minutes");
-                    etMiddle.setVisibility(View.VISIBLE);
-                    etBottom.setHint("In miles");
-                    etBottom.setVisibility(View.VISIBLE);
-
-                    if(etMiddle != null) {
-                        etMiddle.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                etMiddle.setText(etMiddle.getText());
-                            }
-                        });
-                    }
-                    if(etBottom != null) {
-                        etBottom.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                etBottom.setText(etBottom.getText());
-                            }
-                        });
-                    }
-                }
-            }
-        });
-
-        btnClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                etActivity.setText("");
-                etMiddle.setText("");
-                etBottom.setText("");
-            }
-        });
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            DatabaseHelper db = new DatabaseHelper(getContext());
-            @Override
-            public void onClick(View view) {
-                db.addTimeBasedData(etActivity.getText().toString(), etMiddle.getText().toString(), etBottom.getText().toString());
-                db.close();
-                etActivity.setText("");
-                etMiddle.setText("");
-                etBottom.setText("");
-               // Toast.makeText(Fitne, "Data Saved", Toast.LENGTH_SHORT).show();
-            }
-        });
+            TextView textView = convertView.findViewById(android.R.id.text1);
+            textView.setText(getItem(position));
+            return convertView;
+        }
     }
-
-    private void updateLabel(EditText et_date) {
-        String myFormat = "MM/dd/yy HH:mm";
-        SimpleDateFormat formatter = new SimpleDateFormat(myFormat, Locale.US);
-        et_date.setText(formatter.format(myCalendar.getTime()));
-    }
-
 }

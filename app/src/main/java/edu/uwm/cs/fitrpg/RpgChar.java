@@ -3,7 +3,8 @@ package edu.uwm.cs.fitrpg;
 import android.util.Log;
 import android.util.Pair;
 
-import edu.uwm.cs.fitrpg.view.HomeScreen;
+import edu.uwm.cs.fitrpg.activity.Home;
+
 
 /**
  * Created by Jason on 11/8/17.
@@ -23,7 +24,7 @@ public class RpgChar {
 
     //constructor for player - the player's usr_id will always be 1
     public RpgChar() {
-        this.db = new DatabaseHelper(HomeScreen.appCon);
+        this.db = new DatabaseHelper(Home.appCon);
         boolean exists = dbPull(1);
 
         if (!exists) {
@@ -44,7 +45,7 @@ public class RpgChar {
     //constructor for enemies - use UNIQUE id's for new enemies, otherwise db constraint violation
     //  create enemy character, set attributes, then push manually
     public RpgChar(int x) {
-        this.db = new DatabaseHelper(HomeScreen.appCon);
+        this.db = new DatabaseHelper(Home.appCon);
         boolean exists = dbPull(x);
 
         if (!exists) {

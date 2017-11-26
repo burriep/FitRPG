@@ -5,7 +5,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import edu.uwm.cs.fitrpg.view.HomeScreen;
+import edu.uwm.cs.fitrpg.activity.Home;
 
 /**
  * Created by Jason on 11/8/17.
@@ -19,7 +19,7 @@ public class GameBoard {
 
     public GameBoard(int map_id)
     {
-        db = new DatabaseHelper(HomeScreen.appCon);
+        db = new DatabaseHelper(Home.appCon);
         boolean exists = dbPull(map_id);
 
         if(!exists)
