@@ -37,6 +37,11 @@ public class CooldownBar
         curCooldownTime = 0;
     }
 
+    public void setMaxCooldownTime(long maxCooldownTime)
+    {
+        this.maxCooldownTime = maxCooldownTime;
+    }
+
     public boolean isOffCooldown()
     {
         return isReady;

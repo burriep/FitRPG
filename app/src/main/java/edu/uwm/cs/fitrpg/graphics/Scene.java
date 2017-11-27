@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import edu.uwm.cs.fitrpg.Audio.SFXPlayer;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.game.CombatUnit;
+import edu.uwm.cs.fitrpg.view.GameActivity;
 
 import static edu.uwm.cs.fitrpg.R.*;
 
@@ -28,15 +29,19 @@ public class Scene
 
     private State curState;
     Resources res;
+    private GameActivity listener;
     private ArrayList<AnimatedSprite> spriteList;
     private ArrayList<Particle> particleList;
     private ArrayList<CombatUnit> combatUnitList;
     private ArrayList<Text> textList;
+    private long curenemyCd, maxenemyCd;
     private int bgColor = Color.BLACK;
     private BitmapDrawable bmDraw = null;
     private CooldownBar cdbar;
+    private SFXPlayer sfx;
 
-    public Scene(Resources res)
+
+    public Scene(Resources res, SFXPlayer sfx)
     {
         spriteList = new ArrayList<AnimatedSprite>();
         particleList = new ArrayList<Particle>();
@@ -45,6 +50,12 @@ public class Scene
         cdbar = new CooldownBar(res.getDisplayMetrics().widthPixels / 2, res.getDisplayMetrics().heightPixels/2 );
         curState = State.IN_COMBAT;
         this.res = res;
+        this.sfx = sfx;
+    }
+
+    public void addActivityListener(GameActivity ga)
+    {
+        this.listener = ga;
     }
 
     public void spawnPlayerCombatUnit(Bitmap bm, int initStamina, int initStrength, int initEndurance, int initDexterity, int initSpeed)
@@ -55,6 +66,10 @@ public class Scene
         addThis.getHealthbar().setX(addThis.getx() + (32*6));
         addThis.getHealthbar().setY(addThis.getY() + (64*7));
         combatUnitList.add(0,addThis);
+
+        long cdTime = (long)(((double)Math.log((double)(addThis.GetSpeed() + 1))));
+
+        cdbar.setMaxCooldownTime((long)(1.0/cdTime) * 500);
 
     }
 
@@ -67,7 +82,13 @@ public class Scene
         addThis.getHealthbar().setY(addThis.getY());
         combatUnitList.add(addThis);
 
+        maxenemyCd = (long)(((double)Math.log((double)(addThis.GetSpeed() + 1))));
+        maxenemyCd = (long)(1.0/maxenemyCd) * 500;
+        curenemyCd = 0;
+
     }
+
+
 
 
     // spawnNewSprite
@@ -175,6 +196,13 @@ public class Scene
             }
         }
 
+        if(!combatUnitList.isEmpty())
+        for (CombatUnit cu : combatUnitList)
+        {
+            cu.draw(c);
+        }
+
+
         // Draw the Text
         if(!textList.isEmpty())
         {
@@ -184,11 +212,6 @@ public class Scene
             }
         }
 
-        if(!combatUnitList.isEmpty())
-            for (CombatUnit cu : combatUnitList)
-            {
-                cu.draw(c);
-            }
 
 
     }
@@ -238,14 +261,18 @@ public class Scene
 
 
         cdbar.tick(deltaTime);
+
+        if(curState == State.IN_COMBAT)
+         tickEnemies(deltaTime);
     }
 
-    public void handleClick(float x, float y, SFXPlayer sfxPlayer)
+    private void tickEnemies(float deltaTime)
     {
-        if(cdbar.isOffCooldown())
+        curenemyCd += deltaTime;
+        if(curenemyCd >= maxenemyCd)
         {
-            combatUnitList.get(0).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_ATTACK_NORTH);
-            int dmg = combatUnitList.get(0).Attack(combatUnitList.get(1));
+            combatUnitList.get(1).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_ATTACK_NORTH);
+            int dmg = combatUnitList.get(1).Attack(combatUnitList.get(0));
             if(dmg <= 0)
             {
                 writeText("MISS", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING);
@@ -253,15 +280,54 @@ public class Scene
             else
             {
                 writeText(dmg + "", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING);
-                if(combatUnitList.get(1).GetCurrentHP() == 0) victoryScene();
-
+                sfx.playSound(raw.hit);
+                if(combatUnitList.get(0).GetCurrentHP() == 0) defeatScene();
             }
-            cdbar.reset();
+            curenemyCd = 0;
         }
     }
 
+    public void handleClick(float x, float y, SFXPlayer sfxPlayer) {
+        if (cdbar.isOffCooldown() && curState == State.IN_COMBAT) {
+            combatUnitList.get(0).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_ATTACK_NORTH);
+            int dmg = combatUnitList.get(0).Attack(combatUnitList.get(1));
+            if (dmg <= 0) {
+                writeText("MISS", Color.WHITE, combatUnitList.get(1).getx(), combatUnitList.get(1).getY(), 80, Text.Behavior.RISING);
+            } else {
+                writeText(dmg + "", Color.WHITE, combatUnitList.get(1).getx(), combatUnitList.get(1).getY(), 80, Text.Behavior.RISING);
+                sfx.playSound(raw.hit);
+                if (combatUnitList.get(1).GetCurrentHP() == 0) victoryScene();
+
+            }
+            cdbar.reset();
+        } else if (curState == State.DEFEAT) {
+
+            notifyActivity(0);
+        } else if (curState == State.VICTORY)
+        {
+            notifyActivity(1);
+        }
+    }
+
+    private void notifyActivity(int status)
+    {
+        // 0 = Defeat Status
+        if(status == 0)
+        {
+            listener.onFinishAlert(0);
+        }
+        // 1 = Victory Status
+        else if(status == 1)
+        {
+            listener.onFinishAlert(1);
+        }
+    }
+
+
     private void victoryScene()
     {
+        combatUnitList.get(1).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_DIE);
+        combatUnitList.get(1).getSprite().setFinal(true);
         textList.clear();
         disableHealth();
         curState = State.VICTORY;
@@ -273,6 +339,8 @@ public class Scene
 
     private void defeatScene()
     {
+        combatUnitList.get(0).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_DIE);
+        combatUnitList.get(0).getSprite().setFinal(true);
         textList.clear();
         disableHealth();
         curState = State.DEFEAT;
@@ -288,6 +356,16 @@ public class Scene
         {
            cu.setHbEnabled(false);
         }
+    }
+
+    public CombatUnit getPlayer()
+    {
+        return combatUnitList.get(0);
+    }
+
+    public CombatUnit getEnemy()
+    {
+        return combatUnitList.get(1);
     }
 
 

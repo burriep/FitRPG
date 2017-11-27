@@ -9,12 +9,14 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.game.CombatUnit;
 import edu.uwm.cs.fitrpg.graphics.GameView;
 
 public class GameActivity extends Activity {
     private GameView gv;
+    private int loop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,39 @@ public class GameActivity extends Activity {
     {
         super.onStop();
     }
+    @Override
+    public void onBackPressed()
+    {this.finish();}
 
+
+
+    public void onFinishAlert(int status)
+    {
+        Intent intent = new Intent(this, MapActivity.class);
+        intent.putExtra("edu.uwm.cs.fitrpg.playerStamina", gv.getScene().getPlayer().GetStamina());
+        intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", gv.getScene().getPlayer().GetStamina()/loop);
+
+        intent.putExtra("edu.uwm.cs.fitrpg.playerStrength", gv.getScene().getPlayer().GetStrength());
+        intent.putExtra("edu.uwm.cs.fitrpg.enemyStrength", gv.getScene().getEnemy().GetStrength()/loop);
+
+        intent.putExtra("edu.uwm.cs.fitrpg.playerEndurance", gv.getScene().getPlayer().GetEndurance());
+        intent.putExtra("edu.uwm.cs.fitrpg.enemyEndurance", gv.getScene().getEnemy().GetEndurance()/loop);
+
+        intent.putExtra("edu.uwm.cs.fitrpg.playerDexterity", gv.getScene().getPlayer().GetDexterity());
+        intent.putExtra("edu.uwm.cs.fitrpg.enemyDexterity", gv.getScene().getEnemy().GetDexterity()/loop);
+
+        intent.putExtra("edu.uwm.cs.fitrpg.playerSpeed", gv.getScene().getPlayer().GetSpeed());
+        intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", gv.getScene().getEnemy().GetSpeed()/loop);
+
+        if (status > 0)
+        {
+            loop++;
+        }
+        finish();
+
+        intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);
+        startActivity(intent);
+    }
 
 
 
@@ -51,7 +85,7 @@ public class GameActivity extends Activity {
 
         gv.getScene().setBackground(R.drawable.dark_grass1, 128, 32);
 
-        int loop = intent.getIntExtra("edu.uwm.cs.fitrpg.mapLoop", 1);
+        loop = intent.getIntExtra("edu.uwm.cs.fitrpg.mapLoop", 1);
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.player_ss_test);
         bm = Bitmap.createScaledBitmap(bm, 576, 384,false);
 
@@ -72,6 +106,7 @@ public class GameActivity extends Activity {
 
 
 
+       gv.getScene().addActivityListener(this);
 
       /*  Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.player_ss_test);
         bm = Bitmap.createScaledBitmap(bm, 576, 384,false);

@@ -34,7 +34,7 @@ public class GameView extends SurfaceView
         sfx = new SFXPlayer(this);
         sfx.loadSound(R.raw.hit);
 
-        scene = new Scene(getResources());
+        scene = new Scene(getResources(),sfx);
         holder = getHolder();
         holder.addCallback(new SurfaceHolder.Callback()
         {
@@ -63,6 +63,9 @@ public class GameView extends SurfaceView
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
             {}
+
+
+
         });
     }
 

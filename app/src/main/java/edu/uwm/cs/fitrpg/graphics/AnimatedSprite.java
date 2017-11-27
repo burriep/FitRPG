@@ -39,6 +39,7 @@ public class AnimatedSprite
     private float transSpeed = 1;
     private boolean isLooped;
     private boolean isDisposed;
+    private boolean onFinal = false;
 
     public AnimatedSprite()
     {
@@ -100,6 +101,11 @@ public class AnimatedSprite
         else setNumFrames(6);
     }
 
+    public void setFinal(boolean onFinal)
+    {
+        this.onFinal = onFinal;
+    }
+
     public void setDefaultAnimation(int animInt)
     {
         animationQueue.add(animInt);
@@ -142,43 +148,45 @@ public class AnimatedSprite
 
     public void tick(float deltaTime)
     {
-        if(animationQueue.size() >= 2)
-        {
-            setSpriteSheetRow(animationQueue.get(1));
-            isLooped = false;
-        }
 
-        timer += deltaTime;
-        if(transX > 0)
+        if(onFinal && curFrame >= numFrames - 1 && animationQueue.size() <= 2)
         {
-            xpos += deltaTime;
-            transX -= deltaTime;
-        }
+            onFinal = onFinal;
+            return;
 
-        if(transY > 0)
-        {
-            ypos += deltaTime;
-            transY -= deltaTime;
         }
-       if(timer < animSpeed) return;
-        timer = 0;
-        curFrame++;
-        if(isLooped)
-            curFrame = curFrame % numFrames;
-        else if(curFrame >=  numFrames) isDisposed = true;
-        spriteRect.left = curFrame*spriteWidth;
-        spriteRect.right = spriteRect.left + spriteWidth;
+            if (animationQueue.size() >= 2) {
+                setSpriteSheetRow(animationQueue.get(1));
+                isLooped = false;
+            }
 
-        if(isDisposed)
-        {
-            animationQueue.remove(1);
-            setSpriteSheetRow(animationQueue.get(0));
-            curFrame = 0;
-            numFrames = 9;
-            isLooped = true;
-            isDisposed = false;
-        }
+            timer += deltaTime;
+            if (transX > 0) {
+                xpos += deltaTime;
+                transX -= deltaTime;
+            }
 
+            if (transY > 0) {
+                ypos += deltaTime;
+                transY -= deltaTime;
+            }
+            if (timer < animSpeed) return;
+            timer = 0;
+            curFrame++;
+            if (isLooped)
+                curFrame = curFrame % numFrames;
+            else if (curFrame >= numFrames && !onFinal) isDisposed = true;
+            spriteRect.left = curFrame * spriteWidth;
+            spriteRect.right = spriteRect.left + spriteWidth;
+
+            if (isDisposed) {
+                animationQueue.remove(1);
+                setSpriteSheetRow(animationQueue.get(0));
+                curFrame = 0;
+                numFrames = 9;
+                isLooped = true;
+                isDisposed = false;
+            }
     }
 
     public void draw(Canvas canvas)

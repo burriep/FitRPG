@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import edu.uwm.cs.fitrpg.view.GameActivity;
+
 
 public class MapActivity extends AppCompatActivity {
 
@@ -267,7 +269,7 @@ public class MapActivity extends AppCompatActivity {
 
     public void LaunchCombat()
     {
-        Intent intent = new Intent(this, CombatActivity.class);
+        Intent intent = new Intent(this, GameActivity.class);
         intent.putExtra("edu.uwm.cs.fitrpg.playerStamina", basePlayerStamina);
         intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", baseEnemyStamina);
 
