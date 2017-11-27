@@ -83,7 +83,7 @@ public class Scene
         combatUnitList.add(addThis);
 
         maxenemyCd = (long)(((double)Math.log((double)(addThis.GetSpeed() + 1))));
-        maxenemyCd = (long)(1.0/maxenemyCd) * 500;
+        maxenemyCd = (long)(((double)1.0/(double)maxenemyCd) * 5000);
         curenemyCd = 0;
 
     }
