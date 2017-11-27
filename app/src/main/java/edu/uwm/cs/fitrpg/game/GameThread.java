@@ -38,6 +38,16 @@ public class GameThread extends Thread {
 
                     view.draw(c);
                     deltaTime = System.currentTimeMillis() - beginTime;
+                    if(deltaTime < 167)
+                    {
+                        try
+                        {
+                            Thread.sleep(167 - deltaTime);
+                        } catch(Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             } catch(Exception e)
             {
