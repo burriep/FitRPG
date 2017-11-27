@@ -27,7 +27,7 @@ public class SettingsFragment extends Fragment {
     private User user;
 
     private String name;
-    private double weight, height;
+    private int weight, height;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -74,7 +74,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void updateFakeUser() {
-        user.setHeight(75.0);
+        user.setHeight(75);
         user.setWeight(200);
         user.setLastUpdateDate(new SimpleDateFormat("MM-dd-yyyy").format(Calendar.getInstance().getTime()));
     }
@@ -100,8 +100,8 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 name = etName.getText().toString();
-                weight = Double.parseDouble(etWeight.getText().toString());
-                height = Double.parseDouble(etHeight.getText().toString());
+                weight = Integer.parseInt(etWeight.getText().toString());
+                height = Integer.parseInt(etHeight.getText().toString());
                 tvUpdateDate.setText(new SimpleDateFormat("MM-dd-yyyy").format(Calendar.getInstance().getTime()));
                 createHints();
             }

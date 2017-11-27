@@ -85,6 +85,9 @@ public class MapActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
 
+        navigation.getMenu().getItem(0).setChecked(false);
+        navigation.getMenu().getItem(2).setChecked(true);
+
         basePlayerStamina = playerChar.getStamina();
         basePlayerStrength = playerChar.getStrength();
         basePlayerEndurance = playerChar.getEndurance();
@@ -463,6 +466,14 @@ public class MapActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), Home.class);
+        startActivity(intent);
+        navigationIDTag = 1;
+        finish();
+    }
+
     public BottomNavigationView.OnNavigationItemSelectedListener OnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -474,21 +485,22 @@ public class MapActivity extends AppCompatActivity {
                     intent = new Intent(getApplicationContext(), Home.class);
                     startActivity(intent);
                     navigationIDTag = 1;
+                    finish();
                     return true;
                 case R.id.navigation_fitness:
                     intent = new Intent(getApplicationContext(), FitnessOverview.class);
                     startActivity(intent);
                     navigationIDTag = 2;
+                    finish();
                     return true;
                 case R.id.navigation_game_map:
-                    intent = new Intent(getApplicationContext(), MapActivity.class);
-                    startActivity(intent);
                     navigationIDTag = 3;
                     return true;
                 case R.id.navigation_settings:
                     intent = new Intent(getApplicationContext(), SettingsActivity.class);
                     startActivity(intent);
                     navigationIDTag = 4;
+                    finish();
                     return true;
             }
             return false;

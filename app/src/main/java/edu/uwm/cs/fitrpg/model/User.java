@@ -1,12 +1,21 @@
 package edu.uwm.cs.fitrpg.model;
 
 
+import android.database.sqlite.SQLiteDatabase;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
+import edu.uwm.cs.fitrpg.DatabaseHelper;
+
 public class User {
 
     private String name;
     private int userID;
-    private double weight, height;
-    private String lastUpdateDate;
+    private int weight, height;
+    private String lastUpdateDate = null;
+    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     public User(String name, int id) {
         this.name = name;
@@ -24,11 +33,11 @@ public class User {
         return userID;
     }
 
-    public double getWeight() {
+    public int getWeight() {
         return weight;
     }
 
-    public double getHeight() {
+    public int getHeight() {
         return height;
     }
 
@@ -48,16 +57,29 @@ public class User {
         name = n;
     }
 
-    public void setWeight(double w) {
+    public void setWeight(int w) {
         weight = w;
     }
 
-    public void setHeight(double h) {
+    public void setHeight(int h) {
         height = h;
     }
 
-    public void setLastUpdateDate(String d) {
-        lastUpdateDate = d;
+    public void setLastUpdateDate(String d){
+       String date = d;
+        try {
+            date = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).parse(d).toString();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        lastUpdateDate = date;
+    }
+
+    public void updateUser(DatabaseHelper db) {
+        db.createUser(name, weight, height, lastUpdateDate);
+        db.close();
     }
 
     @Override

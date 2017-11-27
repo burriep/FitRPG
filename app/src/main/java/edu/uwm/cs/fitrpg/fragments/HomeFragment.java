@@ -70,11 +70,11 @@ public class HomeFragment extends Fragment {
         String dexterityText = myDB.getDexterity(userID);
         dexterity.setText(dexterityText);
 
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        CurrentLevelFragment fragment = new CurrentLevelFragment();
-        transaction.add(R.id.ll_top_left, fragment, "FragmentName");
-        transaction.commit();
+//        FragmentManager fragmentManager = getFragmentManager();
+//        FragmentTransaction transaction = fragmentManager.beginTransaction();
+//        CurrentLevelFragment fragment = new CurrentLevelFragment();
+//        transaction.add(R.id.ll_top_left, fragment, "FragmentName");
+//        transaction.commit();
 
     }
 

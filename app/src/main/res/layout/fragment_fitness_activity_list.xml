@@ -9,5 +9,6 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
+    android:clickable="true"
     tools:context="edu.uwm.cs.fitrpg.fragments.FitnessActivityHistoryFragment"
     tools:listitem="@layout/fragment_fitness_activity" />

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,9 +17,6 @@ import java.util.Calendar;
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
-import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
-import edu.uwm.cs.fitrpg.fragments.NavigationFragment;
-import edu.uwm.cs.fitrpg.fragments.SettingsFragment;
 import edu.uwm.cs.fitrpg.model.User;
 
 public class SettingsActivity extends AppCompatActivity{
@@ -31,9 +27,11 @@ public class SettingsActivity extends AppCompatActivity{
     public TextView tvUpdateDate;
     public Button btnSave, btnClear;
     private User user;
+    private DatabaseHelper db;
+    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     private String name;
-    private double weight, height;
+    private int weight, height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +43,13 @@ public class SettingsActivity extends AppCompatActivity{
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
 
-        user = new User("Tyler", 1);
+        navigation.getMenu().getItem(0).setChecked(false);
+        navigation.getMenu().getItem(3).setChecked(true);
+
+        db = new DatabaseHelper(this);
+
+//        user = new User("User", 1);
+        getUser();
 
         name = user.getName();
         weight = user.getWeight();
@@ -76,20 +80,21 @@ public class SettingsActivity extends AppCompatActivity{
                     intent = new Intent(getApplicationContext(), Home.class);
                     startActivity(intent);
                     navigationIDTag = 1;
+                    finish();
                     return true;
                 case R.id.navigation_fitness:
                     intent = new Intent(getApplicationContext(), FitnessOverview.class);
                     startActivity(intent);
                     navigationIDTag = 2;
+                    finish();
                     return true;
                 case R.id.navigation_game_map:
                     intent = new Intent(getApplicationContext(), MapActivity.class);
                     startActivity(intent);
                     navigationIDTag = 3;
+                    finish();
                     return true;
                 case R.id.navigation_settings:
-                    intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                    startActivity(intent);
                     navigationIDTag = 4;
                     return true;
             }
@@ -97,15 +102,24 @@ public class SettingsActivity extends AppCompatActivity{
         }
     };
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), Home.class);
+        startActivity(intent);
+        navigationIDTag = 1;
+        finish();
+    }
+
     private void getUser() {
-        DatabaseHelper db = new DatabaseHelper(this);
+        user = db.getUser();
+        closeDatabase();
         //this.user = new User(db.getUserName, db.getUserId);
     }
 
     private void updateFakeUser() {
-        user.setHeight(75.0);
+        user.setHeight(75);
         user.setWeight(200);
-        user.setLastUpdateDate(new SimpleDateFormat("MM-dd-yyyy").format(Calendar.getInstance().getTime()));
+        user.setLastUpdateDate(new SimpleDateFormat(ISO_DATE_TIME_FORMAT).format(Calendar.getInstance().getTime()));
     }
 
     private void createHints() {
@@ -129,9 +143,10 @@ public class SettingsActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 name = etName.getText().toString();
-                weight = Double.parseDouble(etWeight.getText().toString());
-                height = Double.parseDouble(etHeight.getText().toString());
-                tvUpdateDate.setText(new SimpleDateFormat("MM-dd-yyyy").format(Calendar.getInstance().getTime()));
+                weight = Integer.parseInt(etWeight.getText().toString());
+                height = Integer.parseInt(etHeight.getText().toString());
+                tvUpdateDate.setText(new SimpleDateFormat(ISO_DATE_TIME_FORMAT).format(Calendar.getInstance().getTime()));
+                updateSettings();
                 createHints();
             }
         });
@@ -142,8 +157,14 @@ public class SettingsActivity extends AppCompatActivity{
         user.setName(name);
         user.setWeight(weight);
         user.setHeight(height);
+        user.updateUser(db);
+        closeDatabase();
         //Add calls to update user in database
         // ...
+    }
+
+    private void closeDatabase() {
+        db.close();
     }
 
 

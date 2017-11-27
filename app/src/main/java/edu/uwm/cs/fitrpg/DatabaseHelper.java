@@ -13,10 +13,11 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import edu.uwm.cs.fitrpg.model.FitnessActivityType;
+import edu.uwm.cs.fitrpg.model.User;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "fitrpg.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     public static Context x;
 
 
@@ -49,6 +50,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "a_sta INTEGER(2), " +
                 "a_dex INTEGER(2), " +
                 "a_end INTEGER(2))");
+
+        db.execSQL("create table fr_user (usr_id INTEGER(3) PRIMARY KEY, " +
+                "usr_nam VARCHAR(13), " +
+                "usr_weight INTEGER(2), " +
+                "usr_height INTEGER(2), " +
+                "a_date TEXT)");
 
         db.execSQL("create table fr_hst (" +
                 "_id INTEGER PRIMARY KEY, " +
@@ -311,10 +318,81 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    //******* GETTER METHODS FOR USER TABLE ************//
+    public String getUserName() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select * from fr_user ORDER BY usr_id DESC LIMIT 1";
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            db.close();
+            return c.getString(1);
+        }
+        else {
+            db.close();
+            Log.d("ERR", "Error getting name from db - returning null");
+            return null;
+        }
+    }
+
+    public int getUserWeight() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select * from fr_user ORDER BY usr_id DESC LIMIT 1";
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            db.close();
+            return c.getInt(2);
+        }
+        else {
+            db.close();
+            Log.d("ERR", "Error getting name from db - returning null");
+            return -1;
+        }
+    }
+
+    public int getUserHeight() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select * from fr_user ORDER BY usr_id DESC LIMIT 1";
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            db.close();
+            return c.getInt(3);
+        }
+        else {
+            db.close();
+            Log.d("ERR", "Error getting name from db - returning null");
+            return -1;
+        }
+    }
+
+    public String getUserDate() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select * from fr_user ORDER BY usr_id DESC LIMIT 1";
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            db.close();
+            return c.getString(4);
+        }
+        else {
+            db.close();
+            Log.d("ERR", "Error getting name from db - returning null");
+            return null;
+        }
+    }
+
+    public User getUser() {
+        User user = new User(getUserName(), 1);
+        user.setHeight(getUserHeight());
+        user.setWeight(getUserWeight());
+        user.setLastUpdateDate(getUserDate());
+        return user;
+    }
+
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         super.onDowngrade(db, oldVersion, newVersion);
     }
+
+
 
     /*|||||||||||||||||||||||||||||||||||||||||||||||||| SETTER METHODS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
     public int setStrength(int str, int id)
@@ -492,6 +570,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+
     /*|||||||||||||||||||||||||||||||||||||||||||||||||| CREATE METHODS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
     public void createChar(int usrId, int nd_pos, String usrName, int a_str, int a_spd, int a_dex, int a_end, int a_sta)
     {
@@ -548,6 +627,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    //********** CREATE METHOD FOR USER TABLE ************//
+    public void createUser(String userName, int userWeight, int userHeight, String userDate)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        //values.put("usr_id", usrId);
+        values.put("usr_nam", userName);
+        values.put("usr_weight", userWeight);
+        values.put("usr_height", userHeight);
+        values.put("a_date", userDate);
+
+        try{
+            db.insertOrThrow("fr_user", null, values);
+            db.close();
+            Log.d("SCS", "Successfully Created Character");
+        }
+        catch(SQLiteException e)
+        {
+            db.close();
+            Log.d("ERR", "Could Not Create Character");
+            Log.d("SYSMSG", e.getMessage());
+        }
+    }
 
     public void updateNode(int id, int map_id, int nd_id, int nd_cmp, int nd_x_pos, int nd_y_pos, int loop_cnt)
     {
