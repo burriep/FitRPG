@@ -9,6 +9,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -118,13 +119,18 @@ public class MapActivity extends AppCompatActivity {
 
         mapView.ToggleNodeConnections(2, 0);
         mapView.ToggleNodeConnections(1, 3);
+        mapView.ToggleNodeConnections(4, 0);
+        mapView.ToggleNodeConnections(4, 1);
+        mapView.ToggleNodeConnections(4, 3);
+
         passedContext = this;
 
         //PS Example of how to change node position
-        //mapView.ChangeNodePosition(0, new Pair(50,1900));
-        //mapView.ChangeNodePosition(1, new Pair(50,50));
-        //mapView.ChangeNodePosition(2, new Pair(500,1000));
-        //mapView.ChangeNodePosition(3, new Pair(1000,1900));
+        mapView.ChangeNodePosition(0, new Pair(150,1700));
+        mapView.ChangeNodePosition(1, new Pair(150,150));
+        mapView.ChangeNodePosition(2, new Pair(500,1000));
+        mapView.ChangeNodePosition(3, new Pair(1000,1700));
+        mapView.ChangeNodePosition(4, new Pair(750,800));
 
         mapNodes = new View[mapView.getNumOfNodes()];
         endTravelTime = new Date();
@@ -341,7 +347,7 @@ public class MapActivity extends AppCompatActivity {
         final SQLiteDatabase readDb = myDB.getReadableDatabase();
         startTravelTime = new Date();
         lastCheckedTime = new Date();
-        //lastCheckedTime.setTime(0);       //PS DEBUG CODE
+        lastCheckedTime.setTime(0);       //PS DEBUG CODE
         endTravelTime.setTime(startTravelTime.getTime()+travelDuration);
         final Handler mapTravelHandler = new Handler();
         activityLines = 0;

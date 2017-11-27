@@ -23,9 +23,9 @@
             android:id="@+id/MapViewCanvas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:MapBossNode="2"
+            app:MapBossNode="4"
             app:MapNodeSize="100"
-            app:MapNumOfNodes="4"
+            app:MapNumOfNodes="5"
             app:MapStartingNode="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
