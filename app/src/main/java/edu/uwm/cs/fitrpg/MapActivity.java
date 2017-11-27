@@ -20,13 +20,15 @@ import java.util.List;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 
+import edu.uwm.cs.fitrpg.view.GameActivity;
+
 
 public class MapActivity extends AppCompatActivity {
 
     private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
     private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
     private boolean isTraveling;               //PS Local storage of whether the player is currently traveling, and thus whether a node button is clickable
-    private int travelDuration = 10000;         //PS How long in milliseconds it takes currently to travel
+    private int travelDuration = 3000;         //PS How long in milliseconds it takes currently to travel
     private int travelProgress = 0;            //PS A number between 0-100 representing the percentage of how far along the current travel is
     private int destinationNode = 0;           //PS The node the player is currently traveling to
 
@@ -37,10 +39,10 @@ public class MapActivity extends AppCompatActivity {
     private int basePlayerSpeed = 5;
 
     private int baseEnemyStamina = 10;
-    private int baseEnemyStrength = 5;
-    private int baseEnemyEndurance = 5;
-    private int baseEnemyDexterity = 5;
-    private int baseEnemySpeed = 5;
+    private int baseEnemyStrength = 10;
+    private int baseEnemyEndurance = 10;
+    private int baseEnemyDexterity = 10;
+    private int baseEnemySpeed = 10;
 
     private int loop = 1;
     private Context passedContext;
@@ -438,8 +440,8 @@ public class MapActivity extends AppCompatActivity {
 
     public void LaunchCombat()
     {
-        Intent intent = new Intent(this, CombatActivity.class);
-
+        Intent intent = new Intent(this, GameActivity.class);
+		
         intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", baseEnemyStamina);
 
         intent.putExtra("edu.uwm.cs.fitrpg.enemyStrength", baseEnemyStrength);

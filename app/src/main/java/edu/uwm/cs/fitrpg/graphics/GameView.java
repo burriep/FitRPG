@@ -7,6 +7,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import edu.uwm.cs.fitrpg.Audio.MusicPlayer;
+import edu.uwm.cs.fitrpg.Audio.SFXPlayer;
+import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.game.GameThread;
 
 
@@ -19,13 +22,19 @@ public class GameView extends SurfaceView
 {
     private SurfaceHolder holder;
     private GameThread thread;
+    private MusicPlayer player;
+    private SFXPlayer sfx;
     private Scene scene;
 
     public GameView(Context context)
     {
         super(context);
+        player = new MusicPlayer(this);
         thread = new GameThread(this);
-        scene = new Scene();
+        sfx = new SFXPlayer(this);
+        sfx.loadSound(R.raw.hit);
+
+        scene = new Scene(getResources(),sfx);
         holder = getHolder();
         holder.addCallback(new SurfaceHolder.Callback()
         {
@@ -36,6 +45,7 @@ public class GameView extends SurfaceView
                 thread.setRunning(false);
                 try {
                     thread.join();
+                    player.stop();
                     retry = false;
                 }catch(InterruptedException e)
                 {
@@ -53,11 +63,13 @@ public class GameView extends SurfaceView
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
             {}
+
+
+
         });
     }
 
-    public void draw(Canvas canvas)
-    {
+    public void draw(Canvas canvas) {
         super.draw(canvas);
         canvas.drawColor(Color.RED);
         scene.draw(canvas);
@@ -80,9 +92,13 @@ public class GameView extends SurfaceView
         switch(action)
         {
             case MotionEvent.ACTION_DOWN:
+                sfx.playSound(R.raw.hit);
                 x = e.getX();
                 y = e.getY();
-                scene.spawnParticles(10, 100, 1, 1, (int)x, (int)y, Color.parseColor("#FFFFFF"), Particle.Behavior.DEFAULT);
+                scene.handleClick(x,y, sfx);
+
+                //scene.spawnParticles(10, 100, 1, 1, (int)x, (int)y, Color.parseColor("#FFFFFF"), Particle.Behavior.DEFAULT);
+                //hb.takeDamage(5);
                 return true;
             default:
                 return super.onTouchEvent(e);

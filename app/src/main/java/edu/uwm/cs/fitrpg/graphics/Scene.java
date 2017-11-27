@@ -1,11 +1,23 @@
 package edu.uwm.cs.fitrpg.graphics;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
 import android.icu.text.MessagePattern;
+import android.util.DisplayMetrics;
 
 import java.util.ArrayList;
+
+import edu.uwm.cs.fitrpg.Audio.SFXPlayer;
+import edu.uwm.cs.fitrpg.R;
+import edu.uwm.cs.fitrpg.game.CombatUnit;
+import edu.uwm.cs.fitrpg.view.GameActivity;
+
+import static edu.uwm.cs.fitrpg.R.*;
 
 /**
  * Created by SS Fink on 10/17/2017.
@@ -13,17 +25,70 @@ import java.util.ArrayList;
 
 public class Scene
 {
+    private enum State {IN_COMBAT, VICTORY, DEFEAT};
+
+    private State curState;
+    Resources res;
+    private GameActivity listener;
     private ArrayList<AnimatedSprite> spriteList;
     private ArrayList<Particle> particleList;
+    private ArrayList<CombatUnit> combatUnitList;
     private ArrayList<Text> textList;
+    private long curenemyCd, maxenemyCd;
     private int bgColor = Color.BLACK;
+    private BitmapDrawable bmDraw = null;
+    private CooldownBar cdbar;
+    private SFXPlayer sfx;
 
-    public Scene()
+
+    public Scene(Resources res, SFXPlayer sfx)
     {
         spriteList = new ArrayList<AnimatedSprite>();
         particleList = new ArrayList<Particle>();
         textList = new ArrayList<Text>();
+        combatUnitList = new ArrayList<CombatUnit>(2);
+        cdbar = new CooldownBar(res.getDisplayMetrics().widthPixels / 2, res.getDisplayMetrics().heightPixels/2 );
+        curState = State.IN_COMBAT;
+        this.res = res;
+        this.sfx = sfx;
     }
+
+    public void addActivityListener(GameActivity ga)
+    {
+        this.listener = ga;
+    }
+
+    public void spawnPlayerCombatUnit(Bitmap bm, int initStamina, int initStrength, int initEndurance, int initDexterity, int initSpeed)
+    {
+        CombatUnit addThis = new CombatUnit(initStamina, initStrength, initEndurance, initDexterity, initSpeed, (res.getDisplayMetrics().widthPixels / 2) - (32*6), (res.getDisplayMetrics().heightPixels/ 8) * 5);
+        addThis.initializeGraphics(bm, AnimatedSprite.ANIMATION_WALK_NORTH);
+        addThis.getSprite().setScale(6);
+        addThis.getHealthbar().setX(addThis.getx() + (32*6));
+        addThis.getHealthbar().setY(addThis.getY() + (64*7));
+        combatUnitList.add(0,addThis);
+
+        long cdTime = (long)(((double)Math.log((double)(addThis.GetSpeed() + 1))));
+
+        cdbar.setMaxCooldownTime((long)(1.0/cdTime) * 500);
+
+    }
+
+    public void spawnEnemyCombatUnit(Bitmap bm, int initStamina, int initStrength, int initEndurance, int initDexterity, int initSpeed)
+    {
+        CombatUnit addThis = new CombatUnit(initStamina, initStrength, initEndurance, initDexterity, initSpeed,(res.getDisplayMetrics().widthPixels / 2) - (32*6), (res.getDisplayMetrics().heightPixels/ 8));
+        addThis.initializeGraphics(bm, AnimatedSprite.ANIMATION_WALK_SOUTH);
+        addThis.getSprite().setScale(6);
+        addThis.getHealthbar().setX(addThis.getx() + (32*6));
+        addThis.getHealthbar().setY(addThis.getY());
+        combatUnitList.add(addThis);
+
+        maxenemyCd = (long)(((double)Math.log((double)(addThis.GetSpeed() + 1))));
+        maxenemyCd = (long)(1.0/maxenemyCd) * 500;
+        curenemyCd = 0;
+
+    }
+
+
 
 
     // spawnNewSprite
@@ -49,9 +114,15 @@ public class Scene
     // setBackground
     // sets the background of the scene to the
     // specified bitmap image
-    public void setBackground(Bitmap bitmap)
+    public void setBackground(int resID, int width, int height)
     {
+        Bitmap bm = BitmapFactory.decodeResource(res, resID);
+        bm = Bitmap.createScaledBitmap(bm, width, height,false);
 
+        bmDraw = new BitmapDrawable(res, bm);
+        bmDraw.setTileModeX(Shader.TileMode.REPEAT);
+        bmDraw.setTileModeY(Shader.TileMode.REPEAT);
+        bmDraw.setBounds(0,0, res.getSystem().getDisplayMetrics().widthPixels, res.getSystem().getDisplayMetrics().heightPixels);
     }
 
 
@@ -81,9 +152,9 @@ public class Scene
 
     }
 
-    public void writeText(String text, int color, int x, int y, int size, boolean isScrolling)
+    public void writeText(String text, int color, int x, int y, int size, Text.Behavior behavior)
     {
-        Text addThis = new Text(text, x, y, size, color, isScrolling);
+        Text addThis = new Text(text, x, y, size, color, behavior);
         textList.add(addThis);
     }
 
@@ -105,7 +176,10 @@ public class Scene
     {
         // Draw the Background
         c.drawColor(bgColor);
+        if(bmDraw != null){ bmDraw.draw(c);}
 
+        if(curState == State.IN_COMBAT)
+            cdbar.draw(c);
         // Draw the Sprites
         if(!spriteList.isEmpty())
             for (AnimatedSprite s : spriteList)
@@ -122,6 +196,13 @@ public class Scene
             }
         }
 
+        if(!combatUnitList.isEmpty())
+        for (CombatUnit cu : combatUnitList)
+        {
+            cu.draw(c);
+        }
+
+
         // Draw the Text
         if(!textList.isEmpty())
         {
@@ -130,6 +211,8 @@ public class Scene
                 t.draw(c);
             }
         }
+
+
 
     }
 
@@ -166,14 +249,124 @@ public class Scene
             for (Text t : textList)
             {
                 t.tick(deltaTime);
+                if(t.getYpos() < 0 || t.getXpos() < 0) textList.remove(t);
             }
+        }
+
+        if(!combatUnitList.isEmpty())
+            for (CombatUnit cu : combatUnitList)
+            {
+                cu.tick(deltaTime);
+            }
+
+
+        cdbar.tick(deltaTime);
+
+        if(curState == State.IN_COMBAT)
+         tickEnemies(deltaTime);
+    }
+
+    private void tickEnemies(float deltaTime)
+    {
+        curenemyCd += deltaTime;
+        if(curenemyCd >= maxenemyCd)
+        {
+            combatUnitList.get(1).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_ATTACK_NORTH);
+            int dmg = combatUnitList.get(1).Attack(combatUnitList.get(0));
+            if(dmg <= 0)
+            {
+                writeText("MISS", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING);
+            }
+            else
+            {
+                writeText(dmg + "", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING);
+                sfx.playSound(raw.hit);
+                if(combatUnitList.get(0).GetCurrentHP() == 0) defeatScene();
+            }
+            curenemyCd = 0;
+        }
+    }
+
+    public void handleClick(float x, float y, SFXPlayer sfxPlayer) {
+        if (cdbar.isOffCooldown() && curState == State.IN_COMBAT) {
+            combatUnitList.get(0).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_ATTACK_NORTH);
+            int dmg = combatUnitList.get(0).Attack(combatUnitList.get(1));
+            if (dmg <= 0) {
+                writeText("MISS", Color.WHITE, combatUnitList.get(1).getx(), combatUnitList.get(1).getY(), 80, Text.Behavior.RISING);
+            } else {
+                writeText(dmg + "", Color.WHITE, combatUnitList.get(1).getx(), combatUnitList.get(1).getY(), 80, Text.Behavior.RISING);
+                sfx.playSound(raw.hit);
+                if (combatUnitList.get(1).GetCurrentHP() == 0) victoryScene();
+
+            }
+            cdbar.reset();
+        } else if (curState == State.DEFEAT) {
+
+            notifyActivity(0);
+        } else if (curState == State.VICTORY)
+        {
+            notifyActivity(1);
+        }
+    }
+
+    private void notifyActivity(int status)
+    {
+        // 0 = Defeat Status
+        if(status == 0)
+        {
+            listener.onFinishAlert(0);
+        }
+        // 1 = Victory Status
+        else if(status == 1)
+        {
+            listener.onFinishAlert(1);
         }
     }
 
 
+    private void victoryScene()
+    {
+        combatUnitList.get(1).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_DIE);
+        combatUnitList.get(1).getSprite().setFinal(true);
+        textList.clear();
+        disableHealth();
+        curState = State.VICTORY;
+        setBackground(drawable.test, 96, 32);
+        writeText("VICTORY", Color.BLACK, res.getDisplayMetrics().widthPixels/2, res.getDisplayMetrics().heightPixels/2, 160, Text.Behavior.SCROLLING);
+        writeText("VICTORY", Color.parseColor("#FFD700"), res.getDisplayMetrics().widthPixels/2, res.getDisplayMetrics().heightPixels/2, 150, Text.Behavior.SCROLLING);
 
+    }
 
+    private void defeatScene()
+    {
+        combatUnitList.get(0).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_DIE);
+        combatUnitList.get(0).getSprite().setFinal(true);
+        textList.clear();
+        disableHealth();
+        curState = State.DEFEAT;
+        bmDraw = null;
+        writeText("DEFEAT", Color.RED, res.getDisplayMetrics().widthPixels/2, res.getDisplayMetrics().heightPixels/2, 160, Text.Behavior.SCROLLING);
+        writeText("DEFEAT", Color.WHITE, res.getDisplayMetrics().widthPixels/2, res.getDisplayMetrics().heightPixels/2, 150, Text.Behavior.SCROLLING);
+        setBackground(Color.BLACK);
+    }
 
+    private void disableHealth()
+    {
+        for(CombatUnit cu : combatUnitList)
+        {
+           cu.setHbEnabled(false);
+        }
+    }
+
+    public CombatUnit getPlayer()
+    {
+        return combatUnitList.get(0);
+    }
+
+    public CombatUnit getEnemy()
+    {
+        return combatUnitList.get(1);
+    }
 
 
 }

@@ -1,9 +1,6 @@
 package edu.uwm.cs.fitrpg.game;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.provider.Settings;
 
 import edu.uwm.cs.fitrpg.graphics.GameView;
 
