@@ -47,8 +47,8 @@ public class SettingsFragment extends Fragment {
         View fragmentView = getView();
 
         /* Need to create DB methods and table for user data*/
-        //getUser();
-        user = new User("Tyler", 1);
+        getUser();
+        //user = new User("Tyler", 1);
 
         name = user.getName();
         weight = user.getWeight();
@@ -61,7 +61,7 @@ public class SettingsFragment extends Fragment {
         btnClear = fragmentView.findViewById(R.id.btn_settings_clear);
         btnSave = fragmentView.findViewById(R.id.btn_settings_save);
 
-        updateFakeUser();
+        //updateFakeUser();
         createHints();
 
         createListeners();
@@ -108,6 +108,7 @@ public class SettingsFragment extends Fragment {
                 weight = Integer.parseInt(etWeight.getText().toString());
                 height = Integer.parseInt(etHeight.getText().toString());
                 tvUpdateDate.setText(new SimpleDateFormat("MM-dd-yyyy").format(Calendar.getInstance().getTime()));
+                updateSettings();
                 createHints();
             }
         });
@@ -118,6 +119,7 @@ public class SettingsFragment extends Fragment {
         user.setName(name);
         user.setWeight(weight);
         user.setHeight(height);
+
         //Add calls to update user in database
         // ...
     }

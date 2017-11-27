@@ -148,12 +148,12 @@ public class SettingsActivity extends AppCompatActivity{
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //updateSettings();
+                name = etName.getText().toString();
+                weight = Integer.parseInt(etWeight.getText().toString());
+                height = Integer.parseInt(etHeight.getText().toString());
+                tvUpdateDate.setText(new SimpleDateFormat("MM-dd-yyyy").format(Calendar.getInstance().getTime()));
                 updateSettings();
-                name = user.getName();
-                weight = user.getWeight();
-                height = user.getHeight();
-                tvUpdateDate.setText(user.getLastUpdateDate());
-
                 createHints();
             }
         });

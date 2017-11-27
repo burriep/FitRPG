@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -24,6 +25,8 @@ public class Home extends AppCompatActivity{
     public static Context appCon;
 
     private int userID = 1;
+    TextView stamina, speed, strength, endurance, dexterity;
+    DatabaseHelper myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +38,13 @@ public class Home extends AppCompatActivity{
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
 
-        TextView stamina, speed, strength, endurance, dexterity;
+        //TextView stamina, speed, strength, endurance, dexterity;
         stamina = (TextView) findViewById(R.id.tv_stamina);
         speed = (TextView) findViewById(R.id.tv_speed);
         strength = (TextView) findViewById(R.id.tv_strength);
         endurance = (TextView) findViewById(R.id.tv_endurance);
         dexterity = (TextView) findViewById(R.id.tv_dexterity);
-        DatabaseHelper myDB = new DatabaseHelper(this);
+        myDB = new DatabaseHelper(this);
 
         //PS Check database for a user with ID 0, otherwise create one
         if(myDB.getStamina(userID) == "-1") {
@@ -73,6 +76,38 @@ public class Home extends AppCompatActivity{
             transaction.add(R.id.ll_top_left, fragment);
             transaction.commit();
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(myDB.getStamina(userID) == "-1") {
+            myDB.createChar(userID, 0, "Defaultio", 10, 10, 10, 10, 10);
+        }
+        //These setText calls would eventually collect the stat info
+        // from database or character class
+        //ToDo
+        //stamina.setText("" + 0);
+        String staminaText = myDB.getStamina(userID);
+        stamina.setText(staminaText);
+        //speed.setText("" + 0);
+        String speedText = myDB.getSpeed(userID);
+        speed.setText(speedText);
+        //strength.setText("" + 0);
+        String strengthText = myDB.getStrength(userID);
+        strength.setText(strengthText);
+        //endurance.setText("" + 0);
+        String enduranceText = myDB.getEndurance(userID);
+        endurance.setText(enduranceText);
+        //dexterity.setText("" + 0);
+        String dexterityText = myDB.getDexterity(userID);
+        dexterity.setText(dexterityText);
+
+    }
+
+    public void getStats() {
+
     }
 
     @Override
