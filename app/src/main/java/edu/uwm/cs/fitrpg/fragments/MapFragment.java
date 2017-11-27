@@ -1,35 +1,52 @@
-package edu.uwm.cs.fitrpg;
+package edu.uwm.cs.fitrpg.fragments;
+
 
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.MenuItem;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import java.util.Date;
 import java.util.List;
 
-import edu.uwm.cs.fitrpg.activity.FitnessOverview;
-import edu.uwm.cs.fitrpg.activity.Home;
-import edu.uwm.cs.fitrpg.activity.SettingsActivity;
-import edu.uwm.cs.fitrpg.fragments.NavigationFragment;
-import edu.uwm.cs.fitrpg.fragments.SettingsFragment;
+import edu.uwm.cs.fitrpg.CombatActivity;
+import edu.uwm.cs.fitrpg.DatabaseHelper;
+import edu.uwm.cs.fitrpg.FitnessChallenge;
+import edu.uwm.cs.fitrpg.MapView;
+import edu.uwm.cs.fitrpg.R;
+import edu.uwm.cs.fitrpg.RpgChar;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
-import edu.uwm.cs.fitrpg.model.FitnessActivityType;
+
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MapFragment extends Fragment {
 
 
-public class MapActivity extends AppCompatActivity {
-    private int navigationIDTag;
+    public MapFragment() {
+        // Required empty public constructor
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        context = getActivity();
+        myDB = new DatabaseHelper(context);
+        return inflater.inflate(R.layout.activity_map, container, false);
+    }
+
 
     private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
     private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
@@ -40,7 +57,7 @@ public class MapActivity extends AppCompatActivity {
 
     private int basePlayerStamina = 1000;      //PS A debug value for how much stamina the player will be told to have.  Set high so as to not die, even on higher loops.
     private int basePlayerStrength = 5;        //PS A debug value for how much strength the player will be told to have.
-    private int basePlayerEndurance = 5;       //PS 
+    private int basePlayerEndurance = 5;       //PS
     private int basePlayerDexterity = 5;
     private int basePlayerSpeed = 5;
 
@@ -73,17 +90,15 @@ public class MapActivity extends AppCompatActivity {
     Boolean[] challengeComplete;
     int countComplete;
 
+    View fragmentView = getView();
+    private Context context;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
+    public void onStart() {
+        super.onStart();
 
-        navigationIDTag = 0;
-        Intent intent = getIntent();
+        Intent intent = getActivity().getIntent();
         playerChar = new RpgChar();
-
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
 
         basePlayerStamina = playerChar.getStamina();
         basePlayerStrength = playerChar.getStrength();
@@ -97,24 +112,24 @@ public class MapActivity extends AppCompatActivity {
         baseEnemyDexterity = intent.getIntExtra("edu.uwm.cs.fitrpg.enemyDexterity", baseEnemyDexterity);
         baseEnemySpeed = intent.getIntExtra("edu.uwm.cs.fitrpg.enemySpeed", baseEnemySpeed);
 
-        myDB = new DatabaseHelper(this);
+        //myDB = new DatabaseHelper(context);
         //PS TODO Get loop from DB
         loop = intent.getIntExtra("edu.uwm.cs.fitrpg.loopCount", 1);
 
 
         isTraveling = false;
 
-        menuLayout = findViewById((R.id.MapMenuLayout));
+        menuLayout = fragmentView.findViewById((R.id.MapMenuLayout));
         menuLayout.setVisibility(View.INVISIBLE);
         menuIsVisible = false;
-        menuTopBarText = (TextView)findViewById(R.id.MapMenuTopBarText);
-        menuBodyText = (TextView)findViewById(R.id.MapMenuBodyText);
-        menuTravelFitnessLog = (TextView)findViewById(R.id.MapMenuTravelFitnessActivities);
-        menuTravelProgressBar = (ProgressBar)findViewById(R.id.MapMenuTravelProgress);
+        menuTopBarText = (TextView)fragmentView.findViewById(R.id.MapMenuTopBarText);
+        menuBodyText = (TextView)fragmentView.findViewById(R.id.MapMenuBodyText);
+        menuTravelFitnessLog = (TextView)fragmentView.findViewById(R.id.MapMenuTravelFitnessActivities);
+        menuTravelProgressBar = (ProgressBar)fragmentView.findViewById(R.id.MapMenuTravelProgress);
         menuTravelProgressBar.setMax(100);
-        menuLeftButton = (Button)findViewById(R.id.MapMenuLeftButton);
-        menuRightButton = (Button)findViewById(R.id.MapMenuRightButton);
-        mapView = (MapView)findViewById(R.id.MapViewCanvas);
+        menuLeftButton = (Button)fragmentView.findViewById(R.id.MapMenuLeftButton);
+        menuRightButton = (Button)fragmentView.findViewById(R.id.MapMenuRightButton);
+        mapView = (MapView)fragmentView.findViewById(R.id.MapViewCanvas);
         mapView.setCurrentNode(playerChar.getCurrentNode());
 
         //Boolean[] connections = new Boolean[3];
@@ -131,7 +146,7 @@ public class MapActivity extends AppCompatActivity {
 
         mapView.ToggleNodeConnections(2, 0);
         mapView.ToggleNodeConnections(1, 3);
-        passedContext = this;
+        passedContext = getActivity();
 
         //PS Example of how to change node position
         //mapView.ChangeNodePosition(0, new Pair(50,1900));
@@ -157,7 +172,7 @@ public class MapActivity extends AppCompatActivity {
             public void run() {
                 Button myButton;
                 ConstraintSet lp_set = new ConstraintSet();
-                ConstraintLayout ll = (ConstraintLayout) findViewById(R.id.buttonLayout);
+                ConstraintLayout ll = (ConstraintLayout) fragmentView.findViewById(R.id.buttonLayout);
                 ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams((int) ((int) mapView.getNodeSize() * buttonScale), (int) ((int) mapView.getNodeSize() * buttonScale));
 
                 for(int i = 0; i < mapNodes.length; i++) {
@@ -185,7 +200,7 @@ public class MapActivity extends AppCompatActivity {
 
     public void RedrawButton(int i)
     {
-        ConstraintLayout ll = (ConstraintLayout) findViewById(R.id.buttonLayout);
+        ConstraintLayout ll = (ConstraintLayout) fragmentView.findViewById(R.id.buttonLayout);
         ConstraintSet lp_set = new ConstraintSet();
         lp_set.clone(ll);
         lp_set.setTranslationX(i, (int) mapView.getAdjustedNodePosition(i).first - (int) (mapView.getNodeSize() * buttonScale) / 2);
@@ -445,7 +460,7 @@ public class MapActivity extends AppCompatActivity {
 
     public void LaunchCombat()
     {
-        Intent intent = new Intent(this, CombatActivity.class);
+        Intent intent = new Intent(context, CombatActivity.class);
 
         intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", baseEnemyStamina);
 
@@ -460,38 +475,7 @@ public class MapActivity extends AppCompatActivity {
         intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);
 
         startActivity(intent);
-        finish();
+        onStop();
     }
 
-    public BottomNavigationView.OnNavigationItemSelectedListener OnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Intent intent;
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    intent = new Intent(getApplicationContext(), Home.class);
-                    startActivity(intent);
-                    navigationIDTag = 1;
-                    return true;
-                case R.id.navigation_fitness:
-                    intent = new Intent(getApplicationContext(), FitnessOverview.class);
-                    startActivity(intent);
-                    navigationIDTag = 2;
-                    return true;
-                case R.id.navigation_game_map:
-                    intent = new Intent(getApplicationContext(), MapActivity.class);
-                    startActivity(intent);
-                    navigationIDTag = 3;
-                    return true;
-                case R.id.navigation_settings:
-                    intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                    startActivity(intent);
-                    navigationIDTag = 4;
-                    return true;
-            }
-            return false;
-        }
-    };
 }

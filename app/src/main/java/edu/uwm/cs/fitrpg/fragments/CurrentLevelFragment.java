@@ -1,6 +1,6 @@
 package edu.uwm.cs.fitrpg.fragments;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,4 +32,16 @@ public class CurrentLevelFragment extends Fragment {
         currentLevelProgress.setMax(100);
         currentLevelProgress.setProgress(5);
     }
+
+//    private int getLevel() {
+//
+//    }
+//
+//    private int getLevelProgress() {
+//
+//    }
+//
+//    private void setProgressBar() {
+//
+//    }
 }

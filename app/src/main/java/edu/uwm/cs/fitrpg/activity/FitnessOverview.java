@@ -2,23 +2,35 @@ package edu.uwm.cs.fitrpg.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Date;
 
+import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.FitnessActivityHistoryFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
+import edu.uwm.cs.fitrpg.fragments.NavigationFragment;
+import edu.uwm.cs.fitrpg.fragments.SettingsFragment;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 
 public class FitnessOverview extends AppCompatActivity implements FitnessActivityHistoryFragment.OnListFragmentInteractionListener {
+    private int navigationIDTag;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fitness);
+
+        navigationIDTag = 0;
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
+        
 
         TextView history, recordData, trackData, goToMap;
         history = (TextView) findViewById(R.id.tv_fitness_history);
@@ -54,6 +66,38 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
             }
         });
     }
+
+    public BottomNavigationView.OnNavigationItemSelectedListener OnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Intent intent;
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    intent = new Intent(getApplicationContext(), Home.class);
+                    startActivity(intent);
+                    navigationIDTag = 1;
+                    return true;
+                case R.id.navigation_fitness:
+                    intent = new Intent(getApplicationContext(), FitnessOverview.class);
+                    startActivity(intent);
+                    navigationIDTag = 2;
+                    return true;
+                case R.id.navigation_game_map:
+                    intent = new Intent(getApplicationContext(), MapActivity.class);
+                    startActivity(intent);
+                    navigationIDTag = 3;
+                    return true;
+                case R.id.navigation_settings:
+                    intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                    startActivity(intent);
+                    navigationIDTag = 4;
+                    return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     public void onListFragmentInteraction(FitnessActivity item) {
