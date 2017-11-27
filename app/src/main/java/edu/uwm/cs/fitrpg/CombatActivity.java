@@ -6,9 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import edu.uwm.cs.fitrpg.game.CombatUnit;
 
 /**
  * Created by Patrick Seaton on 10/30/2017.

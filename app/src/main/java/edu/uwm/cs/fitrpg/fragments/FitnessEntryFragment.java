@@ -1,7 +1,6 @@
 package edu.uwm.cs.fitrpg.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,10 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -23,7 +20,7 @@ import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.model.FitnessActivityType;
-import edu.uwm.cs.fitrpg.util.Utils;
+import edu.uwm.cs.fitrpg.util.FitnessActivityTypeAdapter;
 
 public class FitnessEntryFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
@@ -90,7 +87,7 @@ public class FitnessEntryFragment extends Fragment implements AdapterView.OnItem
                     @Override
                     public void run() {
                         fitnessActivityTypes = list;
-                        typeSpinner.setAdapter(new MyFitnessActivityTypeAdapter());
+                        typeSpinner.setAdapter(new FitnessActivityTypeAdapter(FitnessEntryFragment.this, list));
                         if (!fitnessActivityTypes.isEmpty()) {
                             activityType = fitnessActivityTypes.get(0);
                         }
@@ -99,7 +96,7 @@ public class FitnessEntryFragment extends Fragment implements AdapterView.OnItem
                 });
             }
         }).run();
-        typeSpinner.setOnItemSelectedListener(FitnessEntryFragment.this);
+        typeSpinner.setOnItemSelectedListener(this);
 
         saveButton = view.findViewById(R.id.btn_fitness_entry_save);
         clearButton = view.findViewById(R.id.btn_fitness_entry_clear);
@@ -158,8 +155,7 @@ public class FitnessEntryFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (position >= 0 && position < fitnessActivityTypes.size()) {
-            FitnessActivityType type = fitnessActivityTypes.get(position);
-            activityType = type;
+            activityType = fitnessActivityTypes.get(position);
             updateFragments(false);
         }
     }
@@ -167,32 +163,5 @@ public class FitnessEntryFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // nothing to do
-    }
-
-    private class MyFitnessActivityTypeAdapter extends BaseAdapter {
-        @Override
-        public int getCount() {
-            return fitnessActivityTypes.size();
-        }
-
-        @Override
-        public String getItem(int position) {
-            return fitnessActivityTypes.get(position).getName();
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return fitnessActivityTypes.get(position).getId();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup container) {
-            if (convertView == null) {
-                convertView = getLayoutInflater().inflate(android.R.layout.simple_spinner_dropdown_item, container, false);
-            }
-            TextView textView = convertView.findViewById(android.R.id.text1);
-            textView.setText(getItem(position));
-            return convertView;
-        }
     }
 }

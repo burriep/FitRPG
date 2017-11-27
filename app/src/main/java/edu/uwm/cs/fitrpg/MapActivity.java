@@ -4,28 +4,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import java.util.Date;
 import java.util.List;
 
 import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.activity.Home;
 import edu.uwm.cs.fitrpg.activity.SettingsActivity;
-import edu.uwm.cs.fitrpg.fragments.NavigationFragment;
-import edu.uwm.cs.fitrpg.fragments.SettingsFragment;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
-import edu.uwm.cs.fitrpg.model.FitnessActivityType;
+import edu.uwm.cs.fitrpg.view.GameActivity;
 
 
 public class MapActivity extends AppCompatActivity {
@@ -34,7 +34,7 @@ public class MapActivity extends AppCompatActivity {
     private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
     private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
     private boolean isTraveling;               //PS Local storage of whether the player is currently traveling, and thus whether a node button is clickable
-    private int travelDuration = 10000;         //PS How long in milliseconds it takes currently to travel
+    private int travelDuration = 3000;         //PS How long in milliseconds it takes currently to travel
     private int travelProgress = 0;            //PS A number between 0-100 representing the percentage of how far along the current travel is
     private int destinationNode = 0;           //PS The node the player is currently traveling to
 
@@ -45,10 +45,10 @@ public class MapActivity extends AppCompatActivity {
     private int basePlayerSpeed = 5;
 
     private int baseEnemyStamina = 10;
-    private int baseEnemyStrength = 5;
-    private int baseEnemyEndurance = 5;
-    private int baseEnemyDexterity = 5;
-    private int baseEnemySpeed = 5;
+    private int baseEnemyStrength = 10;
+    private int baseEnemyEndurance = 10;
+    private int baseEnemyDexterity = 10;
+    private int baseEnemySpeed = 10;
 
     private int loop = 1;
     private Context passedContext;
@@ -134,13 +134,18 @@ public class MapActivity extends AppCompatActivity {
 
         mapView.ToggleNodeConnections(2, 0);
         mapView.ToggleNodeConnections(1, 3);
+        mapView.ToggleNodeConnections(4, 0);
+        mapView.ToggleNodeConnections(4, 1);
+        mapView.ToggleNodeConnections(4, 3);
+
         passedContext = this;
 
         //PS Example of how to change node position
-        //mapView.ChangeNodePosition(0, new Pair(50,1900));
-        //mapView.ChangeNodePosition(1, new Pair(50,50));
-        //mapView.ChangeNodePosition(2, new Pair(500,1000));
-        //mapView.ChangeNodePosition(3, new Pair(1000,1900));
+        mapView.ChangeNodePosition(0, new Pair(150,1700));
+        mapView.ChangeNodePosition(1, new Pair(150,150));
+        mapView.ChangeNodePosition(2, new Pair(500,1000));
+        mapView.ChangeNodePosition(3, new Pair(1000,1700));
+        mapView.ChangeNodePosition(4, new Pair(750,800));
 
         mapNodes = new View[mapView.getNumOfNodes()];
         endTravelTime = new Date();
@@ -357,7 +362,7 @@ public class MapActivity extends AppCompatActivity {
         final SQLiteDatabase readDb = myDB.getReadableDatabase();
         startTravelTime = new Date();
         lastCheckedTime = new Date();
-        //lastCheckedTime.setTime(0);       //PS DEBUG CODE
+        lastCheckedTime.setTime(0);       //PS DEBUG CODE
         endTravelTime.setTime(startTravelTime.getTime()+travelDuration);
         final Handler mapTravelHandler = new Handler();
         activityLines = 0;
@@ -448,8 +453,8 @@ public class MapActivity extends AppCompatActivity {
 
     public void LaunchCombat()
     {
-        Intent intent = new Intent(this, CombatActivity.class);
-
+        Intent intent = new Intent(this, GameActivity.class);
+		
         intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", baseEnemyStamina);
 
         intent.putExtra("edu.uwm.cs.fitrpg.enemyStrength", baseEnemyStrength);
