@@ -49,7 +49,8 @@ public class SettingsActivity extends AppCompatActivity{
         db = new DatabaseHelper(this);
 
 //        user = new User("User", 1);
-        getUser();
+        //getUser();
+        initUser();
 
         name = user.getName();
         weight = user.getWeight();
@@ -62,7 +63,7 @@ public class SettingsActivity extends AppCompatActivity{
         btnClear = findViewById(R.id.btn_settings_clear);
         btnSave = findViewById(R.id.btn_settings_save);
 
-        updateFakeUser();
+        //updateFakeUser();
         createHints();
 
         createListeners();
@@ -116,6 +117,11 @@ public class SettingsActivity extends AppCompatActivity{
         //this.user = new User(db.getUserName, db.getUserId);
     }
 
+    private void initUser() {
+        user = new User("User", 1);
+        updateFakeUser();
+    }
+
     private void updateFakeUser() {
         user.setHeight(75);
         user.setWeight(200);
@@ -142,18 +148,19 @@ public class SettingsActivity extends AppCompatActivity{
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                name = etName.getText().toString();
-                weight = Integer.parseInt(etWeight.getText().toString());
-                height = Integer.parseInt(etHeight.getText().toString());
-                tvUpdateDate.setText(new SimpleDateFormat(ISO_DATE_TIME_FORMAT).format(Calendar.getInstance().getTime()));
                 updateSettings();
+                name = user.getName();
+                weight = user.getWeight();
+                height = user.getHeight();
+                tvUpdateDate.setText(user.getLastUpdateDate());
+
                 createHints();
             }
         });
     }
 
     private void updateSettings() {
-        user.setLastUpdateDate(tvUpdateDate.getText().toString());
+        user.setLastUpdateDate(new SimpleDateFormat(ISO_DATE_TIME_FORMAT).format(Calendar.getInstance().getTime()));
         user.setName(name);
         user.setWeight(weight);
         user.setHeight(height);

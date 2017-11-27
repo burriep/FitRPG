@@ -4,8 +4,10 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FitRPG.iml" filepath="$PROJECT_DIR$/FitRPG.iml" />
       <module fileurl="file://C:\Users\Admin\Desktop\Sprint2\FitRPG\FitRPG.iml" filepath="C:\Users\Admin\Desktop\Sprint2\FitRPG\FitRPG.iml" />
+      <module fileurl="file://C:\Users\tcBre\Desktop\Sprint2\FitRPG\FitRPG.iml" filepath="C:\Users\tcBre\Desktop\Sprint2\FitRPG\FitRPG.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://C:\Users\Admin\Desktop\Sprint2\FitRPG\app\app.iml" filepath="C:\Users\Admin\Desktop\Sprint2\FitRPG\app\app.iml" />
+      <module fileurl="file://C:\Users\tcBre\Desktop\Sprint2\FitRPG\app\app.iml" filepath="C:\Users\tcBre\Desktop\Sprint2\FitRPG\app\app.iml" />
     </modules>
   </component>
 </project>

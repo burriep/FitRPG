@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6">
+
+        <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/list"
+            android:name="edu.uwm.cs.fitrpg.fragments.FitnessActivityHistoryFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            app:layoutManager="LinearLayoutManager"
+            android:clickable="true"
+            tools:context="edu.uwm.cs.fitrpg.fragments.FitnessActivityHistoryFragment"
+            tools:listitem="@layout/fragment_fitness_activity" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_start_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Activity"/>
+
+        <Button
+            android:id="@+id/btn_add_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Activity"/>
+    </LinearLayout>
+
+</LinearLayout>

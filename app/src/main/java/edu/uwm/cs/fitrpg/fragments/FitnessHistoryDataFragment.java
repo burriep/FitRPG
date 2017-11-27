@@ -21,10 +21,8 @@ import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class FitnessHistoryDataFragment extends Fragment {
+
+public class FitnessHistoryDataFragment extends Fragment{
 
     TextView tvStartTime,tvEndTime, tvDuration, tvDistance, tvTopSpeed, tvSets, tvReps;
     Button btnOK;
@@ -86,5 +84,6 @@ public class FitnessHistoryDataFragment extends Fragment {
         });
 
     }
+
 
 }

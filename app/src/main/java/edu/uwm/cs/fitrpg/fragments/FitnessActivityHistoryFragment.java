@@ -5,11 +5,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,7 +27,7 @@ import edu.uwm.cs.fitrpg.util.FitnessActivityRecyclerViewAdapter;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class FitnessActivityHistoryFragment extends Fragment implements View.OnClickListener{
+public class FitnessActivityHistoryFragment extends Fragment {
 
     private static final String ARG_START_DATE = "start-date";
     private static final String ARG_END_DATE = "end-date";
@@ -92,6 +91,8 @@ public class FitnessActivityHistoryFragment extends Fragment implements View.OnC
                 }
             }).run();
         }
+
+
         return view;
     }
 
@@ -112,15 +113,6 @@ public class FitnessActivityHistoryFragment extends Fragment implements View.OnC
         mListener = null;
     }
 
-    @Override
-    public void onClick(View view) {
-        FitnessHistoryDataFragment fragment = new FitnessHistoryDataFragment();
-        Bundle myBundle = new Bundle();
-        myBundle.putInt("FitnessActivityValue", view.getId());
-        fragment.setArguments(myBundle);
-        FragmentActivity fragmentActivity = getActivity();
-        fragmentActivity.getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
-    }
 
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(FitnessActivity item);

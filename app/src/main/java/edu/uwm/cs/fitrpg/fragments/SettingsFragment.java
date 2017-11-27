@@ -73,6 +73,11 @@ public class SettingsFragment extends Fragment {
         //this.user = new User(db.getUserName, db.getUserId);
     }
 
+    private void initUser() {
+        user = new User("User", 1);
+        updateFakeUser();
+    }
+
     private void updateFakeUser() {
         user.setHeight(75);
         user.setWeight(200);
