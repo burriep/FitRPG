@@ -37,7 +37,7 @@ import edu.uwm.cs.fitrpg.service.LocationUpdatesService;
 public class FitnessActivityTracking extends AppCompatActivity implements FitnessActivityTypeFragment.OnListFragmentInteractionListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 6923;
     FitnessActivityType activityType;
-    edu.uwm.cs.fitrpg.model.FitnessActivity currentActivity;
+    FitnessActivity currentActivity;
     Button continuePauseButton, cancelButton, stopButton;
 
     // The BroadcastReceiver used to listen from broadcasts from the service.
