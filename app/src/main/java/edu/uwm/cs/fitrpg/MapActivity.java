@@ -60,6 +60,9 @@ public class MapActivity extends AppCompatActivity {
     Date endTravelTime;
     Date lastCheckedTime;
     int activityLines;
+    FitnessChallenge[] challenges;
+    Boolean[] challengeComplete;
+    int countComplete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +128,16 @@ public class MapActivity extends AppCompatActivity {
 
         mapNodes = new View[mapView.getNumOfNodes()];
         endTravelTime = new Date();
+        lastCheckedTime = new Date();
+        lastCheckedTime.setTime(0);     //PS DEBUG CODE
+        challenges = new FitnessChallenge[3];     //PS DEBUG CODE
+        challengeComplete = new Boolean[3];     //PS DEBUG CODE
+        countComplete = 0;     //PS DEBUG CODE
+        for (int i = 0; i < challenges.length; i++)
+        {
+            challenges[i] = new FitnessChallenge();     //PS DEBUG CODE
+            challengeComplete[i] = false;     //PS DEBUG CODE
+        }
 
         final Handler placeButtonsHandler = new Handler();
         placeButtonsHandler.postDelayed(new Runnable() {
@@ -196,9 +209,44 @@ public class MapActivity extends AppCompatActivity {
                 menuIsVisible = true;
                 final View passedView = view;
                 if(destinationNode == mapView.getCurrentNode()) {
+                    SQLiteDatabase readDb = myDB.getReadableDatabase();
                     menuTopBarText.setText("Current Node");
-                    menuBodyText.setText( "This is your current location (PS TODO: Add fitness activities here)");
-                    menuLeftButton.setVisibility(View.GONE);
+                    String tempMenuBodyText = "This is your current location\nChallenges:\n";
+                    List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, lastCheckedTime, new Date());
+
+                    for(int i = 0; i < activities.size(); i++)
+                    {
+                        for(int j = 0; j < challengeComplete.length; j++)
+                        {
+                            if(!challengeComplete[j])
+                            {
+                                challengeComplete[j] = challenges[j].checkComplete(activities.get(i).getType().getName());
+                            }
+                        }
+                    }
+                    for(int i = 0; i < challengeComplete.length; i++) {
+                        tempMenuBodyText += challenges[i].getChallengeType();
+                        if (challengeComplete[i]) {
+                            tempMenuBodyText += " Complete!\n";
+                        } else {
+                            tempMenuBodyText += " Not Done\n";
+                        }
+                    }
+                    menuBodyText.setText(tempMenuBodyText);
+                    menuLeftButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            int tempComplete = 0;
+                            for (int i = 0; i < challengeComplete.length; i++)
+                            {
+                                if(challengeComplete[i])
+                                {
+                                    tempComplete++;
+                                }
+                            }
+                            CompleteNode(tempComplete);
+                        }
+                    });
                 }
                 else if (mapView.getConnectedToCurrentNode(destinationNode))
                 {
@@ -235,6 +283,27 @@ public class MapActivity extends AppCompatActivity {
         {
             menuLayout.setVisibility(View.INVISIBLE);
             menuIsVisible = false;
+        }
+    }
+
+    public void CompleteNode(int val)
+    {
+        if(val <= countComplete)
+        {
+            CloseMenu();
+        }
+        else
+        {
+            val = val - countComplete;
+            countComplete += val;
+            menuBodyText.setText("Stats all increase by " + val + "!");
+            playerChar.setStrength(playerChar.getStrength()+val);
+            playerChar.setStamina(playerChar.getStamina()+val);
+            playerChar.setSpeed(playerChar.getSpeed()+val);
+            playerChar.setDexterity(playerChar.getDexterity()+val);
+            playerChar.setEndurance(playerChar.getEndurance()+val);
+            playerChar.dbPush();
+            menuLeftButton.setVisibility(View.GONE);
         }
     }
 
@@ -329,6 +398,15 @@ public class MapActivity extends AppCompatActivity {
         menuBodyText.setText("Travel Complete!\nGains: Sta +" + staminaGain + " Spd +" + speedGain + " Str +" + strengthGain + " End +" + enduranceGain + " Dex +" + dexterityGain);
         //PS TODO calculate gains
         menuLeftButton.setVisibility(View.VISIBLE);
+        challenges = new FitnessChallenge[3];
+        challengeComplete = new Boolean[3];
+        countComplete = 0;
+        lastCheckedTime.setTime(0);     //PS DEBUG CODE
+        for (int i = 0; i < challenges.length; i++)
+        {
+            challenges[i] = new FitnessChallenge();
+            challengeComplete[i] = false;
+        }
         if(destinationNode == mapView.getBossNode())
         {
             menuLeftButton.setText(getResources().getString(R.string.combat_start_button));
