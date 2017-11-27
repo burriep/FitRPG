@@ -2,17 +2,22 @@ package edu.uwm.cs.fitrpg;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import java.util.Date;
+import java.util.List;
+
+import edu.uwm.cs.fitrpg.model.FitnessActivity;
+import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 
 
 public class MapActivity extends AppCompatActivity {
@@ -20,7 +25,7 @@ public class MapActivity extends AppCompatActivity {
     private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
     private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
     private boolean isTraveling;               //PS Local storage of whether the player is currently traveling, and thus whether a node button is clickable
-    private int travelDuration = 1000;         //PS How long in milliseconds it takes currently to travel
+    private int travelDuration = 10000;         //PS How long in milliseconds it takes currently to travel
     private int travelProgress = 0;            //PS A number between 0-100 representing the percentage of how far along the current travel is
     private int destinationNode = 0;           //PS The node the player is currently traveling to
 
@@ -51,6 +56,10 @@ public class MapActivity extends AppCompatActivity {
 
     DatabaseHelper myDB;
     RpgChar playerChar;
+    Date startTravelTime;
+    Date endTravelTime;
+    Date lastCheckedTime;
+    int activityLines;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +124,7 @@ public class MapActivity extends AppCompatActivity {
         //mapView.ChangeNodePosition(3, new Pair(1000,1900));
 
         mapNodes = new View[mapView.getNumOfNodes()];
+        endTravelTime = new Date();
 
         final Handler placeButtonsHandler = new Handler();
         placeButtonsHandler.postDelayed(new Runnable() {
@@ -193,7 +203,7 @@ public class MapActivity extends AppCompatActivity {
                 else if (mapView.getConnectedToCurrentNode(destinationNode))
                 {
                     menuTopBarText.setText(getResources().getString(R.string.confirm_movement_title_string));
-                    menuBodyText.setText( "Travel to this node will take " + Integer.toString(travelDuration/100) + " seconds\n" +
+                    menuBodyText.setText( "Travel to this node will take " + Integer.toString(travelDuration/1000) + " seconds\n" +
                             "Confirm Travel?");
                     menuLeftButton.setVisibility(View.VISIBLE);
                     menuLeftButton.setOnClickListener(new View.OnClickListener() {
@@ -244,6 +254,8 @@ public class MapActivity extends AppCompatActivity {
                 isTraveling = true;
                 mapView.setDestinationNode(destinationNode);
                 mapView.setIsTraveling(true);
+                mapView.setTravelProgress(0);
+                menuTravelProgressBar.setProgress(0);
                 menuTravelProgressBar.setVisibility(View.VISIBLE);
                 menuTravelFitnessLog.setVisibility(View.VISIBLE);
                 menuLeftButton.setVisibility(View.GONE);
@@ -256,21 +268,43 @@ public class MapActivity extends AppCompatActivity {
 
     private void StartMoving()
     {
+        //PS TODO move DB stuff to on create when updating travel on database
+        final SQLiteDatabase readDb = myDB.getReadableDatabase();
+        startTravelTime = new Date();
+        lastCheckedTime = new Date();
+        //lastCheckedTime.setTime(0);       //PS DEBUG CODE
+        endTravelTime.setTime(startTravelTime.getTime()+travelDuration);
         final Handler mapTravelHandler = new Handler();
+        activityLines = 0;
         mapTravelHandler.postDelayed(new Runnable() {
             public void run() {
-                travelProgress += 200;
+                travelProgress += 500;
                 mapView.setTravelProgress((travelProgress*100)/travelDuration);
                 menuTravelProgressBar.setProgress((int)((travelProgress*100)/travelDuration));
+                List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, lastCheckedTime, new Date());
+                lastCheckedTime = new Date();
+                for(int i = 0; i < activities.size(); i++)
+                {
+                    if(activityLines < 2) {
+                        activityLines++;
+                    }
+                    else
+                    {
+                        String fitnessLogText = menuTravelFitnessLog.getText().toString();
+                        fitnessLogText = "Fitness Activities:\n" + fitnessLogText.substring(fitnessLogText.indexOf("Date", fitnessLogText.indexOf("Date")+1));
+                        menuTravelFitnessLog.setText(fitnessLogText);
+                    }
+                    menuTravelFitnessLog.append("\nDate: " + activities.get(i).getStartDate() + "\nActivity Type: " + activities.get(i).getType().getName());
+                }
                 if (travelProgress < travelDuration) {
-                    mapTravelHandler.postDelayed(this, 200);
+                    mapTravelHandler.postDelayed(this, 500);
                 }
                 else
                 {
                     StopMoving();
                 }
             }
-        }, 200);
+        }, 500);
     }
 
     private void StopMoving()
@@ -289,7 +323,9 @@ public class MapActivity extends AppCompatActivity {
 
     private void TravelComplete()
     {
-        final int strengthGain = 0, staminaGain = 0, dexterityGain = 0, speedGain = 0, enduranceGain = 0;
+        startTravelTime.setTime(0);     //PS DEBUG CODE
+        int[] updatedStats = playerChar.peekStatsFromActivities(startTravelTime, endTravelTime);
+        final int strengthGain = updatedStats[0], enduranceGain = updatedStats[1], dexterityGain = updatedStats[2], speedGain = updatedStats[3], staminaGain = updatedStats[4] ;
         menuBodyText.setText("Travel Complete!\nGains: Sta +" + staminaGain + " Spd +" + speedGain + " Str +" + strengthGain + " End +" + enduranceGain + " Dex +" + dexterityGain);
         //PS TODO calculate gains
         menuLeftButton.setVisibility(View.VISIBLE);
@@ -300,11 +336,8 @@ public class MapActivity extends AppCompatActivity {
         menuLeftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playerChar.setStamina(playerChar.getStamina() + staminaGain);
-                playerChar.setStrength(playerChar.getStrength() + strengthGain);
-                playerChar.setSpeed(playerChar.getSpeed() + speedGain);
-                playerChar.setEndurance(playerChar.getEndurance() + enduranceGain);
-                playerChar.setDexterity(playerChar.getDexterity() + dexterityGain);
+                playerChar.updateStatsFromActivities(startTravelTime, endTravelTime);
+                playerChar.updateStaminaFromActivities(startTravelTime, endTravelTime);
                 playerChar.dbPush();
                 if(destinationNode == mapView.getBossNode())
                 {

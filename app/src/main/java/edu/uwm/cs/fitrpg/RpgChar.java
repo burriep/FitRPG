@@ -209,15 +209,19 @@ public class RpgChar {
         updateStatsFromActivities(activities);
     }
 
+    public int[] peekStatsFromActivities(Date startDate, Date endDate)
+    {
+        SQLiteDatabase readDb = db.getReadableDatabase();
+        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, startDate, endDate);
+        return peekStatsFromActivities(activities);
+    }
+
     public void updateStatsFromActivities(List<FitnessActivity> activities) {
-        for (FitnessActivity activity : activities) {
-            FitnessActivityType type = activity.getType();
-            // TODO: improve this calculation
-            strength += type.getMuscleStrengthImpact();
-            endurance += type.getAerobicImpact();
-            dexterity += type.getFlexibilityImpact();
-            speed += type.getBoneStrengthImpact();
-        }
+        int[] updatedStats = peekStatsFromActivities(activities);
+        strength += updatedStats[0];
+        endurance += updatedStats[1];
+        dexterity += updatedStats[2];
+        speed += updatedStats[3];
     }
 
     public void updateStaminaFromActivities(Date startDate, Date endDate) {
@@ -228,16 +232,30 @@ public class RpgChar {
     }
 
     public void updateStaminaFromActivities(List<FitnessActivity> activities) {
-        int muscleStrength = 0, aerobic = 0, flexibility = 0, boneStrength = 0;
+        int[] updatedStats = peekStatsFromActivities(activities);
+        stamina += updatedStats[4];
+    }
+
+    public int[] peekStatsFromActivities(List<FitnessActivity> activities)
+    {
+        int[] returnVal = new int[5];
+        for(int i = 0; i < returnVal.length; i++)
+        {
+            returnVal[i] = 0;
+        }
         for (FitnessActivity activity : activities) {
             FitnessActivityType type = activity.getType();
-            muscleStrength += type.getMuscleStrengthImpact();
-            aerobic += type.getAerobicImpact();
-            flexibility += type.getFlexibilityImpact();
-            boneStrength += type.getBoneStrengthImpact();
+            // TODO: improve this calculation
+            returnVal[0] += type.getMuscleStrengthImpact(); //Strength
+            returnVal[1] += type.getAerobicImpact();        //Endurance
+            returnVal[2] += type.getFlexibilityImpact();    //Dexterity
+            returnVal[3] += type.getBoneStrengthImpact();   //Speed
         }
-        boolean variety = muscleStrength > 0 && aerobic > 0 && flexibility > 0 && boneStrength > 0;
+        boolean variety = returnVal[0] > 0 && returnVal[1] > 0 && returnVal[2] > 0 && returnVal[3] > 0;
         // TODO: improve this calculation
-        stamina += 1;
+        if(variety) {
+            returnVal[4] += Math.floor((returnVal[0] + returnVal[1] + returnVal[2] + returnVal[3])/4);
+        }
+        return returnVal;
     }
 }
