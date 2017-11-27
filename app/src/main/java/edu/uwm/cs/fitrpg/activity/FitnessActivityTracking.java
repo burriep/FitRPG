@@ -114,12 +114,9 @@ public class FitnessActivityTracking extends AppCompatActivity implements Fitnes
     protected void onStart() {
         super.onStart();
 
-        boolean hasLocationPermissions = hasLocationPermission();
         updateButtonState();
         if (hasLocationPermission()) {
-            if (activityType != null && activityType.tracksDistance()) {
-                bindLocationService();
-            }
+            bindLocationService();
         } else {
             requestLocationPermission();
         }
@@ -241,6 +238,7 @@ public class FitnessActivityTracking extends AppCompatActivity implements Fitnes
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission granted
                     updateButtonState();
+                    bindLocationService();
                 } else {
                     // Permission denied.
                     updateButtonState();
@@ -307,11 +305,9 @@ public class FitnessActivityTracking extends AppCompatActivity implements Fitnes
         updateClockHandler.removeCallbacks(updateClockTask);
         updateClockHandler.postDelayed(updateClockTask, 1000);
         continuePauseButton.setText(R.string.activity_tracking_pause_record);
-        if (activityType.tracksDistance()) {
-            bindLocationService();
-        }
-        if (mService != null) {
+        if (mService != null && currentActivity.getType().tracksDistance()) {
             mService.requestLocationUpdates();
+            updateLocationText(this);
         }
     }
 
@@ -323,6 +319,7 @@ public class FitnessActivityTracking extends AppCompatActivity implements Fitnes
         // stop tracking location
         if (mService != null) {
             mService.removeLocationUpdates();
+            updateLocationText(this);
         }
     }
 
@@ -333,18 +330,20 @@ public class FitnessActivityTracking extends AppCompatActivity implements Fitnes
         @Override
         public void onReceive(Context context, Intent intent) {
             Location location = intent.getParcelableExtra(LocationUpdatesService.EXTRA_LOCATION);
-            if (location != null) {
-                if (currentActivity != null) {
-                    currentActivity.addLocation(location);
-                    PreferenceManager.getDefaultSharedPreferences(context)
-                            .edit()
-                            .putLong(Utils.SP_KEY_TOP_SPEED_UPDATES, Double.doubleToRawLongBits(currentActivity.getTopSpeed()))
-                            .putLong(Utils.SP_KEY_AVG_SPEED_UPDATES, Double.doubleToRawLongBits(currentActivity.getAverageSpeed()))
-                            .putLong(Utils.SP_KEY_DISTANCE_UPDATES, Double.doubleToRawLongBits(currentActivity.getDistance()))
-                            .apply();
-                }
+            if (location != null && currentActivity != null && currentActivity.isTracking() && currentActivity.getType().tracksDistance()) {
+                currentActivity.addLocation(location);
+                updateLocationText(context);
             }
         }
+    }
+
+    public void updateLocationText(Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putLong(Utils.SP_KEY_TOP_SPEED_UPDATES, Double.doubleToRawLongBits(currentActivity.getTopSpeed()))
+                .putLong(Utils.SP_KEY_AVG_SPEED_UPDATES, Double.doubleToRawLongBits(currentActivity.getAverageSpeed()))
+                .putLong(Utils.SP_KEY_DISTANCE_UPDATES, Double.doubleToRawLongBits(currentActivity.getDistance()))
+                .apply();
     }
 
 }
