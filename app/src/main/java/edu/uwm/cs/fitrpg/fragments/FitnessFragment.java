@@ -41,40 +41,40 @@ public class FitnessFragment extends Fragment implements FitnessActivityHistoryF
         View fragmentView = getView();
         //Fragment fragment = null;
 
-        TextView history, recordData, trackData, goToMap;
-        history = (TextView) fragmentView.findViewById(R.id.tv_fitness_history);
-        recordData = (TextView) fragmentView.findViewById(R.id.tv_fitness_record_data);
-        trackData = (TextView) fragmentView.findViewById(R.id.tv_fitness_track_data);
-
-        history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Calendar calendar = Calendar.getInstance();
-                Date now = calendar.getTime();
-                calendar.add(Calendar.DATE, -1);
-                Date yesterday = calendar.getTime();
-                Fragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
-                FragmentActivity fragmentActivity = getActivity();
-                fragmentActivity.getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
-            }
-        });
-
-        recordData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FitnessEntryFragment fragmentEntry = new FitnessEntryFragment();
-                FragmentActivity fragmentActivity = getActivity();
-                fragmentActivity.getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragmentEntry).commit();
-            }
-        });
-
-        trackData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            Intent intent = new Intent(getActivity(), FitnessActivityTracking.class);
-            startActivity(intent);
-            }
-        });
+//        TextView history, recordData, trackData, goToMap;
+//        history = (TextView) fragmentView.findViewById(R.id.tv_fitness_history);
+//        recordData = (TextView) fragmentView.findViewById(R.id.tv_fitness_record_data);
+//        trackData = (TextView) fragmentView.findViewById(R.id.tv_fitness_track_data);
+//
+//        history.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Calendar calendar = Calendar.getInstance();
+//                Date now = calendar.getTime();
+//                calendar.add(Calendar.DATE, -1);
+//                Date yesterday = calendar.getTime();
+//                Fragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
+//                FragmentActivity fragmentActivity = getActivity();
+//                fragmentActivity.getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
+//            }
+//        });
+//
+//        recordData.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                FitnessEntryFragment fragmentEntry = new FitnessEntryFragment();
+//                FragmentActivity fragmentActivity = getActivity();
+//                fragmentActivity.getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragmentEntry).commit();
+//            }
+//        });
+//
+//        trackData.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//            Intent intent = new Intent(getActivity(), FitnessActivityTracking.class);
+//            startActivity(intent);
+//            }
+//        });
     }
 
 

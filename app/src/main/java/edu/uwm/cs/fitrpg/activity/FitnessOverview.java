@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -35,23 +36,30 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
         navigation.getMenu().getItem(1).setChecked(true);
 
 
-        TextView history, recordData, trackData, goToMap;
-        history = (TextView) findViewById(R.id.tv_fitness_history);
-        recordData = (TextView) findViewById(R.id.tv_fitness_record_data);
-        trackData = (TextView) findViewById(R.id.tv_fitness_track_data);
+        Button recordData, trackData;
+        recordData = findViewById(R.id.btn_add_activity);
+        trackData = findViewById(R.id.btn_start_activity);
 
-        history.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Calendar calendar = Calendar.getInstance();
-                Date now = calendar.getTime();
-                calendar.add(Calendar.DATE, -1);
-                Date yesterday = calendar.getTime();
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
+        calendar.add(Calendar.DATE, -1);
+        Date yesterday = calendar.getTime();
 
-                FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
-            }
-        });
+        FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
+
+//        history.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Calendar calendar = Calendar.getInstance();
+//                Date now = calendar.getTime();
+//                calendar.add(Calendar.DATE, -1);
+//                Date yesterday = calendar.getTime();
+//
+//                FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
+//                getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
+//            }
+//        });
 
         recordData.setOnClickListener(new View.OnClickListener() {
             @Override
