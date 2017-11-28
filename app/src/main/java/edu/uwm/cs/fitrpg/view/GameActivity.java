@@ -57,7 +57,7 @@ public class GameActivity extends Activity {
         if(!isTransferring) {
             isTransferring = true;
             Intent intent = new Intent(this, MapActivity.class);
-            intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", gv.getScene().getPlayer().GetStamina() / loop);
+            intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", gv.getScene().getEnemy().GetStamina() / loop);
 
             intent.putExtra("edu.uwm.cs.fitrpg.enemyStrength", gv.getScene().getEnemy().GetStrength() / loop);
 

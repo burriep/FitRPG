@@ -58,7 +58,7 @@ public class Healthbar
 
 
         // Calculate the appropriate speed health bar should decrease
-        deltaSpeed = (curHealth / deltaHealth);
+        deltaSpeed = 1;
         if(timer < deltaSpeed) return;
 
 

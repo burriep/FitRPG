@@ -69,7 +69,7 @@ public class Scene
 
         long cdTime = (long)(((double)Math.log((double)(addThis.GetSpeed() + 1))));
 
-        cdbar.setMaxCooldownTime((long)(1.0/cdTime) * 500);
+        cdbar.setMaxCooldownTime((long)((1.0/cdTime) * 500));
 
     }
 
@@ -83,7 +83,7 @@ public class Scene
         combatUnitList.add(addThis);
 
         maxenemyCd = (long)(((double)Math.log((double)(addThis.GetSpeed() + 1))));
-        maxenemyCd = (long)(((double)1.0/(double)maxenemyCd) * 5000);
+        maxenemyCd = (long)(((double)1.0/(double)maxenemyCd) * 500);
         curenemyCd = 0;
 
     }
