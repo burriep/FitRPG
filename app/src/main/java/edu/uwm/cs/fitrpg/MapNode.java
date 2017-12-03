@@ -80,6 +80,7 @@ public class MapNode {
     {
         return this.nodeID;
     }
+    public int getIsBoss(){return isBoss;}
 
     /*|||||||||||||||||||||||||||||||||||||||||||||||||| SETTER METHODS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
     //1 for complete, 0 for playable

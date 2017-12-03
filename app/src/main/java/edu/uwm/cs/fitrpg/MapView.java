@@ -11,6 +11,8 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 
+import java.util.ArrayList;
+
 /**
  * Created by Ronike on 11/4/2017.
  */
@@ -18,7 +20,7 @@ import android.view.View;
 public class MapView extends View {
 
     private int numOfNodes = 0;
-    private int currentNode = 0;
+    //private int currentNode = 0;
     private boolean isTraveling = false;
     private int destinationNode = 0;
     private int travelProgress = 0;
@@ -27,6 +29,7 @@ public class MapView extends View {
     private Pair screenDimensions = new Pair(1080, 1920);
     public static GameBoard board;
     private int loopCount;
+    private int map_id = 1;
 
 
     private Paint paint = new Paint();
@@ -48,7 +51,7 @@ public class MapView extends View {
         try {
 
             numOfNodes = board.getNumNodes();
-            currentNode = board.player.getCurrentNode();
+            //currentNode = board.player.getCurrentNode();
             bossNode = a.getInteger(R.styleable.MapView_MapBossNode, 0);
             nodeSize = a.getInteger(R.styleable.MapView_MapNodeSize, 20);
 
@@ -89,6 +92,16 @@ public class MapView extends View {
         Log.d("DBG", "In MapView - end of constructor");
     }
 
+    public int GetMapID()
+    {
+        return map_id;
+    }
+
+    public void SetMapID(int id)
+    {
+        map_id = id;
+    }
+
     public void SetMultipleNodeConnections(int baseNode, Pair[] nodeConnectionPairs)
     {
         for(int i = 0; i < nodeConnectionPairs.length; i++)
@@ -115,8 +128,6 @@ public class MapView extends View {
     protected void onDraw(Canvas canvas)
     {
         super.onDraw(canvas);
-        float progress = 0.0f;
-        float startX, startY, endX, endY, midX, midY;
         float adjustmentX = (float)canvas.getWidth()/(int)screenDimensions.first;
         float adjustmentY = (float)canvas.getHeight()/(int)screenDimensions.second;
 
@@ -137,11 +148,11 @@ public class MapView extends View {
         }
         for(int i = 0; i < numOfNodes; i++)
         {
-            if(i == currentNode)
+            if(board.getNodes().get(i).getNodeId() == board.player.getCurrentNode())
             {
                 mapNodeImage[i].setColorFilter(getResources().getColor(R.color.cyan), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
-            else if (i == bossNode)
+            else if (board.getNodes().get(i).getIsBoss() == 1)
             {
                 mapNodeImage[i].setColorFilter(getResources().getColor(R.color.red), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
@@ -150,8 +161,8 @@ public class MapView extends View {
                 mapNodeImage[i].setColorFilter(getResources().getColor(R.color.gold), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
 
-            board.nodeList.get(i).setAdjX(board.nodeList.get(i).getX()* (int)adjustmentX);
-            board.nodeList.get(i).setAdjY(board.nodeList.get(i).getY()* (int)adjustmentY);
+            board.nodeList.get(i).setAdjX((int)(board.nodeList.get(i).getX()* adjustmentX));
+            board.nodeList.get(i).setAdjY((int)(board.nodeList.get(i).getY()* adjustmentY));
 
             mapNodeImage[i].setBounds(board.nodeList.get(i).getAdjX()-(nodeSize/2),board.nodeList.get(i).getAdjY()-(nodeSize/2),board.nodeList.get(i).getAdjX()+(nodeSize/2),board.nodeList.get(i).getAdjY()+(nodeSize/2));
             mapNodeImage[i].draw(canvas);
@@ -159,11 +170,16 @@ public class MapView extends View {
         }
     }
 
+    public void AdjustImage()
+    {
+        invalidate();
+        requestLayout();
+    }
+
 
     public void setNumOfNodes(int val) {
         numOfNodes = val;
-        invalidate();
-        requestLayout();
+        AdjustImage();
     }
 
     public int getNumOfNodes() {
@@ -176,9 +192,9 @@ public class MapView extends View {
     }
 
     public void setCurrentNode(int val) {
-        board.player.setCurrentNode(val);
-        invalidate();
-        requestLayout();
+        Log.d("DBG", "In MapView - Arg Node: " + val + " Converted Node: " + (board.getNodes().get(val).getNodeId()));
+        board.player.setCurrentNode(board.getNodes().get(val).getNodeId());
+        AdjustImage();
     }
 
     public boolean getIsTraveling()
@@ -220,15 +236,14 @@ public class MapView extends View {
         {
             for(int i=0; i< board.pathList.size();i++)
             {
-                if((board.pathList.get(i).getNodeA() == currentNode && board.pathList.get(i).getNodeB() == destinationNode)||(board.pathList.get(i).getNodeB() == currentNode && board.pathList.get(i).getNodeA() == destinationNode))
+                if((board.pathList.get(i).getNodeA() == board.player.getCurrentNode() && board.pathList.get(i).getNodeB() == destinationNode)||(board.pathList.get(i).getNodeB() == board.player.getCurrentNode() && board.pathList.get(i).getNodeA() == destinationNode))
                 {
                     board.pathList.get(i).setStatus(1);
                     isTraveling = true;
                 }
             }
         }
-        invalidate();
-        requestLayout();
+        AdjustImage();
     }
 
     public int getDestinationNode()
@@ -238,8 +253,7 @@ public class MapView extends View {
 
     public void setDestinationNode(int val) {
         destinationNode = val;
-        invalidate();
-        requestLayout();
+        AdjustImage();
     }
 
     public int getTravelProgress()
@@ -249,8 +263,7 @@ public class MapView extends View {
 
     public void setTravelProgress(int val) {
         travelProgress = val;
-        invalidate();
-        requestLayout();
+        AdjustImage();
     }
 
     public int getBossNode()
@@ -260,8 +273,7 @@ public class MapView extends View {
 
     public void setBossNode(int val) {
         bossNode = val;
-        invalidate();
-        requestLayout();
+        AdjustImage();
     }
 
     public int getNodeSize()
@@ -272,13 +284,15 @@ public class MapView extends View {
     public void setNodeSize(int val)
     {
         nodeSize = val;
-        invalidate();
-        requestLayout();
+        AdjustImage();
     }
 
-    public Boolean getConnectedToCurrentNode(int destinationNode)
+    public Boolean getConnectedToCurrentNode(int destNode)
     {
-        return board.isConnected(board.player.getCurrentNode(),destinationNode);
+        ArrayList<MapNode> nodes = board.getNodes();
+
+        Log.d("DBG", "In MapView - Current Node: " + board.player.getCurrentNode() + " Dest Node: " + board.getNodes().get(destNode).getNodeId());
+        return board.isConnected(board.player.getCurrentNode(), nodes.get(destNode).getNodeId());
 
     }
 }

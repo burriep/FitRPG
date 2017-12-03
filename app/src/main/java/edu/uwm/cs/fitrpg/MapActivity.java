@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class MapActivity extends AppCompatActivity {
     private Button menuRightButton;
 
     DatabaseHelper myDB;
-    RpgChar playerChar;
+    //RpgChar playerChar;
     Date startTravelTime;
     Date endTravelTime;
     Date lastCheckedTime;
@@ -80,19 +81,13 @@ public class MapActivity extends AppCompatActivity {
 
         navigationIDTag = 0;
         Intent intent = getIntent();
-        playerChar = new RpgChar();
+        //playerChar = new RpgChar();
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
 
         navigation.getMenu().getItem(0).setChecked(false);
         navigation.getMenu().getItem(2).setChecked(true);
-
-        basePlayerStamina = playerChar.getStamina();
-        basePlayerStrength = playerChar.getStrength();
-        basePlayerEndurance = playerChar.getEndurance();
-        basePlayerDexterity = playerChar.getDexterity();
-        basePlayerSpeed = playerChar.getSpeed();
 
         baseEnemyStamina = intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStamina", baseEnemyStamina);
         baseEnemyStrength = intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStrength", baseEnemyStrength);
@@ -118,34 +113,18 @@ public class MapActivity extends AppCompatActivity {
         menuLeftButton = (Button)findViewById(R.id.MapMenuLeftButton);
         menuRightButton = (Button)findViewById(R.id.MapMenuRightButton);
         mapView = (MapView)findViewById(R.id.MapViewCanvas);
-        mapView.setCurrentNode(playerChar.getCurrentNode());
+        mapView.setCurrentNode(mapView.board.player.getCurrentNode());
 
-        //Boolean[] connections = new Boolean[3];
-        //connections[0]=false;
-        //connections[1]=true;
-        //connections[2]=false;
-        //connections[3]=false;
-        //mapView.SetAllNodeConnections(2, connections);
+        basePlayerStamina = mapView.board.player.getStamina();
+        basePlayerStrength = mapView.board.player.getStrength();
+        basePlayerEndurance = mapView.board.player.getEndurance();
+        basePlayerDexterity = mapView.board.player.getDexterity();
+        basePlayerSpeed = mapView.board.player.getSpeed();
 
-        //Pair[] nodeConnectionPair = new Pair[2];
-        //nodeConnectionPair[0] = new Pair(0, false);
-        //nodeConnectionPair[1] = new Pair(3, true);
-        //mapView.SetMultipleNodeConnections(2, nodeConnectionPair);
-
-        mapView.ToggleNodeConnections(2, 0);
-        mapView.ToggleNodeConnections(1, 3);
-        mapView.ToggleNodeConnections(4, 0);
-        mapView.ToggleNodeConnections(4, 1);
-        mapView.ToggleNodeConnections(4, 3);
+        //mapView.board.toggleConnection(2, 3);
+        mapView.AdjustImage();
 
         passedContext = this;
-
-        //PS Example of how to change node position
-        mapView.ChangeNodePosition(0, new Pair(150,1700));
-        mapView.ChangeNodePosition(1, new Pair(150,150));
-        mapView.ChangeNodePosition(2, new Pair(500,1000));
-        mapView.ChangeNodePosition(3, new Pair(1000,1700));
-        mapView.ChangeNodePosition(4, new Pair(750,800));
 
         mapNodes = new View[mapView.getNumOfNodes()];
         endTravelTime = new Date();
@@ -168,6 +147,7 @@ public class MapActivity extends AppCompatActivity {
                 ConstraintLayout ll = (ConstraintLayout) findViewById(R.id.buttonLayout);
                 ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams((int) ((int) mapView.getNodeSize() * buttonScale), (int) ((int) mapView.getNodeSize() * buttonScale));
 
+                ArrayList<MapNode> nodes = mapView.board.getNodes();
                 for(int i = 0; i < mapNodes.length; i++) {
                     myButton = new Button(passedContext);
                     myButton.setId(i);
@@ -181,8 +161,8 @@ public class MapActivity extends AppCompatActivity {
 
                     ll.addView(myButton, lp);
                     lp_set.clone(ll);
-                    lp_set.setTranslationX(myButton.getId(), (int) mapView.getAdjustedNodePosition(i).first - (int) (mapView.getNodeSize() * buttonScale) / 2);
-                    lp_set.setTranslationY(myButton.getId(), (int) mapView.getAdjustedNodePosition(i).second - (int) (mapView.getNodeSize() * buttonScale) / 2);
+                    lp_set.setTranslationX(myButton.getId(), mapView.board.getNodes().get(i).getAdjX()- (int) (mapView.getNodeSize() * buttonScale) / 2);
+                    lp_set.setTranslationY(myButton.getId(),  mapView.board.getNodes().get(i).getAdjY() - (int) (mapView.getNodeSize() * buttonScale) / 2);
 
                     lp_set.applyTo(ll);
                     mapNodes[i] = (View)myButton;
@@ -193,11 +173,12 @@ public class MapActivity extends AppCompatActivity {
 
     public void RedrawButton(int i)
     {
+        ArrayList<MapNode> nodes = mapView.board.getNodes();
         ConstraintLayout ll = (ConstraintLayout) findViewById(R.id.buttonLayout);
         ConstraintSet lp_set = new ConstraintSet();
         lp_set.clone(ll);
-        lp_set.setTranslationX(i, (int) mapView.getAdjustedNodePosition(i).first - (int) (mapView.getNodeSize() * buttonScale) / 2);
-        lp_set.setTranslationY(i, (int) mapView.getAdjustedNodePosition(i).second - (int) (mapView.getNodeSize() * buttonScale) / 2);
+        lp_set.setTranslationX(i, (int) nodes.get(i).getAdjX() - (int) (mapView.getNodeSize() * buttonScale) / 2);
+        lp_set.setTranslationY(i, (int) nodes.get(i).getAdjY() - (int) (mapView.getNodeSize() * buttonScale) / 2);
 
         lp_set.applyTo(ll);
     }
@@ -214,6 +195,7 @@ public class MapActivity extends AppCompatActivity {
 
     public void ClickNode(View view)
     {
+
         if(!menuIsVisible) {
             if(!isTraveling) {
                 destinationNode = 3;
@@ -229,7 +211,7 @@ public class MapActivity extends AppCompatActivity {
                 menuRightButton.setVisibility(View.VISIBLE);
                 menuIsVisible = true;
                 final View passedView = view;
-                if(destinationNode == mapView.getCurrentNode()) {
+                if(mapView.board.getNodes().get(destinationNode).getNodeId() == mapView.getCurrentNode()) {
                     SQLiteDatabase readDb = myDB.getReadableDatabase();
                     menuTopBarText.setText("Current Node");
                     String tempMenuBodyText = "This is your current location\nChallenges:\n";
@@ -285,7 +267,7 @@ public class MapActivity extends AppCompatActivity {
                 else
                 {
                     menuTopBarText.setText("Node is Too Far!");
-                    menuBodyText.setText( "This node is not connected to your current location");
+                    menuBodyText.setText( "This node is not connected to your current location " + mapView.board.getNodes().get(0).getAdjX() + " " + mapView.board.getNodes().get(1).getAdjX());
                     menuLeftButton.setVisibility(View.GONE);
                 }
                 menuRightButton.setOnClickListener(new View.OnClickListener() {
@@ -304,6 +286,7 @@ public class MapActivity extends AppCompatActivity {
         {
             menuLayout.setVisibility(View.INVISIBLE);
             menuIsVisible = false;
+
         }
     }
 
@@ -318,12 +301,12 @@ public class MapActivity extends AppCompatActivity {
             val = val - countComplete;
             countComplete += val;
             menuBodyText.setText("Stats all increase by " + val + "!");
-            playerChar.setStrength(playerChar.getStrength()+val);
-            playerChar.setStamina(playerChar.getStamina()+val);
-            playerChar.setSpeed(playerChar.getSpeed()+val);
-            playerChar.setDexterity(playerChar.getDexterity()+val);
-            playerChar.setEndurance(playerChar.getEndurance()+val);
-            playerChar.dbPush();
+            mapView.board.player.setStrength(mapView.board.player.getStrength()+val);
+            mapView.board.player.setStamina(mapView.board.player.getStamina()+val);
+            mapView.board.player.setSpeed(mapView.board.player.getSpeed()+val);
+            mapView.board.player.setDexterity(mapView.board.player.getDexterity()+val);
+            mapView.board.player.setEndurance(mapView.board.player.getEndurance()+val);
+            mapView.board.player.dbPush();
             menuLeftButton.setVisibility(View.GONE);
         }
     }
@@ -340,7 +323,7 @@ public class MapActivity extends AppCompatActivity {
                     break;
                 }
             }
-            if(destinationNode != mapView.getCurrentNode() && mapView.getConnectedToCurrentNode(destinationNode)) {
+            if(mapView.board.getNodes().get(destinationNode).getNodeId() != mapView.getCurrentNode() && mapView.getConnectedToCurrentNode(destinationNode)) {
                 isTraveling = true;
                 mapView.setDestinationNode(destinationNode);
                 mapView.setIsTraveling(true);
@@ -401,9 +384,8 @@ public class MapActivity extends AppCompatActivity {
     {
         isTraveling = false;
         mapView.setCurrentNode(destinationNode);
-        playerChar.setCurrentNode(destinationNode);
         //PS TODO Move to travel complete
-        playerChar.dbPush();
+        mapView.board.player.dbPush();
         mapView.setIsTraveling(false);
         mapView.setTravelProgress(0);
         menuTravelProgressBar.setProgress(0);
@@ -414,7 +396,7 @@ public class MapActivity extends AppCompatActivity {
     private void TravelComplete()
     {
         startTravelTime.setTime(0);     //PS DEBUG CODE
-        int[] updatedStats = playerChar.peekStatsFromActivities(startTravelTime, endTravelTime);
+        int[] updatedStats = mapView.board.player.peekStatsFromActivities(startTravelTime, endTravelTime);
         final int strengthGain = updatedStats[0], enduranceGain = updatedStats[1], dexterityGain = updatedStats[2], speedGain = updatedStats[3], staminaGain = updatedStats[4] ;
         menuBodyText.setText("Travel Complete!\nGains: Sta +" + staminaGain + " Spd +" + speedGain + " Str +" + strengthGain + " End +" + enduranceGain + " Dex +" + dexterityGain);
         //PS TODO calculate gains
@@ -435,9 +417,9 @@ public class MapActivity extends AppCompatActivity {
         menuLeftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playerChar.updateStatsFromActivities(startTravelTime, endTravelTime);
-                playerChar.updateStaminaFromActivities(startTravelTime, endTravelTime);
-                playerChar.dbPush();
+                mapView.board.player.updateStatsFromActivities(startTravelTime, endTravelTime);
+                mapView.board.player.updateStaminaFromActivities(startTravelTime, endTravelTime);
+                mapView.board.player.dbPush();
                 if(destinationNode == mapView.getBossNode())
                 {
                     menuLeftButton.setText(getResources().getString(R.string.confirm_button_string));
