@@ -36,7 +36,7 @@ public class RpgChar {
             this.id = 1;
             this.currentHealth = 0;
             this.name = "";
-            this.currentNode = 0;
+            this.currentNode = 2;
             this.strength = 0;
             this.speed = 0;
             this.dexterity = 0;
