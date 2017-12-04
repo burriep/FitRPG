@@ -14,10 +14,13 @@ public class MapNode {
     private int mapID;
     private int x;
     private int y;
+    private int adjX;
+    private int adjY;
     private int nodeComplete;
     private DatabaseHelper db;
+    private int isBoss = 0;
 
-    public MapNode(int id, int map,int cmp, int x, int y)
+    public MapNode(int id, int map,int cmp, int x, int y, int adjX, int adjY)
     {
         db = new DatabaseHelper(Home.appCon);
 
@@ -30,6 +33,8 @@ public class MapNode {
             this.mapID = map;
             this.x = x;
             this.y = y;
+            this.adjX = adjX;
+            this.adjY = adjY;
             this.nodeComplete = 0;
             dbPush();
         }
@@ -48,6 +53,17 @@ public class MapNode {
         return this.y;
     }
 
+    public int getAdjX()
+    {
+
+        return this.adjX;
+    }
+
+    public int getAdjY()
+    {
+
+        return this.adjY;
+    }
 
 
     public int getNodeStatus()
@@ -85,22 +101,37 @@ public class MapNode {
         this.y= y;
     }
 
+    public void setAdjX(int x)
+    {
+
+        this.adjX = x;
+    }
+
+    public void setAdjY(int y)
+    {
+
+        this.adjY= y;
+    }
+
     /*|||||||||||||||||||||||||||||||||||||||||||||||||| DATABASE METHODS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
     public boolean dbPull()
     {
         Log.d("DBG", "in MapNode dbPull");
-        Point retCoords = db.getNodeCoord(this.mapID, this.nodeID, 1);
+        int[] retCoords = db.getNodeCoord(this.mapID, this.nodeID, 1);
         int retStatus = db.getNodeStatus(this.mapID, this.nodeID, 1);
 
         if(retCoords != null && retStatus > -1)
         {
-            this.x = retCoords.x;
-            this.y = retCoords.y;
+            this.x = retCoords[0];
+            this.y = retCoords[1];
+            this.adjX = retCoords[2];
+            this.adjY = retCoords[3];
             this.nodeComplete = retStatus;
             return true;
         }
         else
         {
+            Log.d("DBG", "dbPull was not successful");
             return false;
         }
     }
@@ -108,7 +139,7 @@ public class MapNode {
     public void dbPush()
     {
         Log.d("DBG", "in MapNode dbPush");
-        db.setNodeCoord(new Point(this.x,this.y), this.mapID, this.nodeID, 1,this.nodeComplete);
+        db.setNodeCoord(new Point(this.x,this.y), new Point(this.adjX,this.adjY), this.mapID, this.nodeID, 1,this.nodeComplete);
     }
 
 }

@@ -26,6 +26,8 @@ public class RpgChar {
     private int stamina;
     private int endurance;
     private DatabaseHelper db;
+    private int loopCount;
+    private int currentMap;
 
     //constructor for player - the player's usr_id will always be 1
     public RpgChar() {
@@ -36,12 +38,14 @@ public class RpgChar {
             this.id = 1;
             this.currentHealth = 0;
             this.name = "";
-            this.currentNode = 0;
+            this.currentNode = 2;
             this.strength = 0;
             this.speed = 0;
             this.dexterity = 0;
             this.stamina = 0;
             this.endurance = 0;
+            this.loopCount =0;
+            this.currentMap = 0;
             dbPush();
         }
 
@@ -63,6 +67,8 @@ public class RpgChar {
             this.dexterity = 0;
             this.stamina = 0;
             this.endurance = 0;
+            this.loopCount =0;
+            this.currentMap = 0;
             dbPush();
         }
 
@@ -81,6 +87,8 @@ public class RpgChar {
         this.speed = Integer.parseInt(db.getSpeed(id));
         this.dexterity = Integer.parseInt(db.getDexterity(id));
         this.currentNode = Integer.parseInt(db.getNodePosition(id));
+        this.loopCount = Integer.parseInt(db.getLoopCount(id));
+        this.currentMap = Integer.parseInt(db.getCurrentMap(id));
         this.id = id;
 
         if (this.name != null) {
@@ -101,7 +109,7 @@ public class RpgChar {
         int retStatus = 0;
 
         db.getReadableDatabase();
-        this.db.createChar(this.id, this.currentNode, this.name, this.strength, this.speed, this.dexterity, this.endurance, this.stamina);
+        this.db.createChar(this.id, this.currentNode, this.name, this.strength, this.speed, this.dexterity, this.endurance, this.stamina, this.loopCount);
 
         retStatus += db.setStrength(this.strength, this.id);
         retStatus += db.setStamina(this.stamina, this.id);
@@ -109,6 +117,8 @@ public class RpgChar {
         retStatus += db.setEndurance(this.endurance, this.id);
         retStatus += db.setDexterity(this.dexterity, this.id);
         retStatus += db.setCurrentNode(this.currentNode, this.id);
+        retStatus += db.setLoopCount(this.loopCount, this.id);
+        retStatus += db.setCurrentMap(this.currentMap, this.id);
 
         if (retStatus == 0) {
             Log.d("SCS", "Push was successful - sum(all sets) = 0");
@@ -132,6 +142,16 @@ public class RpgChar {
     public void setSpeed(int x) {
 
         this.speed = x;
+    }
+
+    public void setLoopCount(int x)
+    {
+        this.loopCount = x;
+    }
+
+    public void setCurrentMap(int x)
+    {
+        this.currentMap = x;
     }
 
     public void setDexterity(int x) {
@@ -199,6 +219,10 @@ public class RpgChar {
     public int getId() {
         return this.id;
     }
+
+    public int getLoopCount(){ return this.loopCount;}
+
+    public int getCurrentMap(){return this.currentMap;}
 
     /*/////////////////////////////////////////////////////////////////////////////////////////////*/
 

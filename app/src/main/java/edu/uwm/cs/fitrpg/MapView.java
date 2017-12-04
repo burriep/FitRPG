@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 
@@ -23,10 +24,9 @@ public class MapView extends View {
     private int travelProgress = 0;
     private int bossNode = 0;
     private int nodeSize = 0;
-    private Pair[] nodePositions;
-    private Pair[] adjustedNodePositions;
     private Pair screenDimensions = new Pair(1080, 1920);
-    private Boolean[][] nodeConnections;
+    public static GameBoard board;
+    private int loopCount;
 
 
     private Paint paint = new Paint();
@@ -34,16 +34,28 @@ public class MapView extends View {
 
     public MapView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        Log.d("DBG", "In MapView Constructor");
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.MapView,
                 0, 0);
+        //initialize gameboard - if map exists in db, you'll get that gameboard, else a brand new one
+        //later we will pass in a map_id variable, instead of 1
+        board = new GameBoard(1);
+        loopCount = board.getLoopCount();
+        Log.d("DBG", "In Mapview - loopcount:" + this.loopCount);
 
         try {
-            numOfNodes = a.getInteger(R.styleable.MapView_MapNumOfNodes, 0);
-            currentNode = a.getInteger(R.styleable.MapView_MapStartingNode, 0);
+
+            numOfNodes = board.getNumNodes();
+            currentNode = board.player.getCurrentNode();
             bossNode = a.getInteger(R.styleable.MapView_MapBossNode, 0);
             nodeSize = a.getInteger(R.styleable.MapView_MapNodeSize, 20);
+
+            /*numOfNodes = a.getInteger(R.styleable.MapView_MapNumOfNodes, 0);
+            currentNode = a.getInteger(R.styleable.MapView_MapStartingNode, 0);
+            bossNode = a.getInteger(R.styleable.MapView_MapBossNode, 0);
+            nodeSize = a.getInteger(R.styleable.MapView_MapNodeSize, 20);*/
         } finally {
             a.recycle();
         }
@@ -51,70 +63,52 @@ public class MapView extends View {
         paint.setStrokeWidth(5f);
 
         mapNodeImage = new Drawable[numOfNodes];
-        nodePositions = new Pair[numOfNodes];
-        adjustedNodePositions = new Pair[numOfNodes];
-        nodeConnections = new Boolean[numOfNodes][numOfNodes];
         double angle = 0;
         int canvasCenterWidth = (int)screenDimensions.first/2;
         int canvasCenterHeight = (int)screenDimensions.second/2;
         int distanceFromCenterWidth = canvasCenterWidth/2;
         int distanceFromCenterHeight = canvasCenterHeight/2;
 
-        for(int i = 0; i < numOfNodes; i++)
+        if(numOfNodes > 0)
         {
-            mapNodeImage[i] = getResources().getDrawable(R.drawable.map_node);
-            angle = 2 * Math.PI * (i/(double)(numOfNodes));
-            nodePositions[i] = new Pair(canvasCenterWidth - (int)Math.round(distanceFromCenterWidth * Math.cos(angle)),
-                    canvasCenterHeight - (int)Math.round(distanceFromCenterHeight * Math.sin(angle)));
-            adjustedNodePositions[i] = new Pair(50,0);
-            for(int j = 0; j < numOfNodes; j++)
+            for(int i = 0; i < numOfNodes; i++)
             {
-                nodeConnections[i][j] = i != j;
+
+                mapNodeImage[i] = getResources().getDrawable(R.drawable.map_node);
+                angle = 2 * Math.PI * (i/(double)(numOfNodes));
+                board.nodeList.get(i).setX(canvasCenterWidth - (int)Math.round(distanceFromCenterWidth * Math.cos(angle)));
+                board.nodeList.get(i).setY(canvasCenterHeight - (int)Math.round(distanceFromCenterHeight * Math.sin(angle)));
+
             }
         }
-
-    }
-
-    public void SetNodeConnection(int baseNode, int connectedNode, Boolean isConnected)
-    {
-        if(baseNode != connectedNode && baseNode < numOfNodes && connectedNode < numOfNodes)
+        else
         {
-            nodeConnections[baseNode][connectedNode] = isConnected;
-            nodeConnections[connectedNode][baseNode] = isConnected;
+            //todo need to create nodes
         }
-    }
 
-    public void ToggleNodeConnections(int baseNode, int connectedNode)
-    {
-        if(baseNode != connectedNode && baseNode < numOfNodes && connectedNode < numOfNodes)
-        {
-            nodeConnections[baseNode][connectedNode] = ! nodeConnections[baseNode][connectedNode];
-            nodeConnections[connectedNode][baseNode] = ! nodeConnections[connectedNode][baseNode];
-        }
+        Log.d("DBG", "In MapView - end of constructor");
     }
 
     public void SetMultipleNodeConnections(int baseNode, Pair[] nodeConnectionPairs)
     {
         for(int i = 0; i < nodeConnectionPairs.length; i++)
         {
-            SetNodeConnection(baseNode, (int)nodeConnectionPairs[i].first, (boolean)nodeConnectionPairs[i].second);
+            //todo
+            //SetNodeConnection(baseNode, (int)nodeConnectionPairs[i].first, (boolean)nodeConnectionPairs[i].second);
         }
     }
 
     public void SetAllNodeConnections(int baseNode, Boolean[] connections)
     {
-        for(int i = 0; i < connections.length; i++)
+        for(int i = 0; i < numOfNodes; i++)
         {
-            SetNodeConnection(baseNode, i, connections[i]);
-        }
-    }
-
-    public void ChangeNodePosition(int nodeToChangePos, Pair newPosition)
-    {
-        if(nodeToChangePos < numOfNodes)
-        {
-            nodePositions[nodeToChangePos] = new Pair(newPosition.first, newPosition.second);
-
+            for(int j =i; j<numOfNodes; j++)
+            {
+                if(board.nodeList.get(i) != board.nodeList.get(j))
+                {
+                    //todo
+                }
+            }
         }
     }
 
@@ -126,34 +120,18 @@ public class MapView extends View {
         float adjustmentX = (float)canvas.getWidth()/(int)screenDimensions.first;
         float adjustmentY = (float)canvas.getHeight()/(int)screenDimensions.second;
 
+        Log.d("DBG", "In MapView - in onDraw");
+
         for(int i = 0; i < numOfNodes; i++)
         {
+
+
             for(int j = i; j < numOfNodes; j++)
             {
-                if(i != j && nodeConnections[i][j]) {
-                    if (isTraveling && ((i == currentNode && j == destinationNode) || (j == currentNode && i == destinationNode))) {
-                        progress = travelProgress / 100.0f;
-                        if (i == currentNode) {
-                            startX = (int) nodePositions[i].first * adjustmentX;
-                            startY = (int) nodePositions[i].second * adjustmentY;
-                            endX = (int) nodePositions[j].first * adjustmentX;
-                            endY = (int) nodePositions[j].second * adjustmentY;
-                        } else {
-                            startX = (int) nodePositions[j].first * adjustmentX;
-                            startY = (int) nodePositions[j].second * adjustmentY;
-                            endX = (int) nodePositions[i].first * adjustmentX;
-                            endY = (int) nodePositions[i].second * adjustmentY;
-                        }
-                        paint.setColor(Color.CYAN);
-                        midX = ((endX - startX) * progress) + startX;
-                        midY = ((endY - startY) * progress) + startY;
-                        canvas.drawLine(startX, startY, midX, midY, paint);
-                        paint.setColor(Color.BLACK);
-                        canvas.drawLine(midX, midY, endX, endY, paint);
-                    } else {
-                        canvas.drawLine((int) nodePositions[i].first * adjustmentX, (int) nodePositions[i].second * adjustmentY,
-                                (int) nodePositions[j].first * adjustmentX, (int) nodePositions[j].second * adjustmentY, paint);
-                    }
+                if((board.nodeList.get(i).getNodeId() != board.nodeList.get(j).getNodeId()) && board.isConnected(board.nodeList.get(i).getNodeId(),board.nodeList.get(j).getNodeId())){
+                    canvas.drawLine(board.nodeList.get(i).getX() * adjustmentX, board.nodeList.get(i).getY() * adjustmentY,
+                            board.nodeList.get(j).getX() * adjustmentX, board.nodeList.get(j).getY() * adjustmentY, paint);
+
                 }
             }
         }
@@ -171,27 +149,16 @@ public class MapView extends View {
             {
                 mapNodeImage[i].setColorFilter(getResources().getColor(R.color.gold), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
-            adjustedNodePositions[i] = new Pair((int)((int)nodePositions[i].first * adjustmentX), (int)((int)nodePositions[i].second * adjustmentY));
-            mapNodeImage[i].setBounds((int)adjustedNodePositions[i].first-(nodeSize/2), (int)adjustedNodePositions[i].second-(nodeSize/2),
-                    (int)adjustedNodePositions[i].first +(nodeSize/2), (int)adjustedNodePositions[i].second +(nodeSize/2));
+
+            board.nodeList.get(i).setAdjX(board.nodeList.get(i).getX()* (int)adjustmentX);
+            board.nodeList.get(i).setAdjY(board.nodeList.get(i).getY()* (int)adjustmentY);
+
+            mapNodeImage[i].setBounds(board.nodeList.get(i).getAdjX()-(nodeSize/2),board.nodeList.get(i).getAdjY()-(nodeSize/2),board.nodeList.get(i).getAdjX()+(nodeSize/2),board.nodeList.get(i).getAdjY()+(nodeSize/2));
             mapNodeImage[i].draw(canvas);
+
         }
     }
 
-    public Pair getNodePosition(int nodeNum)
-    {
-        return nodePositions[nodeNum];
-    }
-
-    public Pair getAdjustedNodePosition(int nodeNum)
-    {
-        return adjustedNodePositions[nodeNum];
-    }
-
-    public int getNumOfNodes()
-    {
-        return numOfNodes;
-    }
 
     public void setNumOfNodes(int val) {
         numOfNodes = val;
@@ -199,24 +166,67 @@ public class MapView extends View {
         requestLayout();
     }
 
+    public int getNumOfNodes() {
+        return board.getNumNodes();
+    }
+
     public int getCurrentNode()
     {
-        return currentNode;
+        return board.player.getCurrentNode();
     }
 
     public void setCurrentNode(int val) {
-        currentNode = val;
+        board.player.setCurrentNode(val);
         invalidate();
         requestLayout();
     }
 
     public boolean getIsTraveling()
     {
-        return isTraveling;
+        boolean ret = false;
+
+        for(int i=0; i<board.pathList.size();i++)
+        {
+            if(board.pathList.get(i).getStatus() == 1)
+            {
+                ret = true;
+                isTraveling = true;
+            }
+        }
+
+        if(ret == false)
+        {
+            isTraveling = false;
+        }
+
+        return ret;
+
+
     }
 
     public void setIsTraveling(boolean val) {
-        isTraveling = val;
+
+        //if not traveling, set all path travel statuses to 0
+        if(!val)
+        {
+            for(int i=0; i< board.pathList.size();i++)
+            {
+                board.pathList.get(i).setStatus(0);
+            }
+            isTraveling = false;
+        }
+        //else set the path between current and destination's traveling status to 1
+        else
+        {
+            for(int i=0; i< board.pathList.size();i++)
+            {
+                if((board.pathList.get(i).getNodeA() == currentNode && board.pathList.get(i).getNodeB() == destinationNode)||(board.pathList.get(i).getNodeB() == currentNode && board.pathList.get(i).getNodeA() == destinationNode))
+                {
+                    board.pathList.get(i).setStatus(1);
+                    isTraveling = true;
+                }
+            }
+        }
         invalidate();
         requestLayout();
     }
@@ -268,6 +278,15 @@ public class MapView extends View {
 
     public Boolean getConnectedToCurrentNode(int destinationNode)
     {
-        return nodeConnections[currentNode][destinationNode];
+        return board.isConnected(board.player.getCurrentNode(),destinationNode);
+
+    }
+
+    //this method will be used for when a player completes a board. a new board will be dynamically created and will replace this mapview's board
+    //todo we will call getMaxNum from the board and ++ that number for the next mapId to use for the soon to be board.
+    public void newBoard()
+    {
+        this.board.player.setCurrentMap(this.board.player.getCurrentMap()+1);
+        this.board = new GameBoard();
     }
 }
