@@ -2,6 +2,8 @@ package edu.uwm.cs.fitrpg;
 
 /**
  * Created by Jason on 11/28/17.
+ *
+ * This class will represent all of the logical paths between two connected nodes
  */
 
 public class MapPath {

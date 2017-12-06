@@ -7,6 +7,8 @@ import android.util.Log;
 
 /**
  * Created by Jason on 11/8/17.
+ *
+ * This class will represent each individual node that will be drawn on the map
  */
 
 public class MapNode {
@@ -141,5 +143,4 @@ public class MapNode {
         Log.d("DBG", "in MapNode dbPush");
         db.setNodeCoord(new Point(this.x,this.y), new Point(this.adjX,this.adjY), this.mapID, this.nodeID, 1,this.nodeComplete);
     }
-
 }

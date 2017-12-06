@@ -13,6 +13,7 @@ import android.view.View;
 
 /**
  * Created by Ronike on 11/4/2017.
+ * Modified by Jason K. on 11/27/17.
  */
 
 public class MapView extends View {
@@ -283,10 +284,8 @@ public class MapView extends View {
     }
 
     //this method will be used for when a player completes a board. a new board will be dynamically created and will replace this mapview's board
-    //todo we will call getMaxNum from the board and ++ that number for the next mapId to use for the soon to be board.
     public void newBoard()
     {
-        this.board.player.setCurrentMap(this.board.player.getCurrentMap()+1);
-        this.board = new GameBoard();
+        this.board = new GameBoard(this.board.player.getCurrentMap()+1);
     }
 }

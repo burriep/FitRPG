@@ -8,8 +8,12 @@ import java.util.ArrayList;
 
 import edu.uwm.cs.fitrpg.activity.Home;
 
+import static java.lang.Math.abs;
+
 /**
  * Created by Jason on 11/8/17.
+ *
+ * This class wil represent the gameboard that the user can play on. It will include the nodes, paths between nodes, and the character associated with the board.
  */
 
 public class GameBoard {
@@ -37,6 +41,20 @@ public class GameBoard {
             Log.d("DBG", "Gameboard found");
         }
 
+    }
+
+    public GameBoard(int x)
+    {
+        db = new DatabaseHelper(Home.appCon);
+        this.player = new RpgChar();
+        boolean exists = dbPull(x);
+
+        if (!exists) {
+            Log.d("DBG", "Gameboard not found - new gameboard created");
+            generateNewBoard(x, this.player.getId());
+        } else {
+            Log.d("DBG", "Gameboard found");
+        }
     }
 
     public void addNode(MapNode x) {
@@ -103,7 +121,7 @@ public class GameBoard {
         return ret;
     }
 
-    /*|||||||||||||||||||||||||||||||||||||||||||||||||| PATH METHODS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
+    /*|||||||||||||||||||||||||||||||||||||||||||||||||| GETTERS AND SETTERS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
     public boolean isConnected(int a, int b) {
         Log.d("DBG", "In gameboard - checking it path exists between " + a + "," + b);
         boolean ret = false;
@@ -224,58 +242,78 @@ public class GameBoard {
         }
     }
 
+    /*||||||||||||||||||||||||||||||||||||||||| GAMEBOARD AND NODE/PATH DYNAMIC GENERATION METHOD ||||||||||||||||||||||||||||||||||||||||||||||*/
     public void generateNewBoard(int map_id, int user_id) {
-        //todo 1) pick a number of nodes to generate
+
+        //generate the number of nodes to be placed on the gameboard
         Random rand = new Random();
         int newNumOfNodes = rand.nextInt((12 - 4) + 1) + 4;
 
         int maxX = 1080;
         int maxY = 1920;
 
+        //viewport area that nodes can be drawn in
         int xMaxA = maxX - 150;
         int xMinA = 150;
-        int yMaxA = 1745;
-        int yMinA = 1255;
+        int yMaxA = maxY - 150;
+        int yMinA = 150;
 
         //starting coordinates of node
-        int xStart = xMinA / 2;
+        int xStart = xMinA - 150;
         int yStart = yMaxA / 2;
 
         //coordinate values to assign to new node
         int x = 0;
         int y = 0;
 
-        int partitionSpacing = 0;
+        //in double node situations - this will keep track of the first node, so that the second can be drawn in relation to it
+        int prevY = 0;
 
+        int partitionSpacing = xMaxA - xMinA / newNumOfNodes;
+
+        //the minX of the current partition
         int prevMaxX = xMinA;
+        //true for 1 node in a partition, false for 2
         boolean paritionScheme = true;
 
-        //todo 2) create logic that dynamically pics which x,y to place node
-        for (int i = 0; i < newNumOfNodes; i++) {
+        //dynamically create the coordinates for the nodes and create relevant paths between them
+        for (int i = 1; i <= newNumOfNodes; i++)
+        {
+            //keeps track of the previous partition's structure (one or two nodes)
             boolean prevPartition = paritionScheme;
+            //used to bound the node's y from
+            int distFromMax = 0;
+            int distFromMin = 0;
 
-            partitionSpacing = xMaxA - xMinA / newNumOfNodes;
+            //randomly pick if this partition should have 1 or 2 nodes (true == one, false == two)
             paritionScheme = rand.nextBoolean();
 
 
-            if (i == 0 || i == newNumOfNodes - 1) {
-                if (i == newNumOfNodes - 1) {
-                    //ending node
+            //this handles the first and last node
+            if (i == 0 || i == newNumOfNodes - 1)
+            {
+                if (i == newNumOfNodes - 1)
+                {
+                    //coordinates for ending node
                     y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
                     x = rand.nextInt((maxX - xMaxA) + 1) + xMaxA;
 
                     this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
 
                     //last node partition was a single node - only one path to add
-                    if (prevPartition) {
+                    if (prevPartition)
+                    {
                         this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
                     }
                     //last node partition was double nodes
-                    else {
+                    else
+                    {
                         this.pathList.add(new MapPath(map_id, i - 2, i, 0, "", ""));
                         this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
                     }
-                } else {
+                }
+                else
+                {
                     //initial case - draw Node0 at static point
                     x = xStart;
                     y = yStart;
@@ -284,52 +322,119 @@ public class GameBoard {
 
                 }
 
-            } else {
+            }
+            //this handles all internal nodes
+            else
+            {
                 //single node in partition
-                if (paritionScheme) {
+                if (paritionScheme)
+                {
                     y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
                     x = rand.nextInt((prevMaxX + partitionSpacing - prevMaxX) + 1) + prevMaxX;
 
                     //last node partition was a single node - only one path to add
-                    if (prevPartition) {
+                    if (prevPartition)
+                    {
                         this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
                     }
                     //last node partition was double nodes
-                    else {
+                    else
+                    {
                         this.pathList.add(new MapPath(map_id, i - 2, i, 0, "", ""));
                         this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
                     }
 
                     this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
-                    prevPartition = true;
+                    paritionScheme = true;
 
                 }
                 //two nodes in a partition
-                else {
+                else
+                {
+                    //coordinates for nodeA
                     y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
                     x = rand.nextInt((prevMaxX + partitionSpacing - prevMaxX) + 1) + prevMaxX;
+                    prevY = y;
+
                     this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
 
                     i++;
 
+                    //first coordinates to try for nodeB
                     y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
                     x = rand.nextInt((prevMaxX + partitionSpacing - prevMaxX) + 1) + prevMaxX;
+
+                    //draw the second node in relation to the first
+                    //nodeB is above nodeA
+                    if(y < prevY)
+                    {
+                        //will nodeB be smaller than the minY with extra space
+                        if(y > yMinA+50)
+                        {
+                            y -= 50;
+                        }
+                        //nodeB is close to minY - don't add extra space
+                        else
+                        {
+                            ;
+                        }
+                    }
+                    //nodeB is below nodeA
+                    else if(y > prevY)
+                    {
+                        //will nodeB be larger than the maxY with extra space
+                        if(y < yMaxA-50)
+                        {
+                            y += 50;
+                        }
+                        //nodeB is close to maxY - don't add extra space
+                        else
+                        {
+                            ;
+                        }
+
+                    }
+                    //y and prevY are the exact same
+                    else
+                    {
+                        distFromMax = abs(yMaxA-y);
+                        distFromMin = abs(yMinA-y);
+
+                        //nodeB is closer to the minY - move towards max
+                        if(distFromMax > distFromMin)
+                        {
+                            y += 50;
+                        }
+                        //nodeB is closer to maxY - move towards min
+                        else if(distFromMax < distFromMin)
+                        {
+                             y -= 50;
+                        }
+                        //nodeB is right in the middle - move in either direction
+                        else
+                        {
+                             y += 50;
+                        }
+                    }
+
                     this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
 
                     //last node partition was a single node - only one path to add
-                    if (prevPartition) {
+                    if (prevPartition)
+                    {
                         this.pathList.add(new MapPath(map_id, i - 2, i - 1, 0, "", ""));
                         this.pathList.add(new MapPath(map_id, i - 2, i, 0, "", ""));
                         this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
                     }
                     //last node partition was double nodes
-                    else {
+                    else
+                    {
                         this.pathList.add(new MapPath(map_id, i - 3, i - 1, 0, "", ""));
                         this.pathList.add(new MapPath(map_id, i - 2, i, 0, "", ""));
                         this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
                     }
 
-                    prevPartition = false;
+                    paritionScheme = false;
                 }
 
                 prevMaxX = prevMaxX + partitionSpacing;
@@ -339,8 +444,8 @@ public class GameBoard {
 
         this.player.setCurrentNode(0);
         this.player.setCurrentMap(map_id);
+        this.mapID = map_id;
 
-        //todo 4) push paths, nodes, update player's current node
         this.player.dbPush();
         this.dbPush();
 

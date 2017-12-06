@@ -13,6 +13,8 @@ import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 
 /**
  * Created by Jason on 11/8/17.
+ *
+ * This class will represent the playable character - either the user's character, or an enemy character
  */
 
 public class RpgChar {
