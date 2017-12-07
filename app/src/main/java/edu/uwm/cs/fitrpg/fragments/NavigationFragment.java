@@ -22,6 +22,7 @@ import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.activity.FitnessActivityTracking;
 import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.activity.Home;
+import edu.uwm.cs.fitrpg.activity.SettingsActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,7 +69,7 @@ public class NavigationFragment extends Fragment{
                         navigationIDTag = 3;
                         return true;
                     case R.id.navigation_settings:
-                        intent = new Intent(getActivity(), SettingsFragment.class);
+                        intent = new Intent(getActivity(), SettingsActivity.class);
                         startActivity(intent);
                         navigationIDTag = 4;
                         return true;

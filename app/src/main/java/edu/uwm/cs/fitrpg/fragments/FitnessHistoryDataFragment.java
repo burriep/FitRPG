@@ -73,7 +73,7 @@ public class FitnessHistoryDataFragment extends Fragment{
             public void onClick(View view) {
                 Calendar calendar = Calendar.getInstance();
                 Date now = calendar.getTime();
-                calendar.add(Calendar.DATE, -1);
+                calendar.add(Calendar.DATE, -14);
                 Date yesterday = calendar.getTime();
 
                 FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);

@@ -63,7 +63,7 @@ public class MapView extends View {
         } finally {
             a.recycle();
         }
-        paint.setColor(Color.BLACK);
+        paint.setColor(Color.LTGRAY);
         paint.setStrokeWidth(5f);
 
         mapNodeImage = new Drawable[numOfNodes];

@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -17,8 +16,7 @@ import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.FitnessActivityHistoryFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
-import edu.uwm.cs.fitrpg.fragments.NavigationFragment;
-import edu.uwm.cs.fitrpg.fragments.SettingsFragment;
+import edu.uwm.cs.fitrpg.fragments.HistoryCalendarFragment;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 
 public class FitnessOverview extends AppCompatActivity implements FitnessActivityHistoryFragment.OnListFragmentInteractionListener {
@@ -42,10 +40,11 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
 
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime();
-        calendar.add(Calendar.DATE, -1);
+        calendar.add(Calendar.DATE, -14);
         Date yesterday = calendar.getTime();
 
-        FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
+        //FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
+        HistoryCalendarFragment fragment = new HistoryCalendarFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
 
 //        history.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +99,10 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
                     finish();
                     return true;
                 case R.id.navigation_fitness:
+                    intent = new Intent(getApplicationContext(), FitnessOverview.class);
+                    startActivity(intent);
                     navigationIDTag = 2;
+                    finish();
                     return true;
                 case R.id.navigation_game_map:
                     intent = new Intent(getApplicationContext(), MapActivity.class);

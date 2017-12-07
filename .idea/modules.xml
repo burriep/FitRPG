@@ -2,14 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:\Users\SS Fink\AndroidStudioProjects\FitRPG1\FitRPG.iml" filepath="C:\Users\SS Fink\AndroidStudioProjects\FitRPG1\FitRPG.iml" />
-      <module fileurl="file://C:\Users\tcBre\Desktop\Sprint2\FitRPG\FitRPG.iml" filepath="C:\Users\tcBre\Desktop\Sprint2\FitRPG\FitRPG.iml" />
-      <module fileurl="file://C:\Users\Admin\Desktop\Sprint2\FitRPG\FitRPG.iml" filepath="C:\Users\Admin\Desktop\Sprint2\FitRPG\FitRPG.iml" />
-      <module fileurl="file://$PROJECT_DIR$/FitRPG1.iml" filepath="$PROJECT_DIR$/FitRPG1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FitRPG.iml" filepath="$PROJECT_DIR$/FitRPG.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\SS Fink\AndroidStudioProjects\FitRPG1\app\app.iml" filepath="C:\Users\SS Fink\AndroidStudioProjects\FitRPG1\app\app.iml" />
-      <module fileurl="file://C:\Users\tcBre\Desktop\Sprint2\FitRPG\app\app.iml" filepath="C:\Users\tcBre\Desktop\Sprint2\FitRPG\app\app.iml" />
-      <module fileurl="file://C:\Users\Admin\Desktop\Sprint2\FitRPG\app\app.iml" filepath="C:\Users\Admin\Desktop\Sprint2\FitRPG\app\app.iml" />
     </modules>
   </component>
 </project>
