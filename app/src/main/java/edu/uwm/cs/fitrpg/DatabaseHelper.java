@@ -373,7 +373,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 while(!c.isAfterLast())
                 {
                     int rowData[] = new int[7];
-
                     rowData[0] = c.getInt(1);       //map_id
                     rowData[1] = c.getInt(2);       //node_id
                     rowData[2] = c.getInt(3);       //nd_complete
@@ -542,6 +541,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
             Log.d("ERR", "Error Updating char's current map");
         }
+
+
+
+
 
         return ret;
 

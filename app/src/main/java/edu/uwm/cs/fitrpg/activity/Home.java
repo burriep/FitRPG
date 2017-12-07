@@ -48,7 +48,7 @@ public class Home extends AppCompatActivity{
 
         //PS Check database for a user with ID 0, otherwise create one
         if(myDB.getStamina(userID) == "-1") {
-            myDB.createChar(userID, 0, "Defaultio", 10, 10, 10, 10, 10);
+            myDB.createChar(userID, 0, "Defaultio", 10, 10, 10, 10, 10, 1);
         }
         //These setText calls would eventually collect the stat info
         // from database or character class
@@ -83,7 +83,7 @@ public class Home extends AppCompatActivity{
         super.onResume();
 
         if(myDB.getStamina(userID) == "-1") {
-            myDB.createChar(userID, 0, "Defaultio", 10, 10, 10, 10, 10);
+            myDB.createChar(userID, 0, "Defaultio", 10, 10, 10, 10, 10, 1);
         }
         //These setText calls would eventually collect the stat info
         // from database or character class

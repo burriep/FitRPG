@@ -3,7 +3,9 @@ package edu.uwm.cs.fitrpg;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.util.Pair;
+
 import java.util.Random;
+
 import java.util.ArrayList;
 
 import edu.uwm.cs.fitrpg.activity.Home;
@@ -40,7 +42,6 @@ public class GameBoard {
         } else {
             Log.d("DBG", "Gameboard found");
         }
-
     }
 
     public GameBoard(int x)
@@ -451,3 +452,4 @@ public class GameBoard {
 
     }
 }
+
