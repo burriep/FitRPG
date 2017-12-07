@@ -7,6 +7,7 @@
     tools:context="edu.uwm.cs.fitrpg.activity.Home">
 
     <LinearLayout
+        android:layout_marginTop="30dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -150,7 +151,6 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="?android:attr/windowBackground"
                 app:menu="@menu/navigation" />
 
         </LinearLayout>

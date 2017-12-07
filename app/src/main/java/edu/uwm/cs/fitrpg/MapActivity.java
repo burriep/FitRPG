@@ -132,20 +132,24 @@ public class MapActivity extends AppCompatActivity {
         //nodeConnectionPair[1] = new Pair(3, true);
         //mapView.SetMultipleNodeConnections(2, nodeConnectionPair);
 
+        /*
         mapView.ToggleNodeConnections(2, 0);
         mapView.ToggleNodeConnections(1, 3);
         mapView.ToggleNodeConnections(4, 0);
         mapView.ToggleNodeConnections(4, 1);
         mapView.ToggleNodeConnections(4, 3);
+        */
 
         passedContext = this;
 
+        /*
         //PS Example of how to change node position
         mapView.ChangeNodePosition(0, new Pair(150,1700));
         mapView.ChangeNodePosition(1, new Pair(150,150));
         mapView.ChangeNodePosition(2, new Pair(500,1000));
         mapView.ChangeNodePosition(3, new Pair(1000,1700));
         mapView.ChangeNodePosition(4, new Pair(750,800));
+        */
 
         mapNodes = new View[mapView.getNumOfNodes()];
         endTravelTime = new Date();
@@ -181,8 +185,8 @@ public class MapActivity extends AppCompatActivity {
 
                     ll.addView(myButton, lp);
                     lp_set.clone(ll);
-                    lp_set.setTranslationX(myButton.getId(), (int) mapView.getAdjustedNodePosition(i).first - (int) (mapView.getNodeSize() * buttonScale) / 2);
-                    lp_set.setTranslationY(myButton.getId(), (int) mapView.getAdjustedNodePosition(i).second - (int) (mapView.getNodeSize() * buttonScale) / 2);
+//                    lp_set.setTranslationX(myButton.getId(), (int) mapView.getAdjustedNodePosition(i).first - (int) (mapView.getNodeSize() * buttonScale) / 2);
+//                    lp_set.setTranslationY(myButton.getId(), (int) mapView.getAdjustedNodePosition(i).second - (int) (mapView.getNodeSize() * buttonScale) / 2);
 
                     lp_set.applyTo(ll);
                     mapNodes[i] = (View)myButton;
@@ -191,6 +195,7 @@ public class MapActivity extends AppCompatActivity {
         }, 200);
     }
 
+    /*
     public void RedrawButton(int i)
     {
         ConstraintLayout ll = (ConstraintLayout) findViewById(R.id.buttonLayout);
@@ -201,6 +206,7 @@ public class MapActivity extends AppCompatActivity {
 
         lp_set.applyTo(ll);
     }
+    */
 
     //PS Unused currently
     public void ResetMap(int passedLoop)
@@ -490,13 +496,13 @@ public class MapActivity extends AppCompatActivity {
                     intent = new Intent(getApplicationContext(), Home.class);
                     startActivity(intent);
                     navigationIDTag = 1;
-                    finish();
+                    onPause();
                     return true;
                 case R.id.navigation_fitness:
                     intent = new Intent(getApplicationContext(), FitnessOverview.class);
                     startActivity(intent);
                     navigationIDTag = 2;
-                    finish();
+                    onPause();
                     return true;
                 case R.id.navigation_game_map:
                     navigationIDTag = 3;
@@ -504,8 +510,8 @@ public class MapActivity extends AppCompatActivity {
                 case R.id.navigation_settings:
                     intent = new Intent(getApplicationContext(), SettingsActivity.class);
                     startActivity(intent);
+                    onPause();
                     navigationIDTag = 4;
-                    finish();
                     return true;
             }
             return false;

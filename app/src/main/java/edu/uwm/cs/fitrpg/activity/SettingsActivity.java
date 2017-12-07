@@ -24,7 +24,7 @@ public class SettingsActivity extends AppCompatActivity{
 
 
     public EditText etName, etWeight, etHeight;
-    public TextView tvUpdateDate;
+    public TextView tvUpdateDate, tutorial, aboutMe;
     public Button btnSave, btnClear;
     private User user;
     private DatabaseHelper db;
@@ -36,7 +36,7 @@ public class SettingsActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_settings);
+        setContentView(R.layout.activity_settings);
 
         navigationIDTag = 0;
 
@@ -48,9 +48,10 @@ public class SettingsActivity extends AppCompatActivity{
 
         db = new DatabaseHelper(this);
 
-//        user = new User("User", 1);
-        //getUser();
-        initUser();
+        if (hasUser())
+            getUser();
+        else
+         initUser();
 
         name = user.getName();
         weight = user.getWeight();
@@ -62,6 +63,9 @@ public class SettingsActivity extends AppCompatActivity{
         tvUpdateDate = findViewById(R.id.tv_settings_lastUpdateDate);
         btnClear = findViewById(R.id.btn_settings_clear);
         btnSave = findViewById(R.id.btn_settings_save);
+
+        tutorial = findViewById(R.id.tutorial);
+        aboutMe = findViewById(R.id.about_me);
 
         //updateFakeUser();
         createHints();
@@ -111,6 +115,13 @@ public class SettingsActivity extends AppCompatActivity{
         finish();
     }
 
+    private boolean hasUser() {
+        if (db.getUser() == null)
+            return false;
+        else
+            return true;
+    }
+
     private void getUser() {
         user = db.getUser();
         closeDatabase();
@@ -152,9 +163,25 @@ public class SettingsActivity extends AppCompatActivity{
                 name = etName.getText().toString();
                 weight = Integer.parseInt(etWeight.getText().toString());
                 height = Integer.parseInt(etHeight.getText().toString());
-                tvUpdateDate.setText(new SimpleDateFormat("MM-dd-yyyy").format(Calendar.getInstance().getTime()));
+                tvUpdateDate.setText(new SimpleDateFormat(ISO_DATE_TIME_FORMAT).format(Calendar.getInstance().getTime()));
                 updateSettings();
                 createHints();
+            }
+        });
+
+        tutorial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), TutorialActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        aboutMe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), AboutMe.class);
+                startActivity(intent);
             }
         });
     }

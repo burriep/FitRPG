@@ -12,6 +12,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 import edu.uwm.cs.fitrpg.model.User;
 
@@ -469,6 +470,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setLastUpdateDate(getUserDate());
         return user;
     }
+
+//    public ArrayList<FitnessActivity> getActivitiesList() {
+//        FitnessActivity fa = new FitnessActivity();
+//
+//    }
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
