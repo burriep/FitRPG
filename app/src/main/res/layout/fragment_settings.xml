@@ -1,12 +1,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="edu.uwm.cs.fitrpg.fragments.SettingsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -19,20 +18,22 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Name"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:text="Name" />
+
             <EditText
                 android:id="@+id/et_settings_name"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:imeOptions="actionDone"
-                android:textAlignment="center"
-                android:gravity="center"/>
+                android:textAlignment="center" />
         </LinearLayout>
 
         <LinearLayout
@@ -40,21 +41,23 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Weight (lbs)"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:text="Weight (lbs)" />
+
             <EditText
                 android:id="@+id/et_settings_weight"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:imeOptions="actionDone"
                 android:inputType="number"
-                android:textAlignment="center"
-                android:gravity="center"/>
+                android:textAlignment="center" />
         </LinearLayout>
 
         <LinearLayout
@@ -62,21 +65,23 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Height (inches)"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:text="Height (inches)" />
+
             <EditText
                 android:id="@+id/et_settings_height"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:imeOptions="actionDone"
                 android:inputType="number"
-                android:textAlignment="center"
-                android:gravity="center"/>
+                android:textAlignment="center" />
         </LinearLayout>
 
         <LinearLayout
@@ -84,40 +89,42 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Last updated: "
-                android:gravity="center"/>
+                android:gravity="center"
+                android:text="Last updated: " />
+
             <TextView
                 android:id="@+id/tv_settings_lastUpdateDate"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:textAlignment="center"
-                android:gravity="center"/>
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textAlignment="center" />
         </LinearLayout>
 
 
         <LinearLayout
-            android:layout_marginTop="50dp"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center">
+            android:layout_marginTop="50dp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btn_settings_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save"/>
+                android:text="Save" />
 
             <Button
                 android:id="@+id/btn_settings_clear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Clear"/>
+                android:text="Clear" />
 
         </LinearLayout>
 
@@ -130,13 +137,13 @@
         android:layout_weight="1"
         android:orientation="horizontal">
 
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/navigation"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="?android:attr/windowBackground"
-        app:menu="@menu/navigation" />
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/navigation"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/windowBackground"
+            app:menu="@menu/navigation" />
 
     </LinearLayout>
 

@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context="edu.uwm.cs.fitrpg.fragments.FitnessEntryRepsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <TextView
         android:id="@+id/activity_entry_sets_label"
         android:layout_width="wrap_content"
