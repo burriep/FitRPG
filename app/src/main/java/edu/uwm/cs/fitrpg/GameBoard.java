@@ -1,8 +1,11 @@
 package edu.uwm.cs.fitrpg;
 
 import android.provider.ContactsContract;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Display;
+import android.view.WindowManager;
 
 import java.util.Random;
 
@@ -24,6 +27,10 @@ public class GameBoard {
     private int mapID;
     private DatabaseHelper db;
     public RpgChar player;
+    final private WindowManager w = (WindowManager) Home.appCon.getSystemService(Home.appCon.WINDOW_SERVICE);
+    final private Display d = w.getDefaultDisplay();
+    final private DisplayMetrics screenInfo = new DisplayMetrics();
+
 
     public GameBoard() {
         db = new DatabaseHelper(Home.appCon);
@@ -35,10 +42,7 @@ public class GameBoard {
             generateNewBoard(this.player.getCurrentMap(), this.player.getId());
 
             this.mapID = this.player.getCurrentMap();
-            this.addNode(new MapNode(2, this.mapID, 0, 33, 33, 66, 66));
-            this.addNode(new MapNode(3, this.mapID, 0, 33, 33, 66, 66));
-            this.addPath(2, 3);
-            this.dbPush();
+
         } else {
             Log.d("DBG", "Gameboard found");
         }
@@ -97,7 +101,7 @@ public class GameBoard {
         boolean ret = false;
 
         //temp will hold all nodes associated with the map
-        ArrayList<int[]> temp = db.getMapData(1, this.mapID);
+        ArrayList<int[]> temp = db.getMapData(1, map_id);
         //temp2 will hold all paths between the map's nodes
         ArrayList<String[]> temp2 = db.getPathData(map_id);
 
@@ -246,21 +250,23 @@ public class GameBoard {
     /*||||||||||||||||||||||||||||||||||||||||| GAMEBOARD AND NODE/PATH DYNAMIC GENERATION METHOD ||||||||||||||||||||||||||||||||||||||||||||||*/
     public void generateNewBoard(int map_id, int user_id) {
 
+        d.getMetrics(screenInfo);
+        Log.d("DBG", "Device Screen Dimensions: H: " + screenInfo.heightPixels + ", W: " + screenInfo.widthPixels);
         //generate the number of nodes to be placed on the gameboard
         Random rand = new Random();
-        int newNumOfNodes = rand.nextInt((12 - 4) + 1) + 4;
+        int newNumOfNodes = rand.nextInt((11 - 4) + 1) + 4;
 
-        int maxX = 1080;
-        int maxY = 1920;
+        int maxX = screenInfo.widthPixels;
+        int maxY = screenInfo.heightPixels;
 
         //viewport area that nodes can be drawn in
-        int xMaxA = maxX - 150;
-        int xMinA = 150;
-        int yMaxA = maxY - 150;
+        int xMaxA = maxX - 50;
+        int xMinA = 50;
+        int yMaxA = maxY - 50;
         int yMinA = 150;
 
         //starting coordinates of node
-        int xStart = xMinA - 150;
+        int xStart = xMinA + 25;
         int yStart = yMaxA / 2;
 
         //coordinate values to assign to new node
@@ -270,16 +276,18 @@ public class GameBoard {
         //in double node situations - this will keep track of the first node, so that the second can be drawn in relation to it
         int prevY = 0;
 
-        int partitionSpacing = xMaxA - xMinA / newNumOfNodes;
+        int partitionSpacing = ((xMaxA - xMinA) / newNumOfNodes);
+        Log.d("DBG", "numofNodes: " + newNumOfNodes + ", spacing: " + partitionSpacing);
 
         //the minX of the current partition
-        int prevMaxX = xMinA;
+        int prevMaxX = xStart;
         //true for 1 node in a partition, false for 2
         boolean paritionScheme = true;
 
         //dynamically create the coordinates for the nodes and create relevant paths between them
         for (int i = 1; i <= newNumOfNodes; i++)
         {
+            Log.d("DBG", "i: " + i);
             //keeps track of the previous partition's structure (one or two nodes)
             boolean prevPartition = paritionScheme;
             //used to bound the node's y from
@@ -289,17 +297,17 @@ public class GameBoard {
             //randomly pick if this partition should have 1 or 2 nodes (true == one, false == two)
             paritionScheme = rand.nextBoolean();
 
-
             //this handles the first and last node
-            if (i == 0 || i == newNumOfNodes - 1)
+            if (i == 1 || i == newNumOfNodes)
             {
-                if (i == newNumOfNodes - 1)
+                if (i == newNumOfNodes)
                 {
-                    //coordinates for ending node
+                    //coordinates for ending node (Situation 1 of 2)
                     y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
-                    x = rand.nextInt((maxX - xMaxA) + 1) + xMaxA;
+                    x = rand.nextInt(((maxX-50) - xMaxA) + 1) + xMaxA;
 
                     this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
+                    Log.d("DBG", "End Node New x: " + x + ", New y: "+ y);
 
                     //last node partition was a single node - only one path to add
                     if (prevPartition)
@@ -320,6 +328,7 @@ public class GameBoard {
                     y = yStart;
 
                     this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
+                    Log.d("DBG", "Start Node New x: " + x + ", New y: "+ y);
 
                 }
 
@@ -331,7 +340,7 @@ public class GameBoard {
                 if (paritionScheme)
                 {
                     y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
-                    x = rand.nextInt((prevMaxX + partitionSpacing - prevMaxX) + 1) + prevMaxX;
+                    x = rand.nextInt(((prevMaxX + partitionSpacing) - (prevMaxX+50)) + 1) + (prevMaxX+50);
 
                     //last node partition was a single node - only one path to add
                     if (prevPartition)
@@ -344,7 +353,7 @@ public class GameBoard {
                         this.pathList.add(new MapPath(map_id, i - 2, i, 0, "", ""));
                         this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
                     }
-
+                    Log.d("DBG", "Single New x: " + x + ", New y: "+ y);
                     this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
                     paritionScheme = true;
 
@@ -354,25 +363,25 @@ public class GameBoard {
                 {
                     //coordinates for nodeA
                     y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
-                    x = rand.nextInt((prevMaxX + partitionSpacing - prevMaxX) + 1) + prevMaxX;
+                    x = rand.nextInt(((prevMaxX + partitionSpacing) - (prevMaxX+50)) + 1) + (prevMaxX+50);
                     prevY = y;
-
+                    Log.d("DBG", "Double New x: " + x + ", New y: "+ y);
                     this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
 
                     i++;
 
                     //first coordinates to try for nodeB
                     y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
-                    x = rand.nextInt((prevMaxX + partitionSpacing - prevMaxX) + 1) + prevMaxX;
+                    x = rand.nextInt(((prevMaxX + partitionSpacing) - (prevMaxX+50)) + 1) + (prevMaxX+50);
 
                     //draw the second node in relation to the first
                     //nodeB is above nodeA
                     if(y < prevY)
                     {
                         //will nodeB be smaller than the minY with extra space
-                        if(y > yMinA+50)
+                        if(y > yMinA+100)
                         {
-                            y -= 50;
+                            y -= 100;
                         }
                         //nodeB is close to minY - don't add extra space
                         else
@@ -384,9 +393,9 @@ public class GameBoard {
                     else if(y > prevY)
                     {
                         //will nodeB be larger than the maxY with extra space
-                        if(y < yMaxA-50)
+                        if(y < yMaxA-100)
                         {
-                            y += 50;
+                            y += 100;
                         }
                         //nodeB is close to maxY - don't add extra space
                         else
@@ -404,20 +413,20 @@ public class GameBoard {
                         //nodeB is closer to the minY - move towards max
                         if(distFromMax > distFromMin)
                         {
-                            y += 50;
+                            y += 100;
                         }
                         //nodeB is closer to maxY - move towards min
                         else if(distFromMax < distFromMin)
                         {
-                             y -= 50;
+                             y -= 150;
                         }
                         //nodeB is right in the middle - move in either direction
                         else
                         {
-                             y += 50;
+                             y += 150;
                         }
                     }
-
+                    Log.d("DBG", "Double New x2: " + x + ", New y2: "+ y);
                     this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
 
                     //last node partition was a single node - only one path to add
@@ -435,11 +444,38 @@ public class GameBoard {
                         this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
                     }
 
+                    //coordinates for ending node (Situation 2 of 2)
+                    if(i >= newNumOfNodes)
+                    {
+                        i++;
+
+                        y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
+                        x = rand.nextInt(((maxX-50) - xMaxA) + 1) + xMaxA;
+
+                        this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
+                        Log.d("DBG", "End Node2 New x: " + x + ", New y: "+ y);
+
+                        //last node partition was a single node - only one path to add
+                        if (prevPartition)
+                        {
+                            this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
+                        }
+                        //last node partition was double nodes
+                        else
+                        {
+                            this.pathList.add(new MapPath(map_id, i - 2, i, 0, "", ""));
+                            this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
+                        }
+                    }
+
                     paritionScheme = false;
                 }
 
-                prevMaxX = prevMaxX + partitionSpacing;
             }
+
+            Log.d("DBG", "prevmaxX: " + prevMaxX);
+            prevMaxX = prevMaxX + partitionSpacing;
+            Log.d("DBG", "prevmaxX after adding partition space: " + prevMaxX);
 
         }
 

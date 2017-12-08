@@ -45,7 +45,10 @@ public class MapView extends View {
                 0, 0);
         //initialize gameboard - if map exists in db, you'll get that gameboard, else a brand new one
         //later we will pass in a map_id variable, instead of 1
-        board = new GameBoard(5);
+        if(this.board == null)
+        {
+            board = new GameBoard(5);
+        }
         loopCount = board.getLoopCount();
         Log.d("DBG", "In Mapview - loopcount:" + this.loopCount);
 
@@ -84,10 +87,6 @@ public class MapView extends View {
                 //board.nodeList.get(i).setY(canvasCenterHeight - (int)Math.round(distanceFromCenterHeight * Math.sin(angle)));
 
             }
-        }
-        else
-        {
-            //todo need to create nodes
         }
 
         Log.d("DBG", "In MapView - end of constructor");
