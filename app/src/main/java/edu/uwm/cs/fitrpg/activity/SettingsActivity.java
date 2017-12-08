@@ -49,8 +49,8 @@ public class SettingsActivity extends AppCompatActivity{
         db = new DatabaseHelper(this);
 
 //        user = new User("User", 1);
-        //getUser();
-        initUser();
+        getUser();
+        //initUser();
 
         name = user.getName();
         weight = user.getWeight();

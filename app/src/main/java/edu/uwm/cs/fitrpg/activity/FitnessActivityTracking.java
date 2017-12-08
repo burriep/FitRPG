@@ -176,7 +176,7 @@ public class FitnessActivityTracking extends AppCompatActivity implements Fitnes
                     stopFitnessActivity(view);
                 }
             });
-            currentActivity = new FitnessActivity();
+            currentActivity = new FitnessActivity(1);
             currentActivity.setType(activityType);
             startTrackingFitness();
             stopButton.setEnabled(true);

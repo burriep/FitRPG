@@ -119,7 +119,7 @@ public class FitnessEntryFragment extends Fragment implements AdapterView.OnItem
 
     private void saveActivity(final View view) {
         // get the data
-        final FitnessActivity activity = new FitnessActivity();
+        final FitnessActivity activity = new FitnessActivity(1);
         activity.setType(activityType);
         if (timeFragment != null)
             timeFragment.getData(activity);

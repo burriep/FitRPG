@@ -64,7 +64,7 @@ public class FitnessTrackingRealtimeFragment extends Fragment {
                 Fragment fragment = new FitnessTrackingDistanceFragment();
                 ft.replace(R.id.fitness_tracking_realtime_distance_layout, fragment);
             }
-            // TODO: if hasReps, redirect the user to enter the rep-based activity
+            // TODO: if hasReps, add sets and reps input fragment
             ft.commit();
         }
     }

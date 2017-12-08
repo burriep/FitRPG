@@ -4,11 +4,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import edu.uwm.cs.fitrpg.activity.Home;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.model.FitnessActivityType;
+import edu.uwm.cs.fitrpg.model.FitnessActivityUnit;
+import edu.uwm.cs.fitrpg.model.FitnessChallengeLevel;
 
 
 /**
@@ -203,59 +208,127 @@ public class RpgChar {
     /*/////////////////////////////////////////////////////////////////////////////////////////////*/
 
     public void updateStatsFromActivities(Date startDate, Date endDate) {
-        // TODO: care about the userId for the activities
-        SQLiteDatabase readDb = db.getReadableDatabase();
-        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, startDate, endDate);
-        updateStatsFromActivities(activities);
-    }
-
-    public int[] peekStatsFromActivities(Date startDate, Date endDate)
-    {
-        SQLiteDatabase readDb = db.getReadableDatabase();
-        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, startDate, endDate);
-        return peekStatsFromActivities(activities);
-    }
-
-    public void updateStatsFromActivities(List<FitnessActivity> activities) {
-        int[] updatedStats = peekStatsFromActivities(activities);
+        // calculate stat increase
+        int[] updatedStats = peekStatsFromActivities(startDate, endDate);
+        // update stats
         strength += updatedStats[0];
         endurance += updatedStats[1];
         dexterity += updatedStats[2];
         speed += updatedStats[3];
-    }
-
-    public void updateStaminaFromActivities(Date startDate, Date endDate) {
-        // TODO: care about the userId for the activities
-        SQLiteDatabase readDb = db.getReadableDatabase();
-        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, startDate, endDate);
-        updateStaminaFromActivities(activities);
-    }
-
-    public void updateStaminaFromActivities(List<FitnessActivity> activities) {
-        int[] updatedStats = peekStatsFromActivities(activities);
         stamina += updatedStats[4];
     }
 
-    public int[] peekStatsFromActivities(List<FitnessActivity> activities)
-    {
-        int[] returnVal = new int[5];
-        for(int i = 0; i < returnVal.length; i++)
-        {
-            returnVal[i] = 0;
-        }
+    public int[] peekStatsFromActivities(Date startDate, Date endDate) {
+        SQLiteDatabase readDb = db.getReadableDatabase();
+        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, startDate, endDate);
+        // group activities by type so that smaller activities can get added together
+        Map<FitnessActivityType, List<FitnessActivity>> groups = new HashMap<>(activities.size());
         for (FitnessActivity activity : activities) {
             FitnessActivityType type = activity.getType();
-            // TODO: improve this calculation
-            returnVal[0] += type.getMuscleStrengthImpact(); //Strength
-            returnVal[1] += type.getAerobicImpact();        //Endurance
-            returnVal[2] += type.getFlexibilityImpact();    //Dexterity
-            returnVal[3] += type.getBoneStrengthImpact();   //Speed
+            if (groups.containsKey(type)) {
+                groups.get(type).add(activity);
+            } else {
+                List<FitnessActivity> list = new LinkedList<>();
+                list.add(activity);
+                groups.put(type, list);
+            }
         }
-        boolean variety = returnVal[0] > 0 && returnVal[1] > 0 && returnVal[2] > 0 && returnVal[3] > 0;
-        // TODO: improve this calculation
-        if(variety) {
-            returnVal[4] += Math.floor((returnVal[0] + returnVal[1] + returnVal[2] + returnVal[3])/4);
+        int[] returnVal = new int[5];
+        for (Map.Entry<FitnessActivityType, List<FitnessActivity>> entry : groups.entrySet()) {
+            FitnessActivityType type = entry.getKey();
+            double distance = 0;
+            int duration = 0;
+            int reps = 0;
+            for (FitnessActivity activity : entry.getValue()) {
+                distance += activity.getDistance();
+                duration += activity.getDuration();
+                reps += activity.getSets() * activity.getRepetitions();
+            }
+            int iterations = 0;
+            switch (type.getImpactIntervalUnit()) {
+                case FitnessActivityUnit.TIME:
+                    iterations = duration / type.getImpactInterval();
+                    break;
+                case FitnessActivityUnit.DISTANCE:
+                    iterations = (int) Math.floor(distance / type.getImpactInterval());
+                    break;
+                case FitnessActivityUnit.REPS:
+                    iterations = reps / type.getImpactInterval();
+                    break;
+                default:
+                    break;
+            }
+            // Strength
+            returnVal[0] += iterations * type.getMuscleStrengthImpact();
+            // Endurance
+            returnVal[1] += iterations * type.getAerobicImpact();
+            // Dexterity
+            returnVal[2] += iterations * type.getFlexibilityImpact();
+            // Speed
+            returnVal[3] += iterations * type.getBoneStrengthImpact();
+        }
+        if (returnVal[0] > 0 && returnVal[1] > 0 && returnVal[2] > 0 && returnVal[3] > 0) {
+            // ensure variety to get stamina points
+            returnVal[4] += (returnVal[0] + returnVal[1] + returnVal[2] + returnVal[3]) / 4;
         }
         return returnVal;
+    }
+
+    public void updateChallengeStatsFromActivities(Date startDate, Date endDate, FitnessChallengeLevel challenge) {
+        // calculate stat increase
+        int[] updatedStats = peekChallengeStatsFromActivities(startDate, endDate, challenge);
+        // update stats
+        strength += updatedStats[0];
+        endurance += updatedStats[1];
+        dexterity += updatedStats[2];
+        speed += updatedStats[3];
+        stamina += updatedStats[4];
+    }
+
+    public int[] peekChallengeStatsFromActivities(Date startDate, Date endDate, FitnessChallengeLevel challenge) {
+        boolean completedChallenge = challengeIsCompleted(startDate, endDate, challenge);
+        int[] returnVal = new int[5];
+        if (completedChallenge) {
+            // Strength
+            returnVal[0] += 1;
+            // Endurance
+            returnVal[1] += 1;
+            // Dexterity
+            returnVal[2] += 1;
+            // Speed
+            returnVal[3] += 1;
+            // Stamina
+            returnVal[4] += 1;
+        }
+        return returnVal;
+    }
+
+    public boolean challengeIsCompleted(Date startDate, Date endDate, FitnessChallengeLevel challenge) {
+        SQLiteDatabase readDb = db.getReadableDatabase();
+        FitnessActivityType type = challenge.getActivityType();
+        List<FitnessActivity> activities = FitnessActivity.getAllByDateType(readDb, 1, startDate, endDate, type.getId());
+        double distance = 0;
+        int duration = 0;
+        int reps = 0;
+        for (FitnessActivity activity : activities) {
+            distance += activity.getDistance();
+            duration += activity.getDuration();
+            reps += activity.getSets() * activity.getRepetitions();
+        }
+        boolean completedChallenge = false;
+        switch (type.getImpactIntervalUnit()) {
+            case FitnessActivityUnit.TIME:
+                completedChallenge = duration >= challenge.getLevel();
+                break;
+            case FitnessActivityUnit.DISTANCE:
+                completedChallenge = distance >= challenge.getLevel();
+                break;
+            case FitnessActivityUnit.REPS:
+                completedChallenge = reps >= challenge.getLevel();
+                break;
+            default:
+                break;
+        }
+        return completedChallenge;
     }
 }

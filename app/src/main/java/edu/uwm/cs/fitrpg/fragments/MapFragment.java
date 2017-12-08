@@ -240,7 +240,7 @@ public class MapFragment extends Fragment {
                     SQLiteDatabase readDb = myDB.getReadableDatabase();
                     menuTopBarText.setText("Current Node");
                     String tempMenuBodyText = "This is your current location\nChallenges:\n";
-                    List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, lastCheckedTime, new Date());
+                    List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, lastCheckedTime, new Date());
 
                     for(int i = 0; i < activities.size(); i++)
                     {
@@ -378,7 +378,7 @@ public class MapFragment extends Fragment {
                 travelProgress += 500;
                 mapView.setTravelProgress((travelProgress*100)/travelDuration);
                 menuTravelProgressBar.setProgress((int)((travelProgress*100)/travelDuration));
-                List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, lastCheckedTime, new Date());
+                List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, lastCheckedTime, new Date());
                 lastCheckedTime = new Date();
                 for(int i = 0; i < activities.size(); i++)
                 {
@@ -443,7 +443,6 @@ public class MapFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 playerChar.updateStatsFromActivities(startTravelTime, endTravelTime);
-                playerChar.updateStaminaFromActivities(startTravelTime, endTravelTime);
                 playerChar.dbPush();
                 if(destinationNode == mapView.getBossNode())
                 {
