@@ -8,46 +8,18 @@
     android:layout_height="match_parent"
     tools:context="edu.uwm.cs.fitrpg.activity.FitnessOverview">
 
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_weight="1">-->
-        <!--<TextView-->
-            <!--android:id="@+id/tv_fitness_track_data"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginEnd="16dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:clickable="true"-->
-            <!--android:gravity="center"-->
-            <!--android:text="Start activity"-->
-            <!--android:textAlignment="center"-->
-            <!--android:textSize="20dp"/>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".5"
+        android:gravity="center">
 
-        <!--<TextView-->
-            <!--android:id="@+id/tv_fitness_record_data"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:clickable="true"-->
-            <!--android:gravity="center"-->
-            <!--android:text="Add activity"-->
-            <!--android:textAlignment="center"-->
-            <!--android:textSize="20dp"/>-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/tv_fitness_history"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginLeft="16dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:clickable="true"-->
-            <!--android:gravity="center"-->
-            <!--android:text="History"-->
-            <!--android:textAlignment="center"-->
-            <!--android:textSize="20dp"/>-->
-    <!--</LinearLayout>-->
+        <TextView
+            android:id="@+id/fitness_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/fitness_frag_data"

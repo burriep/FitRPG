@@ -53,15 +53,18 @@ public class TutorialHomeScreenFragment extends Fragment {
                 updateFitnessOverview();
                 return;
             case -4:
-                updateFitnessTracking();
+                updateFitnessHistory();
                 return;
             case -5:
-                updateFitnessAdding();
+                updateFitnessTracking();
                 return;
             case -6:
-                updateMap();
+                updateFitnessAdding();
                 return;
             case -7:
+                updateMap();
+                return;
+            case -8:
                 updateCombat();
                 return;
 
@@ -79,15 +82,18 @@ public class TutorialHomeScreenFragment extends Fragment {
                 updateFitnessAdding();
                 return;
             case 4:
-                updateMap();
+                updateFitnessHistory();
                 return;
             case 5:
-                updateCombat();
+                updateMap();
                 return;
             case 6:
-                updateSettings();
+                updateCombat();
                 return;
             case 7:
+                updateSettings();
+                return;
+            case 8:
                 return;
 
             default:
@@ -112,6 +118,11 @@ public class TutorialHomeScreenFragment extends Fragment {
     private void updateFitnessOverview() {
         image.setImageResource(R.drawable.fitness_overview_image);
         text.setText(R.string.tutorialFitnessOverview);
+    }
+
+    private void updateFitnessHistory() {
+        image.setImageResource(R.drawable.fitness_history_image);
+        text.setText(R.string.tutorialFitnessHistory);
     }
 
     private void updateFitnessTracking() {

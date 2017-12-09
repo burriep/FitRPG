@@ -14,10 +14,12 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.util.Date;
 import java.util.List;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
+import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 import edu.uwm.cs.fitrpg.util.FitnessActivityTypeAdapter;
@@ -31,6 +33,7 @@ public class FitnessEntryFragment extends Fragment implements AdapterView.OnItem
     private FitnessEntryRepsFragment repsFragment;
     private List<FitnessActivityType> fitnessActivityTypes;
     private Button saveButton, clearButton;
+    private Date date;
 
     public FitnessEntryFragment() {
     }
@@ -78,6 +81,8 @@ public class FitnessEntryFragment extends Fragment implements AdapterView.OnItem
         typeSpinner = view.findViewById(R.id.fitness_entry_type_spinner);
         final Context context = getContext();
 
+        date = ((FitnessOverview) getActivity()).getSelectedDate();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -91,6 +96,7 @@ public class FitnessEntryFragment extends Fragment implements AdapterView.OnItem
                         if (!fitnessActivityTypes.isEmpty()) {
                             activityType = fitnessActivityTypes.get(0);
                         }
+
                         updateFragments(false);
                     }
                 });

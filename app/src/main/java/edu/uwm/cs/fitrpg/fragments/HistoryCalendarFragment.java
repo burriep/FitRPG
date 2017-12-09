@@ -44,20 +44,13 @@ import edu.uwm.cs.fitrpg.model.FitnessActivity;
  */
 public class HistoryCalendarFragment extends Fragment implements OnDateSelectedListener {
 
-    private final Calendar calendar = Calendar.getInstance();
     private final int color = Color.parseColor("#228BC34A");
-    private final Drawable highlightDrawable = new ColorDrawable(color);
     private CalendarDay date;
     private HashSet<CalendarDay> dates = new HashSet<CalendarDay>();
     public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     public HistoryCalendarFragment() {
         // Required empty public constructor
-    }
-
-    public void HistoryCalendarFragmentInit() {
-        //highlightDrawable = new ColorDrawable(color);
-        date = CalendarDay.today();
     }
 
     @Override
@@ -72,6 +65,7 @@ public class HistoryCalendarFragment extends Fragment implements OnDateSelectedL
     @Override
     public void onStart() {
         super.onStart();
+        ((FitnessOverview) getActivity()).eraseFitnessDate();
         View fragmentView = getView();
         initDates();
         widget = fragmentView.findViewById(R.id.calendarView);
@@ -81,6 +75,7 @@ public class HistoryCalendarFragment extends Fragment implements OnDateSelectedL
 
         Calendar instance = Calendar.getInstance();
         widget.setSelectedDate(instance.getTime());
+        ((FitnessOverview) getActivity()).setSelectedDate(instance.getTime());
 
         Calendar instance1 = Calendar.getInstance();
         instance1.set(instance1.get(Calendar.YEAR -1), Calendar.JANUARY, 1);
@@ -97,9 +92,6 @@ public class HistoryCalendarFragment extends Fragment implements OnDateSelectedL
 
 
         new ApiSimulator().executeOnExecutor(Executors.newSingleThreadExecutor());
-
-        initDates();
-        //new EventDecorator(color, dates);
     }
 
     @Override
@@ -112,6 +104,8 @@ public class HistoryCalendarFragment extends Fragment implements OnDateSelectedL
         Calendar calendar = date.getCalendar();
         calendar.add(Calendar.DATE, 1);
         Date date2 = calendar.getTime();
+
+        ((FitnessOverview) getActivity()).setSelectedDate(now);
 
         FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(now, date2);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -144,12 +138,10 @@ public class HistoryCalendarFragment extends Fragment implements OnDateSelectedL
 
     private void initDates() {
         SQLiteDatabase db =  new DatabaseHelper(getContext()).getReadableDatabase();
-//        Date endDate = Calendar.getInstance().getTime();
-//        Date startDate = Calendar.getInstance().getTime();
-//        startDate.setTime(Calendar.YEAR);
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime();
-        calendar.add(Calendar.DATE, -14);
+
+        calendar.add(Calendar.MONTH, -6);
         Date yesterday = calendar.getTime();
         List<FitnessActivity> faList = FitnessActivity.getAllByDate(db, 1, yesterday, now);
         for(FitnessActivity fa: faList) {

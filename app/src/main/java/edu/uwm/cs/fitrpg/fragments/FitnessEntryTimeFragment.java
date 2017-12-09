@@ -15,9 +15,11 @@ import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import edu.uwm.cs.fitrpg.R;
+import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.util.Utils;
 
@@ -30,6 +32,7 @@ public class FitnessEntryTimeFragment extends Fragment {
 
     private EditText dateField, timeField, durationHourField, durationMinuteField, durationSecondField;
     private Calendar calendar;
+    private Date date;
 
     public FitnessEntryTimeFragment() {
         // Required empty public constructor
@@ -64,6 +67,10 @@ public class FitnessEntryTimeFragment extends Fragment {
         durationSecondField = view.findViewById(R.id.activity_entry_duration_seconds);
 
         calendar = Calendar.getInstance();
+
+        date = ((FitnessOverview) getActivity()).getSelectedDate();
+
+        calendar.setTime(date);
 
         updateDateField();
         updateTimeField();

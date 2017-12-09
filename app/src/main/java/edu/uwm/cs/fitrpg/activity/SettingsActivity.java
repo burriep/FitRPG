@@ -48,7 +48,7 @@ public class SettingsActivity extends AppCompatActivity{
 
         db = new DatabaseHelper(this);
 
-        if (hasUser())
+        if (db.hasUser())
             getUser();
         else
          initUser();

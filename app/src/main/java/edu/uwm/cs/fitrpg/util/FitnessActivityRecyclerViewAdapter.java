@@ -42,7 +42,8 @@ public class FitnessActivityRecyclerViewAdapter extends RecyclerView.Adapter<Fit
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mContentView.setText(holder.mItem.getType().getName() + "\n" + holder.mItem.getStartDate().toString());
+        //holder.mContentView.setText(holder.mItem.getType().getName() + "\n" + holder.mItem.getStartDate().toString());
+        holder.mContentView.setText(holder.mItem.toString());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -481,10 +481,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return user;
     }
 
-//    public ArrayList<FitnessActivity> getActivitiesList() {
-//        FitnessActivity fa = new FitnessActivity();
-//
-//    }
+    public boolean hasUser() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select * from fr_user";
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            db.close();
+            return true;
+        }
+        else {
+            db.close();
+            Log.d("ERR", "No user in database");
+            return false;
+        }
+    }
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {

@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -16,6 +18,7 @@ import java.util.List;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
+import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.util.FitnessActivityRecyclerViewAdapter;
 
@@ -55,10 +58,12 @@ public class FitnessActivityHistoryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         if (getArguments() != null) {
             startDate = (Date) getArguments().getSerializable(ARG_START_DATE);
             endDate = (Date) getArguments().getSerializable(ARG_END_DATE);
         }
+        ((FitnessOverview) getActivity()).setFitnessDate(startDate);
     }
 
     @Override
@@ -114,5 +119,10 @@ public class FitnessActivityHistoryFragment extends Fragment {
 
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(FitnessActivity item);
+    }
+
+    @Override
+    public String toString() {
+        return "";
     }
 }

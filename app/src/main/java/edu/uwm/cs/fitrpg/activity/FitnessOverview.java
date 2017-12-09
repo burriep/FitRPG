@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -17,11 +19,16 @@ import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.FitnessActivityHistoryFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
 import edu.uwm.cs.fitrpg.fragments.HistoryCalendarFragment;
+import edu.uwm.cs.fitrpg.graphics.Text;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 
 public class FitnessOverview extends AppCompatActivity implements FitnessActivityHistoryFragment.OnListFragmentInteractionListener {
     private int navigationIDTag;
     BottomNavigationView navigation;
+    Date selectedDate;
+    TextView tvDate;
+    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,32 +40,15 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
         navigation.getMenu().getItem(0).setChecked(false);
         navigation.getMenu().getItem(1).setChecked(true);
 
+        tvDate = findViewById(R.id.fitness_date);
 
         Button recordData, trackData;
         recordData = findViewById(R.id.btn_add_activity);
         trackData = findViewById(R.id.btn_start_activity);
 
-        Calendar calendar = Calendar.getInstance();
-        Date now = calendar.getTime();
-        calendar.add(Calendar.DATE, -14);
-        Date yesterday = calendar.getTime();
-
-        //FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
         HistoryCalendarFragment fragment = new HistoryCalendarFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
 
-//        history.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Calendar calendar = Calendar.getInstance();
-//                Date now = calendar.getTime();
-//                calendar.add(Calendar.DATE, -1);
-//                Date yesterday = calendar.getTime();
-//
-//                FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
-//                getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
-//            }
-//        });
 
         recordData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +72,22 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
         super.onResume();
         navigation.getMenu().getItem(0).setChecked(false);
         navigation.getMenu().getItem(1).setChecked(true);
+    }
+
+    public void setFitnessDate(Date date) {
+        tvDate.setText(new SimpleDateFormat(ISO_DATE_TIME_FORMAT).format(date));
+    }
+
+    public void eraseFitnessDate() {
+        tvDate.setText("");
+    }
+
+    public Date getSelectedDate() {
+        return selectedDate;
+    }
+
+    public void setSelectedDate(Date date) {
+        selectedDate = date;
     }
 
     public BottomNavigationView.OnNavigationItemSelectedListener OnNavigationItemSelectedListener

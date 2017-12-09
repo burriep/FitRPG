@@ -77,9 +77,16 @@
     </string>
 
     <string name="tutorialFitnessOverview">
-        This page shows your fitness history.\n\n
+        This page shows a calendar. Dates that have a recorded history will show an orange dot under the date.\n
+        Clicking on one of those dates will show you your fitness history on that page. Clicking on any other date will show no history.\n\n
         You can start tracking a new activity by clicking the "Track Activity" button or
         you can manually add an activity by selecting the "Add Activity" button.
+    </string>
+
+    <string name="tutorialFitnessHistory">
+        This pages shows your selected dates history and information about each fitness activity.\n
+        Clicking on "Add Activity" from this page will set the date for the added activity to the current selected date.\n\n
+        To get back to the calendar view click on the Fitness tab.
     </string>
 
     <string name="tutorialFitnessTracking">
