@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import edu.uwm.cs.fitrpg.util.Utils;
+
 public class FitnessChallengeLevel {
     private int userId;
     private int fitnessTypeId;
@@ -123,5 +125,29 @@ public class FitnessChallengeLevel {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        String s;
+        if (activityType != null) {
+            switch (activityType.getImpactIntervalUnit()) {
+                case FitnessActivityUnit.TIME:
+                    s = Utils.formatDuration(level);
+                    break;
+                case FitnessActivityUnit.DISTANCE:
+                    s = level + "m";
+                    break;
+                case FitnessActivityUnit.REPS:
+                    s = level + " reps";
+                    break;
+                default:
+                    s = "";
+                    break;
+            }
+        } else {
+            s = Integer.toString(level);
+        }
+        return s;
     }
 }
