@@ -73,8 +73,8 @@ public class GameActivity extends Activity {
             finish();
             RpgChar playerChar = new RpgChar();
             playerChar.setCurrentNode(0);
+            playerChar.setLoopCount(loop);
             playerChar.dbPush();
-            intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);
             startActivity(intent);
         }
     }
@@ -88,11 +88,11 @@ public class GameActivity extends Activity {
 
         gv.getScene().setBackground(R.drawable.dark_grass1, 128, 32);
 
-        loop = intent.getIntExtra("edu.uwm.cs.fitrpg.mapLoop", 1);
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.player_ss_test);
         bm = Bitmap.createScaledBitmap(bm, 576, 384,false);
 
         RpgChar tempPlayer = new RpgChar();
+        loop = tempPlayer.getLoopCount();
         // Build the player
         gv.getScene().spawnPlayerCombatUnit(bm, /*tempPlayer.getStamina()*/10000,
                 tempPlayer.getStrength(),

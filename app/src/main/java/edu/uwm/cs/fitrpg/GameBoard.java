@@ -305,9 +305,10 @@ public class GameBoard {
                     //coordinates for ending node (Situation 1 of 2)
                     y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
                     x = rand.nextInt(((maxX-50) - xMaxA) + 1) + xMaxA;
-
-                    this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
-                    Log.d("DBG", "End Node New x: " + x + ", New y: "+ y);
+                    MapNode bossNode = new MapNode(i, map_id, 0, x, y, 0, 0);
+                    bossNode.setIsBoss(1);
+                    this.nodeList.add(bossNode);
+                    Log.d("DBG", "End Node " + i + " New x: " + x + ", New y: "+ y);
 
                     //last node partition was a single node - only one path to add
                     if (prevPartition)

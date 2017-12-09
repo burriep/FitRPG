@@ -116,6 +116,11 @@ public class MapNode {
         this.adjY= y;
     }
 
+    public void setIsBoss(int flag)
+    {
+        isBoss = flag;
+    }
+
     /*|||||||||||||||||||||||||||||||||||||||||||||||||| DATABASE METHODS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
     public boolean dbPull()
     {
