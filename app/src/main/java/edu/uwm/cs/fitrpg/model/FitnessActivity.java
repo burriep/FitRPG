@@ -42,6 +42,7 @@ public class FitnessActivity implements Serializable {
     }
 
     public FitnessActivity(int userId) {
+        usr_id = userId;
     }
 
     public FitnessActivity(Cursor cursor) {
