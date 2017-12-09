@@ -1,5 +1,7 @@
 package edu.uwm.cs.fitrpg;
 
+import android.util.Log;
+
 /**
  * Created by Jason on 11/28/17.
  *
@@ -64,6 +66,8 @@ public class MapPath {
     }
 
     public void setStartTime(String x){
+        Log.d("DBG", "In MapPath - Start Time String: " + x);
+
         this.startTime = x;
     }
 

@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,8 +36,7 @@ public class MapActivity extends AppCompatActivity {
 
     private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
     private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
-    private boolean isTraveling;               //PS Local storage of whether the player is currently traveling, and thus whether a node button is clickable
-    private int travelDuration = 100;         //PS How long in milliseconds it takes currently to travel
+    private int travelDuration = 10000;         //PS How long in milliseconds it takes currently to travel
     private int travelProgress = 0;            //PS A number between 0-100 representing the percentage of how far along the current travel is
     private int destinationNode = 0;           //PS The node the player is currently traveling to
 
@@ -75,6 +75,8 @@ public class MapActivity extends AppCompatActivity {
     Boolean[] challengeComplete;
     int countComplete;
 
+    public static SimpleDateFormat mapDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,14 +99,8 @@ public class MapActivity extends AppCompatActivity {
         baseEnemySpeed = intent.getIntExtra("edu.uwm.cs.fitrpg.enemySpeed", baseEnemySpeed);
 
         myDB = new DatabaseHelper(this);
-        //PS TODO Get loop from DB
-        //PS TODO Check for in combat, travelling, in menu, etc.
-
-        isTraveling = false;
 
         menuLayout = findViewById((R.id.MapMenuLayout));
-        menuLayout.setVisibility(View.INVISIBLE);
-        menuIsVisible = false;
         menuTopBarText = (TextView)findViewById(R.id.MapMenuTopBarText);
         menuBodyText = (TextView)findViewById(R.id.MapMenuBodyText);
         menuTravelFitnessLog = (TextView)findViewById(R.id.MapMenuTravelFitnessActivities);
@@ -126,15 +122,32 @@ public class MapActivity extends AppCompatActivity {
 
         loop = mapView.board.player.getLoopCount();
         Log.d("MapA", "in OnCreate - Loop: " + loop);
-        //mapView.board.toggleConnection(2, 3);
-        mapView.AdjustImage();
+        //PS TODO Check for in combat, travelling, in menu, etc.
 
+        if(mapView.getIsTraveling())
+        {
+            MapPath path = mapView.getCurrentPath();
+            lastCheckedTime = mapView.board.player.getLastCheckedTime();
+            try {
+                startTravelTime = mapDateFormat.parse(path.getStartTime());
+                endTravelTime = mapDateFormat.parse(path.getEndTime());
+            }
+            catch(Exception e)
+            {
+                Log.d("Err", "Error - Exception thrown: " + e.toString());
+            }
+            HandleMoving();
+        }
+        else {
+            menuLayout.setVisibility(View.INVISIBLE);
+            menuIsVisible = false;
+            mapView.AdjustImage();
+            lastCheckedTime = mapView.board.player.getLastCheckedTime();
+        }
         passedContext = this;
 
         mapNodes = new View[mapView.getNumOfNodes()];
-        endTravelTime = new Date();
-        lastCheckedTime = new Date();
-        lastCheckedTime.setTime(0);     //PS DEBUG CODE
+        //lastCheckedTime.setTime(0);     //PS DEBUG CODE
         challenges = new FitnessChallenge[3];     //PS DEBUG CODE
         challengeComplete = new Boolean[3];     //PS DEBUG CODE
         countComplete = 0;     //PS DEBUG CODE
@@ -188,21 +201,11 @@ public class MapActivity extends AppCompatActivity {
         lp_set.applyTo(ll);
     }
 
-    //PS Unused currently
-    public void ResetMap(int passedLoop)
-    {
-        isTraveling = false;
-        mapView.setCurrentNode(0);
-        mapView.setTravelProgress(0);
-        mapView.setTravelProgress(0);
-        loop = passedLoop;
-    }
-
     public void ClickNode(View view)
     {
 
         if(!menuIsVisible) {
-            if(!isTraveling) {
+            if(!mapView.getIsTraveling()) {
                 destinationNode = 3;
                 for (int i = 0; i < mapNodes.length; i++) {
                     if (mapNodes[i] == view) {
@@ -328,7 +331,7 @@ public class MapActivity extends AppCompatActivity {
     public void MoveCharacter(View view)
     {
         //PS TODO Adjust to work off database
-        if(!isTraveling) {
+        if(!mapView.getIsTraveling()) {
             destinationNode = 3;
             mapNodes[0].setVisibility(View.VISIBLE);
             for (int i = 0; i < mapNodes.length; i++) {
@@ -337,39 +340,47 @@ public class MapActivity extends AppCompatActivity {
                     break;
                 }
             }
-            if(mapView.board.getNodes().get(destinationNode).getNodeId() != mapView.getCurrentNode() && mapView.getConnectedToCurrentNode(destinationNode)) {
-                isTraveling = true;
-                mapView.setDestinationNode(destinationNode);
-                mapView.setIsTraveling(true);
-                mapView.setTravelProgress(0);
-                menuTravelProgressBar.setProgress(0);
-                menuTravelProgressBar.setVisibility(View.VISIBLE);
-                menuTravelFitnessLog.setVisibility(View.VISIBLE);
-                menuLeftButton.setVisibility(View.GONE);
-                menuRightButton.setVisibility(View.GONE);
-                //PS TODO Add DB calls telling that we are moving now
-                StartMoving();
-            }
+            mapView.setDestinationNode(destinationNode);
+            mapView.setIsTraveling(true);
+            mapView.setTravelProgress(0);
+            menuTravelProgressBar.setProgress(0);
+            menuTravelProgressBar.setVisibility(View.VISIBLE);
+            menuTravelFitnessLog.setVisibility(View.VISIBLE);
+            menuLeftButton.setVisibility(View.GONE);
+            menuRightButton.setVisibility(View.GONE);
+            //PS TODO Add DB calls telling that we are moving now
+            StartMoving();
         }
     }
 
     private void StartMoving()
     {
         //PS TODO move DB stuff to on create when updating travel on database
-        final SQLiteDatabase readDb = myDB.getReadableDatabase();
         startTravelTime = new Date();
         lastCheckedTime = new Date();
+        endTravelTime = new Date();
         lastCheckedTime.setTime(0);       //PS DEBUG CODE
         endTravelTime.setTime(startTravelTime.getTime()+travelDuration);
+        MapPath path = mapView.getCurrentPath();
+        path.setStartTime(mapDateFormat.format(startTravelTime));
+        path.setEndTime(mapDateFormat.format(endTravelTime));
+        HandleMoving();
+    }
+
+    private void HandleMoving()
+    {
+        final SQLiteDatabase readDb = myDB.getReadableDatabase();
         final Handler mapTravelHandler = new Handler();
         activityLines = 0;
         mapTravelHandler.postDelayed(new Runnable() {
             public void run() {
-                travelProgress += 500;
-                mapView.setTravelProgress((travelProgress*100)/travelDuration);
-                menuTravelProgressBar.setProgress((int)((travelProgress*100)/travelDuration));
-                List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, lastCheckedTime, new Date());
-                lastCheckedTime = new Date();
+                Date currentTime = new Date();
+                travelProgress = (int)(currentTime.getTime()-startTravelTime.getTime());
+                mapView.setTravelProgress((travelProgress*100)/(int)(endTravelTime.getTime()-startTravelTime.getTime()));
+                menuTravelProgressBar.setProgress(mapView.getTravelProgress());
+                List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, mapView.board.player.getLastCheckedTime(), currentTime);
+                mapView.board.player.setLastCheckedTime(new Date());
+                mapView.board.player.dbPush();
                 for(int i = 0; i < activities.size(); i++)
                 {
                     if(activityLines < 2) {
@@ -390,13 +401,15 @@ public class MapActivity extends AppCompatActivity {
                 {
                     StopMoving();
                 }
+                /*travelProgress += 500;
+                mapView.setTravelProgress((travelProgress*100)/travelDuration);
+                menuTravelProgressBar.setProgress((int)((travelProgress*100)/travelDuration));*/
             }
         }, 500);
     }
 
     private void StopMoving()
     {
-        isTraveling = false;
         mapView.setCurrentNode(destinationNode);
         //PS TODO Move to travel complete
         mapView.board.player.dbPush();

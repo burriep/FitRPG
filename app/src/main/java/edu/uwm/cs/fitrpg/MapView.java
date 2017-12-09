@@ -126,8 +126,6 @@ public class MapView extends View {
         float adjustmentX = (float)canvas.getWidth()/(int)screenDimensions.first;
         float adjustmentY = (float)canvas.getHeight()/(int)screenDimensions.second;
 
-        Log.d("DBG", "In MapView - in onDraw");
-
         for(int i = 0; i < numOfNodes; i++)
         {
 
@@ -155,8 +153,6 @@ public class MapView extends View {
             {
                 mapNodeImage.setColorFilter(getResources().getColor(R.color.gold), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
-            Log.d("DBG", "In MapView - in onDraw - Drawing Node " + i + " Converted: " + board.getNodes().get(i).getNodeId());
-
 
             board.nodeList.get(i).setAdjX((int)(board.nodeList.get(i).getX()* adjustmentX));
             board.nodeList.get(i).setAdjY((int)(board.nodeList.get(i).getY()* adjustmentY));
@@ -188,6 +184,23 @@ public class MapView extends View {
         return board.player.getCurrentNode();
     }
 
+    public MapPath getCurrentPath()
+    {
+        if(isTraveling) {
+            int curNode = board.getNodes().get(board.player.getCurrentNode()).getNodeId();
+            int destNode = board.getNodes().get(destinationNode).getNodeId();
+            Log.d("DBG", "In MapView - Get Current Path - Inside If Statement - Current " + curNode + " Destination " + destNode);
+            for (int i = 0; i < board.pathList.size(); i++) {
+
+                if ((board.pathList.get(i).getNodeA() == curNode && board.pathList.get(i).getNodeB() == destNode) || (board.pathList.get(i).getNodeB() == curNode && board.pathList.get(i).getNodeA() == destNode)) {
+                    Log.d("DBG", "In MapView - Get Current Path - Found Path");
+                    return board.pathList.get(i);
+                }
+            }
+        }
+        return null;
+    }
+
     public void setCurrentNode(int val) {
         Log.d("DBG", "In MapView - Arg Node: " + val + " Converted Node: " + (board.getNodes().get(val).getNodeId()));
         board.player.setCurrentNode(val);
@@ -197,13 +210,29 @@ public class MapView extends View {
     public boolean getIsTraveling()
     {
         boolean ret = false;
-
+        int convertedDest = 0;
         for(int i=0; i<board.pathList.size();i++)
         {
             if(board.pathList.get(i).getStatus() == 1)
             {
                 ret = true;
                 isTraveling = true;
+                if(destinationNode == 0) {
+                    if (board.pathList.get(i).getNodeA() == board.getNodes().get(board.player.getCurrentNode()).getNodeId()) {
+                        convertedDest = board.pathList.get(i).getNodeB();
+                    } else {
+                        convertedDest = board.pathList.get(i).getNodeA();
+                    }
+
+                    for(int j = 0; j < board.getNodes().size(); j++)
+                    {
+                        if(board.getNodes().get(j).getNodeId() == convertedDest)
+                        {
+                            destinationNode = j;
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -231,10 +260,12 @@ public class MapView extends View {
         //else set the path between current and destination's traveling status to 1
         else
         {
+            int curNode = board.getNodes().get(board.player.getCurrentNode()).getNodeId();
+            int destNode = board.getNodes().get(destinationNode).getNodeId();
+            Log.d("DBG", "In MapView - Set is Traveling - Current Node: : " + curNode + " Destination Node: " + destNode);
             for(int i=0; i< board.pathList.size();i++)
             {
-
-                if((board.pathList.get(i).getNodeA() == board.player.getCurrentNode() && board.pathList.get(i).getNodeB() == destinationNode)||(board.pathList.get(i).getNodeB() == board.player.getCurrentNode() && board.pathList.get(i).getNodeA() == destinationNode))
+                if((board.pathList.get(i).getNodeA() == curNode && board.pathList.get(i).getNodeB() == destNode)||(board.pathList.get(i).getNodeB() == curNode && board.pathList.get(i).getNodeA() == destNode))
                 {
                     board.pathList.get(i).setStatus(1);
                     isTraveling = true;

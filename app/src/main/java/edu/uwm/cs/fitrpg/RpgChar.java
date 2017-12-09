@@ -35,6 +35,7 @@ public class RpgChar {
     private DatabaseHelper db;
     private int loopCount;
     private int currentMap;
+    private Date lastCheckedTime;
 
     //constructor for player - the player's usr_id will always be 1
     public RpgChar() {
@@ -53,6 +54,7 @@ public class RpgChar {
             this.endurance = 0;
             this.loopCount =0;
             this.currentMap = 0;
+            this.lastCheckedTime = new Date();
             dbPush();
         }
 
@@ -76,6 +78,7 @@ public class RpgChar {
             this.endurance = 0;
             this.loopCount =0;
             this.currentMap = 0;
+            this.lastCheckedTime = new Date();
             dbPush();
         }
 
@@ -96,6 +99,14 @@ public class RpgChar {
         this.currentNode = Integer.parseInt(db.getNodePosition(id));
         this.loopCount = Integer.parseInt(db.getLoopCount(id));
         this.currentMap = Integer.parseInt(db.getCurrentMap(id));
+        try {
+            this.lastCheckedTime = MapActivity.mapDateFormat.parse(db.getLastCheckedTime(id));
+        }
+        catch (Exception e)
+        {
+            Log.d("ERR", "Error getting checked time, setting to current time");
+            this.lastCheckedTime = new Date();
+        }
         this.id = id;
 
         if (this.name != null) {
@@ -126,6 +137,7 @@ public class RpgChar {
         retStatus += db.setCurrentNode(this.currentNode, this.id);
         retStatus += db.setLoopCount(this.loopCount, this.id);
         retStatus += db.setCurrentMap(this.currentMap, this.id);
+        retStatus += db.setCheckTime(MapActivity.mapDateFormat.format(this.lastCheckedTime), this.id);
 
         if (retStatus == 0) {
             Log.d("SCS", "Push was successful - sum(all sets) = 0");
@@ -185,6 +197,11 @@ public class RpgChar {
         this.currentNode = x;
     }
 
+    public void setLastCheckedTime(Date x)
+    {
+        this.lastCheckedTime = x;
+    }
+
     public int getStrength() {
 
         return this.strength;
@@ -217,6 +234,11 @@ public class RpgChar {
 
     public String getName() {
         return this.name;
+    }
+
+    public Date getLastCheckedTime()
+    {
+        return lastCheckedTime;
     }
 
     public int getCurrentNode() {

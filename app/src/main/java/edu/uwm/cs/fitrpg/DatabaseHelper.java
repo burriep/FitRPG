@@ -10,7 +10,9 @@ import android.graphics.Point;
 import android.util.Log;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.model.FitnessActivityType;
@@ -55,6 +57,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "a_dex INTEGER(2), " +
                 "a_end INTEGER(2), " +
                 "loop_cnt INTEGER,"+
+                "last_check_time TEXT,"+
                 "map_id INTEGER)  ");
 
         db.execSQL("create table fr_user (usr_id INTEGER(3) PRIMARY KEY, " +
@@ -238,6 +241,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else {
             db.close();
             Log.d("ERR", "Error getting loop count from db - returning -1");
+            return "-1";
+        }
+    }
+
+    public String getLastCheckedTime(int x) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select last_check_time from fr_char";
+        sqlQuery += " where usr_id = " + x + "";
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            db.close();
+            return "" + c.getInt(0);
+        }
+        else {
+            db.close();
+            Log.d("ERR", "Error getting checked time from db - returning -1");
             return "-1";
         }
     }
@@ -699,6 +718,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return ret;
     }
 
+    public int setCheckTime(String time, int id)
+    {
+        int ret = -1;
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("last_check_time", time);
+        Log.d("Values are:", "nd: " + time + ", id: " + id);
+
+        if(db.update("fr_char", values, "usr_id = " + id + "", null) > 0)
+        {
+            Log.d("SCS", "Current node was sucessfully updated");
+            db.close();
+            ret = 0;
+        }
+        else
+        {
+            db.close();
+            Log.d("ERR", "Error Updating Check Time");
+        }
+
+
+        return ret;
+    }
+
     public void setNodeCoord(Point coord, Point coord2, int map_id, int nd_id, int id, int nd_cmp)
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -750,6 +793,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("a_end", a_end);
         values.put("a_sta", a_sta);
         values.put("loop_cnt", loop_count);
+        String checkTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        values.put("last_check_time", checkTime);
 
         try{
             db.insertOrThrow("fr_char", null, values);
