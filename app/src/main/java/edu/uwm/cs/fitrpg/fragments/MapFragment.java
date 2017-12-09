@@ -144,8 +144,9 @@ public class MapFragment extends Fragment {
         //nodeConnectionPair[1] = new Pair(3, true);
         //mapView.SetMultipleNodeConnections(2, nodeConnectionPair);
 
-        mapView.ToggleNodeConnections(2, 0);
-        mapView.ToggleNodeConnections(1, 3);
+        // TODO: fix
+//        mapView.ToggleNodeConnections(2, 0);
+//        mapView.ToggleNodeConnections(1, 3);
         passedContext = getActivity();
 
         //PS Example of how to change node position
@@ -188,8 +189,9 @@ public class MapFragment extends Fragment {
 
                     ll.addView(myButton, lp);
                     lp_set.clone(ll);
-                    lp_set.setTranslationX(myButton.getId(), (int) mapView.getAdjustedNodePosition(i).first - (int) (mapView.getNodeSize() * buttonScale) / 2);
-                    lp_set.setTranslationY(myButton.getId(), (int) mapView.getAdjustedNodePosition(i).second - (int) (mapView.getNodeSize() * buttonScale) / 2);
+                    // TODO: fix
+//                    lp_set.setTranslationX(myButton.getId(), (int) mapView.getAdjustedNodePosition(i).first - (int) (mapView.getNodeSize() * buttonScale) / 2);
+//                    lp_set.setTranslationY(myButton.getId(), (int) mapView.getAdjustedNodePosition(i).second - (int) (mapView.getNodeSize() * buttonScale) / 2);
 
                     lp_set.applyTo(ll);
                     mapNodes[i] = (View)myButton;
@@ -203,8 +205,9 @@ public class MapFragment extends Fragment {
         ConstraintLayout ll = (ConstraintLayout) fragmentView.findViewById(R.id.buttonLayout);
         ConstraintSet lp_set = new ConstraintSet();
         lp_set.clone(ll);
-        lp_set.setTranslationX(i, (int) mapView.getAdjustedNodePosition(i).first - (int) (mapView.getNodeSize() * buttonScale) / 2);
-        lp_set.setTranslationY(i, (int) mapView.getAdjustedNodePosition(i).second - (int) (mapView.getNodeSize() * buttonScale) / 2);
+        // TODO: fix
+//        lp_set.setTranslationX(i, (int) mapView.getAdjustedNodePosition(i).first - (int) (mapView.getNodeSize() * buttonScale) / 2);
+//        lp_set.setTranslationY(i, (int) mapView.getAdjustedNodePosition(i).second - (int) (mapView.getNodeSize() * buttonScale) / 2);
 
         lp_set.applyTo(ll);
     }
