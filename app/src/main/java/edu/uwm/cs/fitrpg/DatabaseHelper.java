@@ -18,7 +18,7 @@ import edu.uwm.cs.fitrpg.model.User;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "fitrpg.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
     public static Context x;
 
 
@@ -39,7 +39,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "act_aero INTEGER(2), " +
                 "act_flex INTEGER(2), " +
                 "act_musc INTEGER(2), " +
-                "act_bone INTEGER(2))");
+                "act_bone INTEGER(2), " +
+                "act_int INTEGER(2), " +
+                "act_intUnit INTEGER(2), " +
+                "act_intInc INTEGER(2))");
 
         FitnessActivityType.init(db);
 
@@ -92,6 +95,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "trvl_e_time TEXT, " +
                 "PRIMARY KEY(map_id,nd_a,nd_b))");
         //nd_a is the first node in the pair, b is the second
+
+        db.execSQL("CREATE TABLE fr_challenge (" +
+                "usr_id INTEGER NOT NULL," +
+                "act_id INTEGER NOT NULL," +
+                "ch_level REAL NOT NULL," +
+                "ch_increment REAL NOT NULL," +
+                "PRIMARY KEY(usr_id,act_id))");
     }
 
     @Override
@@ -106,6 +116,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("drop table if exists fr_hst");
         db.execSQL("drop table if exists fr_map");
         db.execSQL("drop table if exists fr_path");
+        db.execSQL("drop table if exists fr_challenge");
 
         onCreate(db);
     }

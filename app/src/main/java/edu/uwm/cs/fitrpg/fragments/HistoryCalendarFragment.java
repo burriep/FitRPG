@@ -151,7 +151,7 @@ public class HistoryCalendarFragment extends Fragment implements OnDateSelectedL
         Date now = calendar.getTime();
         calendar.add(Calendar.DATE, -14);
         Date yesterday = calendar.getTime();
-        List<FitnessActivity> faList = FitnessActivity.getAllByDate(db, yesterday, now);
+        List<FitnessActivity> faList = FitnessActivity.getAllByDate(db, 1, yesterday, now);
         for(FitnessActivity fa: faList) {
             dates.add(CalendarDay.from(fa.getStartDate()));
         }

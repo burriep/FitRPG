@@ -4,11 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -80,7 +78,7 @@ public class FitnessActivityHistoryFragment extends Fragment {
                 @Override
                 public void run() {
                     SQLiteDatabase db = new DatabaseHelper(context).getReadableDatabase();
-                    final List<FitnessActivity> newItems = FitnessActivity.getAllByDate(db, startDate, endDate);
+                    final List<FitnessActivity> newItems = FitnessActivity.getAllByDate(db, 1, startDate, endDate);
                     recyclerView.post(new Runnable() {
                         @Override
                         public void run() {
