@@ -160,11 +160,11 @@ public class MapView extends View {
             {
                 mapNodeImage[i].setColorFilter(getResources().getColor(R.color.gold), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
+            Log.d("DBG", "In MapView - in onDraw - Drawing Node " + i + " Converted: " + board.getNodes().get(i).getNodeId());
 
 
             board.nodeList.get(i).setAdjX((int)(board.nodeList.get(i).getX()* adjustmentX));
             board.nodeList.get(i).setAdjY((int)(board.nodeList.get(i).getY()* adjustmentY));
-            Log.d("DBG", "In MapView - in onDraw - Drawing Node at AdjX: " + board.nodeList.get(i).getAdjX() + " AdjY: " + board.nodeList.get(i).getAdjX() + " OrigX: " + board.nodeList.get(i).getX() + " Orig Y: " + board.nodeList.get(i).getY());
             mapNodeImage[i].setBounds(board.nodeList.get(i).getAdjX()-(nodeSize/2),board.nodeList.get(i).getAdjY()-(nodeSize/2),board.nodeList.get(i).getAdjX()+(nodeSize/2),board.nodeList.get(i).getAdjY()+(nodeSize/2));
             mapNodeImage[i].draw(canvas);
 

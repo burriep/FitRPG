@@ -36,7 +36,7 @@ public class MapActivity extends AppCompatActivity {
     private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
     private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
     private boolean isTraveling;               //PS Local storage of whether the player is currently traveling, and thus whether a node button is clickable
-    private int travelDuration = 3000;         //PS How long in milliseconds it takes currently to travel
+    private int travelDuration = 10000;         //PS How long in milliseconds it takes currently to travel
     private int travelProgress = 0;            //PS A number between 0-100 representing the percentage of how far along the current travel is
     private int destinationNode = 0;           //PS The node the player is currently traveling to
 
@@ -99,8 +99,7 @@ public class MapActivity extends AppCompatActivity {
 
         myDB = new DatabaseHelper(this);
         //PS TODO Get loop from DB
-        loop = intent.getIntExtra("edu.uwm.cs.fitrpg.loopCount", 1);
-
+        //PS TODO Check for in combat, travelling, in menu, etc.
 
         isTraveling = false;
 
@@ -123,6 +122,8 @@ public class MapActivity extends AppCompatActivity {
         basePlayerDexterity = mapView.board.player.getDexterity();
         basePlayerSpeed = mapView.board.player.getSpeed();
 
+        loop = mapView.board.player.getLoopCount();
+        Log.d("MapA", "in OnCreate - Loop: " + loop);
         //mapView.board.toggleConnection(2, 3);
         mapView.AdjustImage();
 
@@ -215,30 +216,7 @@ public class MapActivity extends AppCompatActivity {
                 final View passedView = view;
                 Log.d("MapA", "in Click Node: Clicked: " + destinationNode + " Converted: " + mapView.board.getNodes().get(destinationNode).getNodeId() + " Current: " + mapView.getCurrentNode());
                 if(mapView.board.getNodes().get(destinationNode).getNodeId() == mapView.board.getNodes().get(mapView.getCurrentNode()).getNodeId()) {
-                    SQLiteDatabase readDb = myDB.getReadableDatabase();
-                    menuTopBarText.setText("Current Node");
-                    String tempMenuBodyText = "This is your current location\nChallenges:\n";
-                    List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, lastCheckedTime, new Date());
-
-                    for(int i = 0; i < activities.size(); i++)
-                    {
-                        for(int j = 0; j < challengeComplete.length; j++)
-                        {
-                            if(!challengeComplete[j])
-                            {
-                                challengeComplete[j] = challenges[j].checkComplete(activities.get(i).getType().getName());
-                            }
-                        }
-                    }
-                    for(int i = 0; i < challengeComplete.length; i++) {
-                        tempMenuBodyText += challenges[i].getChallengeType();
-                        if (challengeComplete[i]) {
-                            tempMenuBodyText += " Complete!\n";
-                        } else {
-                            tempMenuBodyText += " Not Done\n";
-                        }
-                    }
-                    menuBodyText.setText(tempMenuBodyText);
+                    SetCurrentNodeChallenges();
                     menuLeftButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -269,6 +247,7 @@ public class MapActivity extends AppCompatActivity {
                 }
                 else
                 {
+                    //PS TODO Add ability to do challenge to connect node
                     menuTopBarText.setText("Node is Too Far!");
                     menuBodyText.setText( "This node is not connected to your current location " + mapView.board.getNodes().get(0).getAdjX() + " " + mapView.board.getNodes().get(1).getAdjX());
                     menuLeftButton.setVisibility(View.GONE);
@@ -314,9 +293,39 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
+    public void SetCurrentNodeChallenges()
+    {
+        //PS TODO Set Challenges per Paul's new Stuff
+        SQLiteDatabase readDb = myDB.getReadableDatabase();
+        menuTopBarText.setText("Current Node");
+        String tempMenuBodyText = "This is your current location\nChallenges:\n";
+        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, lastCheckedTime, new Date());
+
+        for(int i = 0; i < activities.size(); i++)
+        {
+            for(int j = 0; j < challengeComplete.length; j++)
+            {
+                if(!challengeComplete[j])
+                {
+                    challengeComplete[j] = challenges[j].checkComplete(activities.get(i).getType().getName());
+                }
+            }
+        }
+        for(int i = 0; i < challengeComplete.length; i++) {
+            tempMenuBodyText += challenges[i].getChallengeType();
+            if (challengeComplete[i]) {
+                tempMenuBodyText += " Complete!\n";
+            } else {
+                tempMenuBodyText += " Not Done\n";
+            }
+        }
+        menuBodyText.setText(tempMenuBodyText);
+    }
+
 
     public void MoveCharacter(View view)
     {
+        //PS TODO Adjust to work off database
         if(!isTraveling) {
             destinationNode = 3;
             mapNodes[0].setVisibility(View.VISIBLE);
@@ -448,8 +457,6 @@ public class MapActivity extends AppCompatActivity {
         intent.putExtra("edu.uwm.cs.fitrpg.enemyDexterity", baseEnemyDexterity);
 
         intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", baseEnemySpeed);
-
-        intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);
 
         startActivity(intent);
         finish();
