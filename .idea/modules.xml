@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FitRPG.iml" filepath="$PROJECT_DIR$/FitRPG.iml" />
-      <module fileurl="file://$PROJECT_DIR$/FitRPG-ST.iml" filepath="$PROJECT_DIR$/FitRPG-ST.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
