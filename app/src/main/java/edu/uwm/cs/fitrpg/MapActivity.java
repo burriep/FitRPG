@@ -11,6 +11,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
@@ -78,6 +79,7 @@ public class MapActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        Log.d("MapA", "in OnCreate");
 
         navigationIDTag = 0;
         Intent intent = getIntent();
@@ -211,7 +213,8 @@ public class MapActivity extends AppCompatActivity {
                 menuRightButton.setVisibility(View.VISIBLE);
                 menuIsVisible = true;
                 final View passedView = view;
-                if(mapView.board.getNodes().get(destinationNode).getNodeId() == mapView.getCurrentNode()) {
+                Log.d("MapA", "in Click Node: Clicked: " + destinationNode + " Converted: " + mapView.board.getNodes().get(destinationNode).getNodeId() + " Current: " + mapView.getCurrentNode());
+                if(mapView.board.getNodes().get(destinationNode).getNodeId() == mapView.board.getNodes().get(mapView.getCurrentNode()).getNodeId()) {
                     SQLiteDatabase readDb = myDB.getReadableDatabase();
                     menuTopBarText.setText("Current Node");
                     String tempMenuBodyText = "This is your current location\nChallenges:\n";

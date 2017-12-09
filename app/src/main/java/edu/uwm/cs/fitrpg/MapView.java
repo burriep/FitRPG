@@ -148,7 +148,7 @@ public class MapView extends View {
         }
         for(int i = 0; i < numOfNodes; i++)
         {
-            if(board.getNodes().get(i).getNodeId() == board.player.getCurrentNode())
+            if(board.getNodes().get(i).getNodeId() == board.getNodes().get(board.player.getCurrentNode()).getNodeId())
             {
                 mapNodeImage[i].setColorFilter(getResources().getColor(R.color.cyan), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
@@ -195,7 +195,7 @@ public class MapView extends View {
 
     public void setCurrentNode(int val) {
         Log.d("DBG", "In MapView - Arg Node: " + val + " Converted Node: " + (board.getNodes().get(val).getNodeId()));
-        board.player.setCurrentNode(board.getNodes().get(val).getNodeId());
+        board.player.setCurrentNode(val);
         AdjustImage();
     }
 
@@ -295,7 +295,7 @@ public class MapView extends View {
 		ArrayList<MapNode> nodes = board.getNodes();
 
         Log.d("DBG", "In MapView - Current Node: " + board.player.getCurrentNode() + " Dest Node: " + board.getNodes().get(destNode).getNodeId());
-        return board.isConnected(board.player.getCurrentNode(), nodes.get(destNode).getNodeId());
+        return board.isConnected(nodes.get(board.player.getCurrentNode()).getNodeId(), nodes.get(destNode).getNodeId());
 
     }
 
