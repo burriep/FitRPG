@@ -67,15 +67,18 @@ public class GameActivity extends Activity {
 
             intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", gv.getScene().getEnemy().GetSpeed() / loop);
 
-            if (status > 0) {
-                loop++;
-            }
-            finish();
+            intent.putExtra("edu.uwm.cs.fitrpg.refreshMap", 1);
+
             RpgChar playerChar = new RpgChar();
+            if (status > 0) {
+                playerChar.setLoopCount(loop+1);
+                playerChar.setCurrentMap(playerChar.getCurrentMap()+1);
+            }
             playerChar.setCurrentNode(0);
-            playerChar.setLoopCount(loop);
+
             playerChar.dbPush();
             startActivity(intent);
+            finish();
         }
     }
 

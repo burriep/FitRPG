@@ -34,7 +34,7 @@ public class MapView extends View {
 
 
     private Paint paint = new Paint();
-    private Drawable[] mapNodeImage;
+    private Drawable mapNodeImage;
 
     public MapView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -47,7 +47,7 @@ public class MapView extends View {
         //later we will pass in a map_id variable, instead of 1
         if(this.board == null)
         {
-            board = new GameBoard(5);
+            board = new GameBoard();
         }
         loopCount = board.getLoopCount();
         Log.d("DBG", "In Mapview - loopcount:" + this.loopCount);
@@ -56,7 +56,7 @@ public class MapView extends View {
 
             numOfNodes = board.getNumNodes();
             //currentNode = board.player.getCurrentNode();
-            bossNode = a.getInteger(R.styleable.MapView_MapBossNode, 0);
+            //bossNode = a.getInteger(R.styleable.MapView_MapBossNode, 0);
             nodeSize = a.getInteger(R.styleable.MapView_MapNodeSize, 20);
 
             /*numOfNodes = a.getInteger(R.styleable.MapView_MapNumOfNodes, 0);
@@ -69,27 +69,22 @@ public class MapView extends View {
         paint.setColor(Color.LTGRAY);
         paint.setStrokeWidth(5f);
 
-        mapNodeImage = new Drawable[numOfNodes];
         double angle = 0;
         int canvasCenterWidth = (int)screenDimensions.first/2;
         int canvasCenterHeight = (int)screenDimensions.second/2;
         int distanceFromCenterWidth = canvasCenterWidth/2;
         int distanceFromCenterHeight = canvasCenterHeight/2;
 
-        if(numOfNodes > 0)
-        {
-            for(int i = 0; i < numOfNodes; i++)
-            {
-
-                mapNodeImage[i] = getResources().getDrawable(R.drawable.map_node);
-                //angle = 2 * Math.PI * (i/(double)(numOfNodes));
-                //board.nodeList.get(i).setX(canvasCenterWidth - (int)Math.round(distanceFromCenterWidth * Math.cos(angle)));
-                //board.nodeList.get(i).setY(canvasCenterHeight - (int)Math.round(distanceFromCenterHeight * Math.sin(angle)));
-
-            }
-        }
+        mapNodeImage = getResources().getDrawable(R.drawable.map_node);
 
         Log.d("DBG", "In MapView - end of constructor");
+    }
+
+    public void RefreshMap()
+    {
+        board = new GameBoard();
+        loopCount = board.getLoopCount();
+        numOfNodes = board.getNumNodes();
     }
 
     public int GetMapID()
@@ -150,23 +145,23 @@ public class MapView extends View {
         {
             if(board.getNodes().get(i).getNodeId() == board.getNodes().get(board.player.getCurrentNode()).getNodeId())
             {
-                mapNodeImage[i].setColorFilter(getResources().getColor(R.color.cyan), android.graphics.PorterDuff.Mode.MULTIPLY);
+                mapNodeImage.setColorFilter(getResources().getColor(R.color.cyan), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
             else if (board.getNodes().get(i).getIsBoss() == 1)
             {
-                mapNodeImage[i].setColorFilter(getResources().getColor(R.color.red), android.graphics.PorterDuff.Mode.MULTIPLY);
+                mapNodeImage.setColorFilter(getResources().getColor(R.color.red), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
             else
             {
-                mapNodeImage[i].setColorFilter(getResources().getColor(R.color.gold), android.graphics.PorterDuff.Mode.MULTIPLY);
+                mapNodeImage.setColorFilter(getResources().getColor(R.color.gold), android.graphics.PorterDuff.Mode.MULTIPLY);
             }
             Log.d("DBG", "In MapView - in onDraw - Drawing Node " + i + " Converted: " + board.getNodes().get(i).getNodeId());
 
 
             board.nodeList.get(i).setAdjX((int)(board.nodeList.get(i).getX()* adjustmentX));
             board.nodeList.get(i).setAdjY((int)(board.nodeList.get(i).getY()* adjustmentY));
-            mapNodeImage[i].setBounds(board.nodeList.get(i).getAdjX()-(nodeSize/2),board.nodeList.get(i).getAdjY()-(nodeSize/2),board.nodeList.get(i).getAdjX()+(nodeSize/2),board.nodeList.get(i).getAdjY()+(nodeSize/2));
-            mapNodeImage[i].draw(canvas);
+            mapNodeImage.setBounds(board.nodeList.get(i).getAdjX()-(nodeSize/2),board.nodeList.get(i).getAdjY()-(nodeSize/2),board.nodeList.get(i).getAdjX()+(nodeSize/2),board.nodeList.get(i).getAdjY()+(nodeSize/2));
+            mapNodeImage.draw(canvas);
 
         }
     }

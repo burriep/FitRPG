@@ -36,7 +36,7 @@ public class MapActivity extends AppCompatActivity {
     private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
     private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
     private boolean isTraveling;               //PS Local storage of whether the player is currently traveling, and thus whether a node button is clickable
-    private int travelDuration = 10000;         //PS How long in milliseconds it takes currently to travel
+    private int travelDuration = 100;         //PS How long in milliseconds it takes currently to travel
     private int travelProgress = 0;            //PS A number between 0-100 representing the percentage of how far along the current travel is
     private int destinationNode = 0;           //PS The node the player is currently traveling to
 
@@ -80,7 +80,6 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         Log.d("MapA", "in OnCreate");
-
         navigationIDTag = 0;
         Intent intent = getIntent();
         //playerChar = new RpgChar();
@@ -114,6 +113,9 @@ public class MapActivity extends AppCompatActivity {
         menuLeftButton = (Button)findViewById(R.id.MapMenuLeftButton);
         menuRightButton = (Button)findViewById(R.id.MapMenuRightButton);
         mapView = (MapView)findViewById(R.id.MapViewCanvas);
+        if(intent.getIntExtra("edu.uwm.cs.fitrpg.refreshMap", 0) == 1) {
+            mapView.RefreshMap();
+        }
         mapView.setCurrentNode(mapView.board.player.getCurrentNode());
 
         basePlayerStamina = mapView.board.player.getStamina();
@@ -422,7 +424,7 @@ public class MapActivity extends AppCompatActivity {
             challenges[i] = new FitnessChallenge();
             challengeComplete[i] = false;
         }
-        if(destinationNode == mapView.getBossNode())
+        if(mapView.board.getNodes().get(destinationNode).getIsBoss()==1)
         {
             menuLeftButton.setText(getResources().getString(R.string.combat_start_button));
         }
@@ -431,7 +433,7 @@ public class MapActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mapView.board.player.updateStatsFromActivities(startTravelTime, endTravelTime);
                 mapView.board.player.dbPush();
-                if(destinationNode == mapView.getBossNode())
+                if(mapView.board.getNodes().get(destinationNode).getIsBoss()==1)
                 {
                     menuLeftButton.setText(getResources().getString(R.string.confirm_button_string));
                     LaunchCombat();
