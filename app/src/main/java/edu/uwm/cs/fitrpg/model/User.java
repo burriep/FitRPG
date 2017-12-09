@@ -65,16 +65,16 @@ public class User {
         height = h;
     }
 
-    public void setLastUpdateDate(String d){
-       String date = d;
+    public void setLastUpdateDate(String d) {
+        if (d == null) {
+            d = "";
+        }
         try {
-            date = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).parse(d).toString();
+            d = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT)).parse(d).toString();
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-
-        lastUpdateDate = date;
+        lastUpdateDate = d;
     }
 
     public void updateUser(DatabaseHelper db) {
