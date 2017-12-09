@@ -44,12 +44,6 @@ public class TutorialActivity extends AppCompatActivity{
             transaction.commit();
             fragment.setArguments(b);
         }
-//        else {
-//            FragmentTransaction transaction = fragmentManager.beginTransaction();
-//            TutorialHomeFragment fragment = new TutorialHomeFragment();
-//            transaction.replace(R.id.tutorial_fragment, fragment);
-//            transaction.commit();
-//        }
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,4 +1,4 @@
-package edu.uwm.cs.fitrpg;
+package edu.uwm.cs.fitrpg.util;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;

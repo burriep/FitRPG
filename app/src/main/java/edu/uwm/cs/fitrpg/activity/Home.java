@@ -128,66 +128,6 @@ public class Home extends AppCompatActivity{
             AlertDialog dialog = alert.create();
             dialog.show();
         }
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//            builder.setTitle("Create User");
-//
-//            LinearLayout layout = new LinearLayout(this);
-//            layout.setOrientation(LinearLayout.VERTICAL);
-//
-//            LinearLayout layoutName = new LinearLayout(this);
-//            layout.setOrientation(LinearLayout.HORIZONTAL);
-//
-//            LinearLayout layoutWeight = new LinearLayout(this);
-//            layout.setOrientation(LinearLayout.HORIZONTAL);
-//
-//            LinearLayout layoutHeight = new LinearLayout(this);
-//            layout.setOrientation(LinearLayout.HORIZONTAL);
-//
-//            final TextView tvName = new TextView(this);
-//            tvName.setText("Name: ");
-//            final EditText etName = new EditText(this);
-//            etName.setInputType(InputType.TYPE_CLASS_TEXT);
-//            layoutName.addView(tvName);
-//            layoutName.addView(etName);
-//            layout.addView(layoutName);
-//
-//            final TextView tvWeight = new TextView(this);
-//            tvWeight.setText("Weight: ");
-//            final EditText etWeight = new EditText(this);
-//            etWeight.setInputType(InputType.TYPE_CLASS_NUMBER);
-//            layoutWeight.addView(tvWeight);
-//            layoutWeight.addView(etWeight);
-//            layout.addView(layoutWeight);
-//
-//            final TextView tvHeight = new TextView(this);
-//            tvHeight.setText("Height: ");
-//            final EditText etHeight = new EditText(this);
-//            etHeight.setInputType(InputType.TYPE_CLASS_NUMBER);
-//            layoutHeight.addView(tvHeight);
-//            layoutHeight.addView(etHeight);
-//            layout.addView(layoutHeight);
-//
-//            builder.setView(layout);
-//
-//            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                String name = "";
-//                int weight = 0;
-//                int height = 0;
-//
-//                @Override
-//                public void onClick(DialogInterface dialogInterface, int i) {
-//                    name = etName.getText().toString();
-//                    weight = Integer.parseInt(etWeight.getText().toString());
-//                    height = Integer.parseInt(etHeight.getText().toString());
-//                    User user = new User(name, 1);
-//                    user.setWeight(weight);
-//                    user.setHeight(height);
-//                    user.setLastUpdateDate(new SimpleDateFormat(ISO_DATE_TIME_FORMAT).format(Calendar.getInstance().getTime()));
-//                }
-//            });
-//
-//            builder.show();
-//        }
     }
 
     @Override

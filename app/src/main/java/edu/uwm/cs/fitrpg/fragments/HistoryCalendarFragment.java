@@ -1,29 +1,20 @@
 package edu.uwm.cs.fitrpg.fragments;
 
 
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.BinderThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.prolificinteractive.materialcalendarview.DayViewDecorator;
-import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
-import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,8 +24,8 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
-import edu.uwm.cs.fitrpg.EventDecorator;
-import edu.uwm.cs.fitrpg.OneDayDecorator;
+import edu.uwm.cs.fitrpg.util.EventDecorator;
+import edu.uwm.cs.fitrpg.util.OneDayDecorator;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;

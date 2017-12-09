@@ -1,4 +1,4 @@
-package edu.uwm.cs.fitrpg;
+package edu.uwm.cs.fitrpg.util;
 
 /**
  * Created by Admin on 12/7/2017.
