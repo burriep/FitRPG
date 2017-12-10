@@ -3,6 +3,7 @@ package edu.uwm.cs.fitrpg.model;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +33,10 @@ public class FitnessChallengeLevel {
     public static FitnessChallengeLevel get(SQLiteDatabase db, int userId, int fitnessTypeId) {
         String[] selectionArgs = {Integer.toString(userId), Integer.toString(fitnessTypeId)};
         Cursor cursor = db.rawQuery("SELECT usr_id, act_id, ch_level, ch_increment FROM fr_challenge WHERE usr_id = ? AND act_id = ?;", selectionArgs);
-
         FitnessChallengeLevel level = null;
         while (cursor.moveToNext()) {
+
+
             level = new FitnessChallengeLevel();
             level.userId = cursor.getInt(cursor.getColumnIndexOrThrow("usr_id"));
             level.fitnessTypeId = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
@@ -131,18 +133,19 @@ public class FitnessChallengeLevel {
     public String toString() {
         String s;
         if (activityType != null) {
+            s = activityType.toString() + " ";
             switch (activityType.getImpactIntervalUnit()) {
                 case FitnessActivityUnit.TIME:
-                    s = Utils.formatDuration(level);
+                    s += Utils.formatDuration(level);
                     break;
                 case FitnessActivityUnit.DISTANCE:
-                    s = level + "m";
+                    s += level + "m";
                     break;
                 case FitnessActivityUnit.REPS:
-                    s = level + " reps";
+                    s += level + " reps";
                     break;
                 default:
-                    s = "";
+                    s += "";
                     break;
             }
         } else {

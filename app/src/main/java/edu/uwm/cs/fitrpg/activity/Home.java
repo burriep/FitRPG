@@ -23,6 +23,7 @@ import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.CurrentLevelFragment;
+import edu.uwm.cs.fitrpg.model.FitnessChallengeLevel;
 import edu.uwm.cs.fitrpg.model.User;
 import edu.uwm.cs.fitrpg.util.Utils;
 
@@ -75,9 +76,10 @@ public class Home extends AppCompatActivity {
         dexterity = (TextView) findViewById(R.id.home_dexterity);
         myDB = new DatabaseHelper(this);
 
-        //PS Check database for a user with ID 0, otherwise create one
+        //PS Check database for a user with ID 1, otherwise create one
         if (myDB.getStamina(userID) == "-1") {
             myDB.createChar(userID, 0, "Defaultio", 10, 10, 10, 10, 10, 1);
+            FitnessChallengeLevel.initUser(myDB.getReadableDatabase(), userID);
         }
         //These setText calls would eventually collect the stat info
         // from database or character class

@@ -27,6 +27,7 @@ import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.activity.Home;
 import edu.uwm.cs.fitrpg.activity.SettingsActivity;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
+import edu.uwm.cs.fitrpg.model.FitnessChallengeLevel;
 import edu.uwm.cs.fitrpg.util.Utils;
 import edu.uwm.cs.fitrpg.view.GameActivity;
 
@@ -36,7 +37,7 @@ public class MapActivity extends AppCompatActivity {
 
     private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
     private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
-    private int travelDuration = 100000;         //PS How long in milliseconds it takes currently to travel
+    private int travelDuration = 1000;         //PS How long in milliseconds it takes currently to travel
     private int travelProgress = 0;            //PS A number between 0-100 representing the percentage of how far along the current travel is
     private int destinationNode = 0;           //PS The node the player is currently traveling to
 
@@ -70,9 +71,10 @@ public class MapActivity extends AppCompatActivity {
     Date startTravelTime;
     Date endTravelTime;
     Date lastCheckedTime;
-    FitnessChallenge[] challenges;
+    List<FitnessChallengeLevel> challenges;
     Boolean[] challengeComplete;
     int countComplete;
+    int numberOfChallenges = 3;
 
     public static SimpleDateFormat mapDateFormat = new SimpleDateFormat(Utils.ISO_DATE_TIME_FORMAT);
     private boolean quitHandler = false;
@@ -159,14 +161,13 @@ public class MapActivity extends AppCompatActivity {
 
         mapNodes = new View[mapView.getNumOfNodes()];
         //lastCheckedTime.setTime(0);     //PS DEBUG CODE
-        challenges = new FitnessChallenge[3];     //PS DEBUG CODE
-        challengeComplete = new Boolean[3];     //PS DEBUG CODE
+        /*challenges = FitnessChallengeLevel.getRandomChallenges(myDB.getReadableDatabase(), MapView.board.player.getId(), numberOfChallenges);     //PS DEBUG CODE
+        challengeComplete = new Boolean[numberOfChallenges];     //PS DEBUG CODE
         countComplete = 0;     //PS DEBUG CODE
-        for (int i = 0; i < challenges.length; i++)
+        for (int i = 0; i < challenges.size(); i++)
         {
-            challenges[i] = new FitnessChallenge();     //PS DEBUG CODE
             challengeComplete[i] = false;     //PS DEBUG CODE
-        }
+        }*/
 
         final Handler placeButtonsHandler = new Handler();
         placeButtonsHandler.postDelayed(new Runnable() {
@@ -315,20 +316,17 @@ public class MapActivity extends AppCompatActivity {
         SQLiteDatabase readDb = myDB.getReadableDatabase();
         menuTopBarText.setText("Current Node");
         String tempMenuBodyText = "This is your current location\nChallenges:\n";
-        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, lastCheckedTime, new Date());
+        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, mapView.board.player.getLastCheckedTime(), new Date());
 
-        for(int i = 0; i < activities.size(); i++)
+        for(int i = 0; i < challengeComplete.length; i++)
         {
-            for(int j = 0; j < challengeComplete.length; j++)
+            if(!challengeComplete[i])
             {
-                if(!challengeComplete[j])
-                {
-                    challengeComplete[j] = challenges[j].checkComplete(activities.get(i).getType().getName());
-                }
+                challengeComplete[i] = MapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(i));
             }
         }
         for(int i = 0; i < challengeComplete.length; i++) {
-            tempMenuBodyText += challenges[i].getChallengeType();
+            tempMenuBodyText += challenges.get(i).toString();
             if (challengeComplete[i]) {
                 tempMenuBodyText += " Complete!\n";
             } else {
@@ -361,7 +359,6 @@ public class MapActivity extends AppCompatActivity {
             menuTravelFitnessLog.setText("Recent Fitness Activities:");
             menuLeftButton.setVisibility(View.GONE);
             menuRightButton.setVisibility(View.GONE);
-            //PS TODO Add DB calls telling that we are moving now
             StartMoving();
         }
     }
@@ -431,13 +428,17 @@ public class MapActivity extends AppCompatActivity {
         final int strengthGain = updatedStats[0], enduranceGain = updatedStats[1], dexterityGain = updatedStats[2], speedGain = updatedStats[3], staminaGain = updatedStats[4] ;
         menuBodyText.setText("Travel Complete!\nGains: Sta +" + staminaGain + " Spd +" + speedGain + " Str +" + strengthGain + " End +" + enduranceGain + " Dex +" + dexterityGain);
         menuLeftButton.setVisibility(View.VISIBLE);
-        challenges = new FitnessChallenge[3];
-        challengeComplete = new Boolean[3];
-        countComplete = 0;
-        for (int i = 0; i < challenges.length; i++)
+        Log.d("DBG", "MapActivity - Before Challenges " );
+        SQLiteDatabase readDB = myDB.getReadableDatabase();
+        challenges = FitnessChallengeLevel.getRandomChallenges(readDB, MapView.board.player.getId(), numberOfChallenges);     //PS DEBUG CODE
+        Log.d("DBG", "MapActivity - After Challenges ");
+
+        challengeComplete = new Boolean[numberOfChallenges];     //PS DEBUG CODE
+        countComplete = 0;     //PS DEBUG CODE
+        for (int i = 0; i < challenges.size(); i++)
         {
-            challenges[i] = new FitnessChallenge();
-            challengeComplete[i] = false;
+            Log.d("DBG", "MapActivity - In challenge loop " + i);
+            challengeComplete[i] = false;     //PS DEBUG CODE
         }
         if(mapView.board.getNodes().get(destinationNode).getIsBoss()==1)
         {
