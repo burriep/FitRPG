@@ -1,13 +1,12 @@
 package edu.uwm.cs.fitrpg.model;
 
 
-import android.database.sqlite.SQLiteDatabase;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
+
+import static edu.uwm.cs.fitrpg.util.Utils.ISO_DATE_TIME_FORMAT;
 
 public class User {
 
@@ -15,7 +14,6 @@ public class User {
     private int userID;
     private int weight, height;
     private String lastUpdateDate = null;
-    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     public User(String name, int id) {
         this.name = name;

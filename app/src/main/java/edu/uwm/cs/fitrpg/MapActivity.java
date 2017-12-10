@@ -12,7 +12,6 @@ import android.support.constraint.ConstraintSet;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +27,7 @@ import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.activity.Home;
 import edu.uwm.cs.fitrpg.activity.SettingsActivity;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
+import edu.uwm.cs.fitrpg.util.Utils;
 import edu.uwm.cs.fitrpg.view.GameActivity;
 
 
@@ -74,7 +74,7 @@ public class MapActivity extends AppCompatActivity {
     Boolean[] challengeComplete;
     int countComplete;
 
-    public static SimpleDateFormat mapDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static SimpleDateFormat mapDateFormat = new SimpleDateFormat(Utils.ISO_DATE_TIME_FORMAT);
     private boolean quitHandler = false;
 
     @Override

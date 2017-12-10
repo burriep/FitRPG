@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -21,6 +20,8 @@ import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 
+import static edu.uwm.cs.fitrpg.util.Utils.ISO_DATE_TIME_FORMAT;
+
 
 public class FitnessHistoryDataFragment extends Fragment{
 
@@ -28,7 +29,6 @@ public class FitnessHistoryDataFragment extends Fragment{
     Button btnOK;
     FitnessActivity fitnessActivity;
     SQLiteDatabase db;
-    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     public FitnessHistoryDataFragment() {
         // Required empty public constructor
