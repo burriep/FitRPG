@@ -11,7 +11,7 @@ import android.provider.Settings;
 public class Text
 {
 
-    public enum Behavior {SCROLLING, RISING, FULLTEXT}
+    public enum Behavior {SCROLLING, RISING, FALLING, FULLTEXT}
 
     private Behavior behavior;
     private float size;
@@ -22,6 +22,7 @@ public class Text
     private int xpos, ypos;
     private int speed  = 5;
     private long timer = 0;
+    private long life = Integer.MAX_VALUE;
     Paint paint;
 
     public Text(String text, int x, int y, float size, int color, Behavior behavior)
@@ -45,11 +46,22 @@ public class Text
 
     public int getYpos() {return this.ypos;}
     public int getXpos() {return this.xpos;}
-
+    public void setLife(long life)
+    {
+        this.life = life;
+    }
+    public long getLife()
+    {
+        return this.life;
+    }
 
     public void tick(float deltaTime)
     {
         timer += deltaTime;
+        if(life != Integer.MAX_VALUE)
+        {
+            life -= deltaTime;
+        }
         if (timer < 5 * speed) return;
         switch (behavior) {
             case SCROLLING:
@@ -64,6 +76,12 @@ public class Text
             case RISING:
             {
                 this.ypos -= speed;
+                timer = 0;
+                break;
+            }
+            case FALLING:
+            {
+                this.ypos += speed;
                 timer = 0;
                 break;
             }
