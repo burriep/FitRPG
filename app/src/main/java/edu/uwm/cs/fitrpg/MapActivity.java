@@ -36,7 +36,7 @@ public class MapActivity extends AppCompatActivity {
 
     private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
     private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
-    private int travelDuration = 10000;         //PS How long in milliseconds it takes currently to travel
+    private int travelDuration = 100000;         //PS How long in milliseconds it takes currently to travel
     private int travelProgress = 0;            //PS A number between 0-100 representing the percentage of how far along the current travel is
     private int destinationNode = 0;           //PS The node the player is currently traveling to
 
@@ -70,12 +70,12 @@ public class MapActivity extends AppCompatActivity {
     Date startTravelTime;
     Date endTravelTime;
     Date lastCheckedTime;
-    int activityLines;
     FitnessChallenge[] challenges;
     Boolean[] challengeComplete;
     int countComplete;
 
     public static SimpleDateFormat mapDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private boolean quitHandler = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +85,7 @@ public class MapActivity extends AppCompatActivity {
         navigationIDTag = 0;
         Intent intent = getIntent();
         //playerChar = new RpgChar();
+        quitHandler = false;
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
@@ -126,6 +127,16 @@ public class MapActivity extends AppCompatActivity {
 
         if(mapView.getIsTraveling())
         {
+            Log.d("DBG", "Map Activity - In On Create - Is Traveling");
+
+            menuIsVisible = true;
+            menuBodyText.setText("Travel Time Remaining: Calculating...");
+            menuTravelProgressBar.setVisibility(View.VISIBLE);
+            menuTravelFitnessLog.setVisibility(View.VISIBLE);
+            menuLeftButton.setVisibility(View.GONE);
+            menuRightButton.setVisibility(View.GONE);
+            menuTravelProgressBar.setProgress(0);
+
             MapPath path = mapView.getCurrentPath();
             lastCheckedTime = mapView.board.player.getLastCheckedTime();
             try {
@@ -134,7 +145,7 @@ public class MapActivity extends AppCompatActivity {
             }
             catch(Exception e)
             {
-                Log.d("Err", "Error - Exception thrown: " + e.toString());
+                Log.d("ERR", "Error - Exception thrown: " + e.toString());
             }
             HandleMoving();
         }
@@ -300,7 +311,7 @@ public class MapActivity extends AppCompatActivity {
 
     public void SetCurrentNodeChallenges()
     {
-        //PS TODO Set Challenges per Paul's new Stuff
+        //PS TODO Set Challenges per Paul's new Stuff (Generate FitnessChallengeLevel, send to RPGchar, get units from FitnessChallengeLevel)
         SQLiteDatabase readDb = myDB.getReadableDatabase();
         menuTopBarText.setText("Current Node");
         String tempMenuBodyText = "This is your current location\nChallenges:\n";
@@ -344,8 +355,10 @@ public class MapActivity extends AppCompatActivity {
             mapView.setIsTraveling(true);
             mapView.setTravelProgress(0);
             menuTravelProgressBar.setProgress(0);
+            menuBodyText.setText("Travel Time Remaining: " + travelDuration/1000 + " seconds");
             menuTravelProgressBar.setVisibility(View.VISIBLE);
             menuTravelFitnessLog.setVisibility(View.VISIBLE);
+            menuTravelFitnessLog.setText("Recent Fitness Activities:");
             menuLeftButton.setVisibility(View.GONE);
             menuRightButton.setVisibility(View.GONE);
             //PS TODO Add DB calls telling that we are moving now
@@ -359,7 +372,7 @@ public class MapActivity extends AppCompatActivity {
         startTravelTime = new Date();
         lastCheckedTime = new Date();
         endTravelTime = new Date();
-        lastCheckedTime.setTime(0);       //PS DEBUG CODE
+        mapView.board.player.setLastCheckedTime(new Date());
         endTravelTime.setTime(startTravelTime.getTime()+travelDuration);
         MapPath path = mapView.getCurrentPath();
         path.setStartTime(mapDateFormat.format(startTravelTime));
@@ -371,36 +384,28 @@ public class MapActivity extends AppCompatActivity {
     {
         final SQLiteDatabase readDb = myDB.getReadableDatabase();
         final Handler mapTravelHandler = new Handler();
-        activityLines = 0;
         mapTravelHandler.postDelayed(new Runnable() {
             public void run() {
-                Date currentTime = new Date();
-                travelProgress = (int)(currentTime.getTime()-startTravelTime.getTime());
-                mapView.setTravelProgress((travelProgress*100)/(int)(endTravelTime.getTime()-startTravelTime.getTime()));
-                menuTravelProgressBar.setProgress(mapView.getTravelProgress());
-                List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, mapView.board.player.getLastCheckedTime(), currentTime);
-                mapView.board.player.setLastCheckedTime(new Date());
-                mapView.board.player.dbPush();
-                for(int i = 0; i < activities.size(); i++)
-                {
-                    if(activityLines < 2) {
-                        activityLines++;
+                    if(!quitHandler) {
+                        Date currentTime = new Date();
+
+                        travelProgress = (int) (currentTime.getTime() - startTravelTime.getTime());
+                        mapView.setTravelProgress((travelProgress * 100) / (int) (endTravelTime.getTime() - startTravelTime.getTime()));
+                        menuTravelProgressBar.setProgress(mapView.getTravelProgress());
+                        menuBodyText.setText("Travel Time Remaining: " + (endTravelTime.getTime() - currentTime.getTime()) / 1000 + " seconds");
+                        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, startTravelTime, currentTime);
+                        mapView.board.player.setLastCheckedTime(new Date());
+                        mapView.board.player.dbPush();
+                        menuTravelFitnessLog.setText("Recent Fitness Activities:");
+                        for (int i = 0; i < Math.min(2, activities.size()); i++) {
+                            menuTravelFitnessLog.append("\nDate: " + activities.get(i).getStartDate() + "\nActivity Type: " + activities.get(i).getType().getName());
+                        }
+                        if (currentTime.getTime() < endTravelTime.getTime()) {
+                            mapTravelHandler.postDelayed(this, 500);
+                        } else {
+                            StopMoving();
+                        }
                     }
-                    else
-                    {
-                        String fitnessLogText = menuTravelFitnessLog.getText().toString();
-                        fitnessLogText = "Fitness Activities:\n" + fitnessLogText.substring(fitnessLogText.indexOf("Date", fitnessLogText.indexOf("Date")+1));
-                        menuTravelFitnessLog.setText(fitnessLogText);
-                    }
-                    menuTravelFitnessLog.append("\nDate: " + activities.get(i).getStartDate() + "\nActivity Type: " + activities.get(i).getType().getName());
-                }
-                if (travelProgress < travelDuration) {
-                    mapTravelHandler.postDelayed(this, 500);
-                }
-                else
-                {
-                    StopMoving();
-                }
                 /*travelProgress += 500;
                 mapView.setTravelProgress((travelProgress*100)/travelDuration);
                 menuTravelProgressBar.setProgress((int)((travelProgress*100)/travelDuration));*/
@@ -422,16 +427,13 @@ public class MapActivity extends AppCompatActivity {
 
     private void TravelComplete()
     {
-        startTravelTime.setTime(0);     //PS DEBUG CODE
         int[] updatedStats = mapView.board.player.peekStatsFromActivities(startTravelTime, endTravelTime);
         final int strengthGain = updatedStats[0], enduranceGain = updatedStats[1], dexterityGain = updatedStats[2], speedGain = updatedStats[3], staminaGain = updatedStats[4] ;
         menuBodyText.setText("Travel Complete!\nGains: Sta +" + staminaGain + " Spd +" + speedGain + " Str +" + strengthGain + " End +" + enduranceGain + " Dex +" + dexterityGain);
-        //PS TODO calculate gains
         menuLeftButton.setVisibility(View.VISIBLE);
         challenges = new FitnessChallenge[3];
         challengeComplete = new Boolean[3];
         countComplete = 0;
-        lastCheckedTime.setTime(0);     //PS DEBUG CODE
         for (int i = 0; i < challenges.length; i++)
         {
             challenges[i] = new FitnessChallenge();
@@ -473,6 +475,7 @@ public class MapActivity extends AppCompatActivity {
 
         intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", baseEnemySpeed);
 
+        quitHandler = true;
         startActivity(intent);
         finish();
     }
@@ -482,6 +485,7 @@ public class MapActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), Home.class);
         startActivity(intent);
         navigationIDTag = 1;
+        quitHandler = true;
         finish();
     }
 
@@ -496,12 +500,14 @@ public class MapActivity extends AppCompatActivity {
                     intent = new Intent(getApplicationContext(), Home.class);
                     startActivity(intent);
                     navigationIDTag = 1;
+                    quitHandler = true;
                     finish();
                     return true;
                 case R.id.navigation_fitness:
                     intent = new Intent(getApplicationContext(), FitnessOverview.class);
                     startActivity(intent);
                     navigationIDTag = 2;
+                    quitHandler = true;
                     finish();
                     return true;
                 case R.id.navigation_game_map:
@@ -511,6 +517,7 @@ public class MapActivity extends AppCompatActivity {
                     intent = new Intent(getApplicationContext(), SettingsActivity.class);
                     startActivity(intent);
                     navigationIDTag = 4;
+                    quitHandler = true;
                     finish();
                     return true;
             }
