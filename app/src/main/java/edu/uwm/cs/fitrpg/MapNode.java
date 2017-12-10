@@ -21,8 +21,9 @@ public class MapNode {
     private int nodeComplete;
     private DatabaseHelper db;
     private int isBoss = 0;
+    private int challengeID;
 
-    public MapNode(int id, int map,int cmp, int x, int y, int adjX, int adjY)
+    public MapNode(int id, int map,int cmp, int x, int y, int adjX, int adjY, int challengeID, int isBoss)
     {
         db = new DatabaseHelper(Home.appCon);
 
@@ -38,6 +39,8 @@ public class MapNode {
             this.adjX = adjX;
             this.adjY = adjY;
             this.nodeComplete = 0;
+            this.challengeID = challengeID;
+            this.isBoss = isBoss;
             dbPush();
         }
     }
@@ -84,6 +87,11 @@ public class MapNode {
     }
     public int getIsBoss(){return isBoss;}
 
+    public int getChallengeID()
+    {
+        return this.challengeID;
+    }
+
     /*|||||||||||||||||||||||||||||||||||||||||||||||||| SETTER METHODS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
     //1 for complete, 0 for playable
     public void setNodeStatus(int x)
@@ -116,9 +124,14 @@ public class MapNode {
         this.adjY= y;
     }
 
+    public void setChallengeID(int x)
+    {
+        this.challengeID = x;
+    }
+
     public void setIsBoss(int flag)
     {
-        isBoss = flag;
+        this.isBoss = flag;
     }
 
     /*|||||||||||||||||||||||||||||||||||||||||||||||||| DATABASE METHODS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
@@ -126,15 +139,17 @@ public class MapNode {
     {
         Log.d("DBG", "in MapNode dbPull");
         int[] retCoords = db.getNodeCoord(this.mapID, this.nodeID, 1);
-        int retStatus = db.getNodeStatus(this.mapID, this.nodeID, 1);
+        int[] retStatus = db.getNodeStatus(this.mapID, this.nodeID, 1);
 
-        if(retCoords != null && retStatus > -1)
+        if(retCoords != null && retStatus != null)
         {
             this.x = retCoords[0];
             this.y = retCoords[1];
             this.adjX = retCoords[2];
             this.adjY = retCoords[3];
-            this.nodeComplete = retStatus;
+            this.nodeComplete = retStatus[0];
+            this.challengeID = retStatus[1];
+            this.isBoss = retStatus[2];
             return true;
         }
         else
@@ -147,6 +162,6 @@ public class MapNode {
     public void dbPush()
     {
         Log.d("DBG", "in MapNode dbPush");
-        db.setNodeCoord(new Point(this.x,this.y), new Point(this.adjX,this.adjY), this.mapID, this.nodeID, 1,this.nodeComplete);
+        db.setNodeCoord(new Point(this.x,this.y), new Point(this.adjX,this.adjY), this.mapID, this.nodeID, 1,this.nodeComplete, this.challengeID, this.isBoss);
     }
 }
