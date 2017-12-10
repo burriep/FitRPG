@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.activity.Home;
@@ -112,9 +113,10 @@ public class MapActivity extends AppCompatActivity {
         menuLeftButton = (Button)findViewById(R.id.MapMenuLeftButton);
         menuRightButton = (Button)findViewById(R.id.MapMenuRightButton);
         mapView = (MapView)findViewById(R.id.MapViewCanvas);
-        if(intent.getIntExtra("edu.uwm.cs.fitrpg.refreshMap", 0) == 1) {
+        if(intent.getIntExtra("edu.uwm.cs.fitrpg.refreshMap", 0) != 0) {
             mapView.RefreshMap();
         }
+
         mapView.setCurrentNode(mapView.board.player.getCurrentNode());
 
         basePlayerStamina = mapView.board.player.getStamina();
@@ -126,8 +128,33 @@ public class MapActivity extends AppCompatActivity {
         loop = mapView.board.player.getLoopCount();
         Log.d("MapA", "in OnCreate - Loop: " + loop);
         //PS TODO Check for in combat, travelling, in menu, etc.
-
-        if(mapView.getIsTraveling())
+        if(intent.getIntExtra("edu.uwm.cs.fitrpg.refreshMap", 0) == 2) {
+            menuIsVisible = true;
+            menuTopBarText.setText("Increment Fitness Difficulty?");
+            menuBodyText.setText("Congratulations on your Victory! \n"
+            +                    "Would you like to increase your fitness difficulty level?\n"
+            +                    "This will increase the minimum threshholds needed to gain stats, as well as increase the difficulty of challenges offerred");
+            menuTravelProgressBar.setVisibility(View.GONE);
+            menuTravelFitnessLog.setVisibility(View.GONE);
+            menuLeftButton.setVisibility(View.VISIBLE);
+            menuRightButton.setVisibility(View.VISIBLE);
+            menuLeftButton.setText("Increment");
+            menuRightButton.setText("Remain the Same");
+            menuLeftButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FitnessChallengeLevel.increaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
+                    CloseMenu();
+                }
+            });
+            menuRightButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CloseMenu();
+                }
+            });
+        }
+        else if(mapView.getIsTraveling())
         {
             Log.d("DBG", "Map Activity - In On Create - Is Traveling");
 
