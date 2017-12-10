@@ -1,15 +1,13 @@
 package edu.uwm.cs.fitrpg;
 
-import android.provider.ContactsContract;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 import android.view.WindowManager;
 
-import java.util.Random;
-
 import java.util.ArrayList;
+import java.util.Random;
 
 import edu.uwm.cs.fitrpg.activity.Home;
 

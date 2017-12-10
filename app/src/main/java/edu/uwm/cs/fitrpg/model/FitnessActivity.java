@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,8 +15,9 @@ import java.util.Locale;
 
 import edu.uwm.cs.fitrpg.util.Utils;
 
-public class FitnessActivity implements Serializable {
-    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+import static edu.uwm.cs.fitrpg.util.Utils.ISO_DATE_TIME_FORMAT;
+
+public class FitnessActivity {
     private static final int NS_IN_MS = 1000000;
     private static final int MS_IN_SECOND = 1000;
     private int _id;

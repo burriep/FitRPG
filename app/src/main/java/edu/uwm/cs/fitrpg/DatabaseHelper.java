@@ -17,6 +17,7 @@ import java.util.Date;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 import edu.uwm.cs.fitrpg.model.User;
+import edu.uwm.cs.fitrpg.util.Utils;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "fitrpg.db";
@@ -793,7 +794,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("a_end", a_end);
         values.put("a_sta", a_sta);
         values.put("loop_cnt", loop_count);
-        String checkTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        String checkTime = new SimpleDateFormat(Utils.ISO_DATE_TIME_FORMAT).format(new Date());
         values.put("last_check_time", checkTime);
 
         try{

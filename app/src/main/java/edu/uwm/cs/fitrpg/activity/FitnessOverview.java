@@ -13,6 +13,8 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
@@ -21,13 +23,12 @@ import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
 import edu.uwm.cs.fitrpg.fragments.HistoryCalendarFragment;
 import edu.uwm.cs.fitrpg.graphics.Text;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
+import edu.uwm.cs.fitrpg.util.Utils;
 
 public class FitnessOverview extends AppCompatActivity implements FitnessActivityHistoryFragment.OnListFragmentInteractionListener {
     private int navigationIDTag;
     BottomNavigationView navigation;
     Date selectedDate;
-    TextView tvDate;
-    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +40,6 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
         navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
         navigation.getMenu().getItem(0).setChecked(false);
         navigation.getMenu().getItem(1).setChecked(true);
-
-        tvDate = findViewById(R.id.fitness_date);
 
         Button recordData, trackData;
         recordData = findViewById(R.id.btn_add_activity);
@@ -72,14 +71,6 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
         super.onResume();
         navigation.getMenu().getItem(0).setChecked(false);
         navigation.getMenu().getItem(1).setChecked(true);
-    }
-
-    public void setFitnessDate(Date date) {
-        tvDate.setText(new SimpleDateFormat(ISO_DATE_TIME_FORMAT).format(date));
-    }
-
-    public void eraseFitnessDate() {
-        tvDate.setText("");
     }
 
     public Date getSelectedDate() {

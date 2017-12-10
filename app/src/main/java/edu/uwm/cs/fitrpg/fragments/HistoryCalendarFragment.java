@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
-import edu.uwm.cs.fitrpg.util.EventDecorator;
-import edu.uwm.cs.fitrpg.util.OneDayDecorator;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
+import edu.uwm.cs.fitrpg.util.EventDecorator;
+import edu.uwm.cs.fitrpg.util.OneDayDecorator;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,7 +38,6 @@ public class HistoryCalendarFragment extends Fragment implements OnDateSelectedL
     private final int color = Color.parseColor("#228BC34A");
     private CalendarDay date;
     private HashSet<CalendarDay> dates = new HashSet<CalendarDay>();
-    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     public HistoryCalendarFragment() {
         // Required empty public constructor
@@ -56,7 +55,6 @@ public class HistoryCalendarFragment extends Fragment implements OnDateSelectedL
     @Override
     public void onStart() {
         super.onStart();
-        ((FitnessOverview) getActivity()).eraseFitnessDate();
         View fragmentView = getView();
         initDates();
         widget = fragmentView.findViewById(R.id.calendarView);

@@ -3,22 +3,17 @@ package edu.uwm.cs.fitrpg.activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.IntentService;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.preference.DialogPreference;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.content.Context;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -29,38 +24,59 @@ import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.CurrentLevelFragment;
 import edu.uwm.cs.fitrpg.model.User;
-import edu.uwm.cs.fitrpg.view.GameActivity;
+import edu.uwm.cs.fitrpg.util.Utils;
 
-public class Home extends AppCompatActivity{
-
-    private int navigationIDTag;
+public class Home extends AppCompatActivity {
     public static Context appCon;
-
+    private BottomNavigationView.OnNavigationItemSelectedListener OnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Intent intent;
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    return true;
+                case R.id.navigation_fitness:
+                    intent = new Intent(getApplicationContext(), FitnessOverview.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                case R.id.navigation_game_map:
+                    intent = new Intent(getApplicationContext(), MapActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+                case R.id.navigation_settings:
+                    intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return true;
+            }
+            return false;
+        }
+    };
+    private TextView stamina, speed, strength, endurance, dexterity;
+    private DatabaseHelper myDB;
     private int userID = 1;
-    TextView stamina, speed, strength, endurance, dexterity;
-    private static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-    DatabaseHelper myDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
         appCon = this.getApplicationContext();
-        navigationIDTag = 0;
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
 
         //TextView stamina, speed, strength, endurance, dexterity;
-        stamina = (TextView) findViewById(R.id.tv_stamina);
-        speed = (TextView) findViewById(R.id.tv_speed);
-        strength = (TextView) findViewById(R.id.tv_strength);
-        endurance = (TextView) findViewById(R.id.tv_endurance);
-        dexterity = (TextView) findViewById(R.id.tv_dexterity);
+        stamina = (TextView) findViewById(R.id.home_stamina);
+        speed = (TextView) findViewById(R.id.home_speed);
+        strength = (TextView) findViewById(R.id.home_strength);
+        endurance = (TextView) findViewById(R.id.home_endurance);
+        dexterity = (TextView) findViewById(R.id.home_dexterity);
         myDB = new DatabaseHelper(this);
 
         //PS Check database for a user with ID 0, otherwise create one
-        if(myDB.getStamina(userID) == "-1") {
+        if (myDB.getStamina(userID) == "-1") {
             myDB.createChar(userID, 0, "Defaultio", 10, 10, 10, 10, 10, 1);
         }
         //These setText calls would eventually collect the stat info
@@ -83,20 +99,19 @@ public class Home extends AppCompatActivity{
         dexterity.setText(dexterityText);
 
         FragmentManager fragmentManager = getFragmentManager();
-        if(fragmentManager.findFragmentById(R.id.ll_top_left) == null) {
+        if (fragmentManager.findFragmentById(R.id.home_top_frame) == null) {
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             CurrentLevelFragment fragment = new CurrentLevelFragment();
-            transaction.add(R.id.ll_top_left, fragment);
+            transaction.add(R.id.home_top_frame, fragment);
             transaction.commit();
         }
         doTheUser();
     }
 
     private void doTheUser() {
-        if(myDB.hasUser()) {
+        if (myDB.hasUser()) {
             return;
-        }
-        else {
+        } else {
             LayoutInflater inflater = getLayoutInflater();
             View alertLayout = inflater.inflate(R.layout.layout_custom_dialog, null);
             final EditText etName = alertLayout.findViewById(R.id.diaglog_name);
@@ -121,7 +136,7 @@ public class Home extends AppCompatActivity{
                     User user = new User(name, 1);
                     user.setWeight(weight);
                     user.setHeight(height);
-                    user.setLastUpdateDate(new SimpleDateFormat(ISO_DATE_TIME_FORMAT).format(Calendar.getInstance().getTime()));
+                    user.setLastUpdateDate(new SimpleDateFormat(Utils.ISO_DATE_TIME_FORMAT).format(Calendar.getInstance().getTime()));
                     user.updateUser(myDB);
                 }
             });
@@ -134,7 +149,7 @@ public class Home extends AppCompatActivity{
     public void onResume() {
         super.onResume();
 
-        if(myDB.getStamina(userID) == "-1") {
+        if (myDB.getStamina(userID) == "-1") {
             myDB.createChar(userID, 0, "Defaultio", 10, 10, 10, 10, 10, 1);
         }
         //These setText calls would eventually collect the stat info
@@ -158,46 +173,9 @@ public class Home extends AppCompatActivity{
 
     }
 
-    public void getStats() {
-
-    }
-
     @Override
     public void onBackPressed() {
         finish();
     }
-
-
-    public BottomNavigationView.OnNavigationItemSelectedListener OnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Intent intent;
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    return true;
-                case R.id.navigation_fitness:
-                    intent = new Intent(getApplicationContext(), FitnessOverview.class);
-                    startActivity(intent);
-                    finish();
-                    navigationIDTag = 2;
-                    return true;
-                case R.id.navigation_game_map:
-                    intent = new Intent(getApplicationContext(), MapActivity.class);
-                    startActivity(intent);
-                    finish();
-                    navigationIDTag = 3;
-                    return true;
-                case R.id.navigation_settings:
-                    intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                    startActivity(intent);
-                    finish();
-                    navigationIDTag = 4;
-                    return true;
-            }
-            return false;
-        }
-    };
 
 }
