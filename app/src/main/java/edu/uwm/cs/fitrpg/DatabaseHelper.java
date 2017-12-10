@@ -132,54 +132,65 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /*|||||||||||||||||||||||||||||||||||||||||||||||||| GETTER METHODS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
     public String getStamina(int x) {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_sta from fr_char";
         sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return "" + c.getInt(0);
+            ret = "" + c.getInt(0);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting stamina from db - returning -1");
-            return "-1";
+            ret = "-1";
         }
+
+        db.close();
+        return ret;
     }
 
     public String getName(int x) {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select usr_nam from fr_char";
         sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return c.getString(0);
+            ret = c.getString(0);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting name from db - returning null");
-            return null;
+            ret = null;
         }
+
+        db.close();
+        return ret;
     }
 
     public String getSpeed(int x) {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_spd from fr_char";
         sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return "" + c.getInt(0);
+            ret = "" + c.getInt(0);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting speed from db - returning -1");
-            return "-1";
+            ret = "-1";
         }
+
+        db.close();
+        return ret;
     }
 
     public String getStrength(int x) {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_str from fr_char";
         sqlQuery += " where usr_id = " + x + "";
@@ -188,110 +199,127 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return "" + c.getInt(0);
+            ret = "" + c.getInt(0);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting strength from db - returning -1");
-            return "-1";
+            ret = "-1";
         }
+
+        db.close();
+        return ret;
     }
 
     public String getEndurance(int x) {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_end from fr_char";
         sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return "" + c.getInt(0);
+            ret =  "" + c.getInt(0);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting endurance from db - returning -1");
-            return "-1";
+            ret = "-1";
         }
+
+        db.close();
+        return ret;
     }
 
     public String getDexterity(int x) {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select a_dex from fr_char";
         sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return "" + c.getInt(0);
+            ret =  "" + c.getInt(0);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting dexterity from db - returning -1");
-            return "-1";
+            ret =  "-1";
         }
+
+        db.close();
+        return ret;
     }
 
     public String getLoopCount(int x) {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select loop_cnt from fr_char";
         sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return "" + c.getInt(0);
+            ret = "" + c.getInt(0);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting loop count from db - returning -1");
-            return "-1";
+            ret = "-1";
         }
+        db.close();
+        return ret;
     }
 
     public String getLastCheckedTime(int x) {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select last_check_time from fr_char";
         sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return "" + c.getInt(0);
+            ret = "" + c.getInt(0);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting checked time from db - returning -1");
-            return "-1";
+            ret =  "-1";
         }
+
+        db.close();
+        return ret;
     }
 
     public String getCurrentMap(int x) {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select map_id from fr_char";
         sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return "" + c.getInt(0);
+            ret = "" + c.getInt(0);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting char's map id from db - returning -1");
-            return "-1";
+            ret = "-1";
         }
+        db.close();
+        return ret;
+
     }
 
     public String getNodePosition(int x) {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select nd_pos from fr_char";
         sqlQuery += " where usr_id = " + x + "";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return "" + c.getInt(0);
+            ret = "" + c.getInt(0);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting node pos from db - returning -1");
-            return "-1";
+            ret = "-1";
         }
+        db.close();
+        return ret;
     }
 
     //get the screen x,y coordinates for the specified node from db
@@ -305,7 +333,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try
         {
             cursor.moveToFirst();
-            db.close();
             retCoord[0] = cursor.getInt(0);
             retCoord[1] = cursor.getInt(1);
             retCoord[2] = cursor.getInt(2);
@@ -315,10 +342,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         catch(Exception e)
         {
             retCoord = null;
-            db.close();
             Log.d("ERR", "Error getting node Coordinates - returning null");
             Log.d("SYSMSG", e.toString());
         }
+        db.close();
         return retCoord;
     }
 
@@ -332,16 +359,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try
         {
             cursor.moveToFirst();
-            db.close();
             retCoord = cursor.getInt(0);
             Log.d("MSG", "Node found in Database - returning status");
         }
         catch(Exception e)
         {
-            db.close();
             Log.d("ERR", "Error getting node Status - returning -1");
             Log.d("SYSMSG", e.toString());
         }
+        db.close();
         return retCoord;
     }
 
@@ -357,7 +383,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             sqlQuery += " where map_id = " + map_id + "";
 
             Cursor c = db.rawQuery(sqlQuery, null);
-            db.close();
             if(c.moveToFirst()) {
                 while(!c.isAfterLast())
                 {
@@ -374,11 +399,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                     c.moveToNext();
                 }
-
+                db.close();
                 return ret;
             }
             else {
                 Log.d("ERR", "No Path Info Returned - returning null");
+                db.close();
                 return null;
             }
         }
@@ -400,7 +426,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             Cursor c = db.rawQuery(sqlQuery, null);
             ArrayList<int[]> ret = new ArrayList<int[]>();
-            db.close();
+
             if(c.moveToFirst()) {
                 while(!c.isAfterLast())
                 {
@@ -417,11 +443,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                     c.moveToNext();
                 }
-
+                db.close();
                 return ret;
             }
             else {
                 Log.d("ERR", "Error getting map info - returning null");
+                db.close();
                 return null;
             }
         }
@@ -434,63 +461,74 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //******* GETTER METHODS FOR USER TABLE ************//
     public String getUserName() {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select * from fr_user ORDER BY usr_id DESC LIMIT 1";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return c.getString(1);
+            ret = "" + c.getString(1);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting name from db - returning null");
-            return null;
+            ret = null;
         }
+        db.close();
+        return ret;
     }
 
     public int getUserWeight() {
+        int ret = 0;
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select * from fr_user ORDER BY usr_id DESC LIMIT 1";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return c.getInt(2);
+            ret = c.getInt(2);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting name from db - returning null");
-            return -1;
+            ret = -1;
         }
+
+        db.close();
+        return ret;
     }
 
     public int getUserHeight() {
+        int ret = 0;
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select * from fr_user ORDER BY usr_id DESC LIMIT 1";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return c.getInt(3);
+            ret = c.getInt(3);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting name from db - returning null");
-            return -1;
+            ret = -1;
         }
+
+        db.close();
+        return ret;
     }
 
     public String getUserDate() {
+        String ret = "";
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select * from fr_user ORDER BY usr_id DESC LIMIT 1";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return c.getString(4);
+            ret = c.getString(4);
         }
         else {
-            db.close();
             Log.d("ERR", "Error getting name from db - returning null");
-            return null;
+            ret = null;
         }
+
+        db.close();
+        return ret;
     }
 
     public User getUser() {
@@ -502,18 +540,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean hasUser() {
+        boolean ret = false;
+
         SQLiteDatabase db = this.getReadableDatabase();
         String sqlQuery = "select * from fr_user";
         Cursor c = db.rawQuery(sqlQuery, null);
         if(c.moveToFirst()) {
-            db.close();
-            return true;
+            ret = true;
         }
         else {
-            db.close();
             Log.d("ERR", "No user in database");
-            return false;
+            ret = false;
         }
+
+        db.close();
+        return ret;
     }
 
     @Override
