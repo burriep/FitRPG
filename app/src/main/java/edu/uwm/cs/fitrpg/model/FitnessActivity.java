@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,8 +13,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class FitnessActivity implements Serializable {
-    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+import edu.uwm.cs.fitrpg.util.Utils;
+
+import static edu.uwm.cs.fitrpg.util.Utils.ISO_DATE_TIME_FORMAT;
+
+public class FitnessActivity {
     private static final int NS_IN_MS = 1000000;
     private static final int MS_IN_SECOND = 1000;
     private int _id;
@@ -36,95 +38,73 @@ public class FitnessActivity implements Serializable {
     private double segmentDistance; // in meters
     private double segmentTopSpeed; // in meters / s
 
-    public static FitnessActivity get(SQLiteDatabase db, int id) {
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                "_id",
-                "act_id",
-                "usr_id",
-                "s_tme",
-                "e_tme",
-                "dist",
-                "dur",
-                "t_spd",
-                "sets",
-                "reps"
-        };
-        // Filter results WHERE "title" = 'My Title'
-        String selection = "_id = ?";
-        String[] selectionArgs = {Integer.toString(id)};
+    public FitnessActivity() {
+    }
 
-        // How you want the results sorted in the resulting Cursor
-        String sortOrder = "_id DESC";
-        Cursor cursor = db.query("fr_hst", projection, selection, selectionArgs, null, null, sortOrder);
+    public FitnessActivity(int userId) {
+        usr_id = userId;
+    }
+
+    public FitnessActivity(Cursor cursor) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US);
+        _id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
+        act_id = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
+        usr_id = cursor.getInt(cursor.getColumnIndexOrThrow("usr_id"));
+        try {
+            startDate = dateFormat.parse(cursor.getString(cursor.getColumnIndexOrThrow("s_tme")));
+            stopDate = dateFormat.parse(cursor.getString(cursor.getColumnIndexOrThrow("e_tme")));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        cachedDistance = cursor.getDouble(cursor.getColumnIndexOrThrow("dist"));
+        cachedDuration = cursor.getInt(cursor.getColumnIndexOrThrow("dur"));
+        cachedTopSpeed = cursor.getDouble(cursor.getColumnIndexOrThrow("t_spd"));
+        repetitions = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
+        sets = cursor.getInt(cursor.getColumnIndexOrThrow("sets"));
+    }
+
+    public static FitnessActivity get(SQLiteDatabase db, int id) {
+        String sql = "SELECT _id, act_id, usr_id, s_tme, e_tme, dist, dur, t_spd, sets, reps FROM fr_hst WHERE _id = ? ORDER BY _id DESC;";
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US);
+        String[] selectionArgs = {Integer.toString(id)};
+        Cursor cursor = db.rawQuery(sql, selectionArgs);
         FitnessActivity fa = null;
         while (cursor.moveToNext()) {
-            fa = new FitnessActivity();
-            fa._id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
-            fa.act_id = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
-            fa.usr_id = cursor.getInt(cursor.getColumnIndexOrThrow("usr_id"));
-            try {
-                fa.startDate = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US)).parse(cursor.getString(cursor.getColumnIndexOrThrow("s_tme")));
-                fa.stopDate = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US)).parse(cursor.getString(cursor.getColumnIndexOrThrow("e_tme")));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            fa.cachedDistance = cursor.getDouble(cursor.getColumnIndexOrThrow("dist"));
-            fa.cachedDuration = cursor.getInt(cursor.getColumnIndexOrThrow("dur"));
-            fa.cachedTopSpeed = cursor.getDouble(cursor.getColumnIndexOrThrow("t_spd"));
-            fa.repetitions = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
-            fa.sets = cursor.getInt(cursor.getColumnIndexOrThrow("sets"));
+            fa = new FitnessActivity(cursor);
         }
         cursor.close();
         return fa;
     }
 
-    public static List<FitnessActivity> getAllByDate(SQLiteDatabase db, Date startDate, Date endDate) {
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                "_id",
-                "act_id",
-                "usr_id",
-                "s_tme",
-                "e_tme",
-                "dist",
-                "dur",
-                "t_spd",
-                "sets",
-                "reps"
-        };
-        // Filter results WHERE "title" = 'My Title'
-        String selection = "s_tme >= ? AND s_tme < ?";
-        String[] selectionArgs = {
-                (new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US)).format(startDate),
-                (new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US)).format(endDate)
-        };
-
-        // How you want the results sorted in the resulting Cursor
-        String sortOrder = "s_tme DESC, _id DESC";
-        Cursor cursor = db.query("fr_hst", projection, selection, selectionArgs, null, null, sortOrder);
+    public static List<FitnessActivity> getAllByDate(SQLiteDatabase db, int userId, Date startDate, Date endDate) {
+        String sql = "SELECT _id, act_id, usr_id, s_tme, e_tme, dist, dur, t_spd, sets, reps FROM fr_hst WHERE s_tme >= ? AND s_tme < ? AND usr_id = ? ORDER BY s_tme DESC, _id DESC;";
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US);
+        String[] selectionArgs = {dateFormat.format(startDate), dateFormat.format(endDate), Integer.toString(userId)};
+        Cursor cursor = db.rawQuery(sql, selectionArgs);
         List<FitnessActivity> activities = new LinkedList<>();
         while (cursor.moveToNext()) {
-            FitnessActivity fa = new FitnessActivity();
-            fa._id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
-            fa.act_id = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
-            fa.usr_id = cursor.getInt(cursor.getColumnIndexOrThrow("usr_id"));
-            try {
-                fa.startDate = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US)).parse(cursor.getString(cursor.getColumnIndexOrThrow("s_tme")));
-                fa.stopDate = (new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US)).parse(cursor.getString(cursor.getColumnIndexOrThrow("e_tme")));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            fa.cachedDistance = cursor.getDouble(cursor.getColumnIndexOrThrow("dist"));
-            fa.cachedDuration = cursor.getInt(cursor.getColumnIndexOrThrow("dur"));
-            fa.cachedTopSpeed = cursor.getDouble(cursor.getColumnIndexOrThrow("t_spd"));
-            fa.repetitions = cursor.getInt(cursor.getColumnIndexOrThrow("reps"));
-            fa.sets = cursor.getInt(cursor.getColumnIndexOrThrow("sets"));
-            activities.add(fa);
+            activities.add(new FitnessActivity(cursor));
         }
         cursor.close();
+
+        // get they activity type as well.
+        for (FitnessActivity activity : activities) {
+            activity.getType(db);
+        }
+        return activities;
+    }
+
+    public static List<FitnessActivity> getAllByDateType(SQLiteDatabase db, int userId, Date startDate, Date endDate, int activityTypeId) {
+        String sql = "SELECT _id, act_id, usr_id, s_tme, e_tme, dist, dur, t_spd, sets, reps FROM fr_hst WHERE s_tme >= ? AND s_tme < ? AND act_id = ? AND usr_id = ? ORDER BY s_tme DESC, _id DESC;";
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US);
+        String[] selectionArgs = {dateFormat.format(startDate), dateFormat.format(endDate), Integer.toString(activityTypeId), Integer.toString(userId)};
+        Cursor cursor = db.rawQuery(sql, selectionArgs);
+        List<FitnessActivity> activities = new LinkedList<>();
+        while (cursor.moveToNext()) {
+            activities.add(new FitnessActivity(cursor));
+        }
+        cursor.close();
+
         // get they activity type as well.
         for (FitnessActivity activity : activities) {
             activity.getType(db);
@@ -316,5 +296,17 @@ public class FitnessActivity implements Serializable {
         values.put("reps", getRepetitions());
         _id = (int) db.insert("fr_hst", null, values);
         return _id > 0;
+    }
+
+    @Override
+    public String toString() {
+        SimpleDateFormat formatTime = new SimpleDateFormat("hh:mm:ss a", Locale.US);
+//
+
+        String line1 = "Activity: " + getType().getName();
+        String line2 = "Start Time: " + formatTime.format(getStartDate()) + " :: End Time: " + formatTime.format(getStopDate());
+        String line3 = "Distance: " + getDistance() + " :: Duration: " + Utils.formatDuration(getDuration()) + " :: Top Speed: " + getTopSpeed();
+        String line4 = "Sets: " + getSets() + " :: Reps: " + getRepetitions();
+        return line1 + "\n" + line2 + "\n" + line3 + "\n" + line4;
     }
 }

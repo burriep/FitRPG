@@ -47,6 +47,89 @@
     <string name="save">Save</string>
     <string name="clear">Clear</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="appVersion">3.0</string>
+    <string name="aboutMe">
+        \tFitRPG is designed by Team6, a capstone group working\n\ttogether to create a fitness tracking game application\n\tto keep people motivated in staying healthy.\n\n
+
+        \t\tContributors:\n
+        \t\tTyler Breckenridge\n
+        \t\tPaul Burrie\n
+        \t\tShannon Fink\n
+        \t\tJason Klein\n
+        \t\tPatrick Seaton\n\n
+
+        Resources:\n
+
+
+        \n\n
+        \t\t11/29/2017
+    </string>
+
+    <string name="tutorialHome">
+        This tutorial will teach the user how to navigate through the application and how to play the game and track their fitness activities.
+        \n\nClick next or previous to navigate through the tutorial.
+    </string>
+
+    <string name="tutorialHomeScreen">
+        In the home screen you are able to view your current map level and progress on that map.\nYou are also able to view your current statistic points in each category.\n\n
+        At the bottom of every page there is a navigation panel that allows the user to jump
+        to important pages (Home, Fitness, Game Map, and Settings).
+    </string>
+
+    <string name="tutorialFitnessOverview">
+        This page shows a calendar. Dates that have a recorded history will show an orange dot under the date.\n
+        Clicking on one of those dates will show you your fitness history on that page. Clicking on any other date will show no history.\n\n
+        You can start tracking a new activity by clicking the "Track Activity" button or
+        you can manually add an activity by selecting the "Add Activity" button.
+    </string>
+
+    <string name="tutorialFitnessHistory">
+        This pages shows your selected dates history and information about each fitness activity.\n
+        Clicking on "Add Activity" from this page will set the date for the added activity to the current selected date.\n\n
+        To get back to the calendar view click on the Fitness tab.
+    </string>
+
+    <string name="tutorialFitnessTracking">
+        This page allows you to select an activity from the drop down menu.\n
+        Then clicking "Start" will begin tracking the selected activity.\n
+        Clicking "Cancel" will cancel activity selection.\n\n
+        The tracking page shows your elapsed time and other necessary information
+        during tracking.
+    </string>
+
+    <string name="tutorialFitnessAdding">
+        This page allows you to select an activity from the drop down menu.\n
+        Then you can enter all the statistics you need to record for your tracking purposes.\n\n
+        Clicking "Save" will save the information.\n
+        Clicking "Clear" will erase any input information.
+    </string>
+
+    <string name="tutorialMap">
+        This page shows your current map progress.\n\n
+        Blue Node: Current node location\n
+        Yellow Node: Open node\n
+        Red Node: Boss node location\n\n
+
+        Click on any node connected to your current location to move to that node.
+        Confirm your selection by clicking on "Confirm" on the popup menu.
+        Clicking cancel will cancel your selection.\n
+        After the elapsed travel time a popup menu will display your finished fitness
+        activities since your last node movemnet and what character statistics will be
+        improved.
+        Click confirm to continue.\n
+        The boss node will prompt to "Begin Combat"
+    </string>
+
+    <string name="tutorialCombat">
+        The combat screen shows your health, the boss health and the cooldown of your attack.\n\n
+        To attack the boss, click on the blue circle in the center of the screen.\n
+        When the boss\'s health reaches 0, you win. If your health reaches 0, you lose.
+    </string>
+
+    <string name="tutorialSettings">
+        This screen allows you to update your personal information such as height and weight and
+        displays the last time you updated your information.\n\n
+        The AboutMe allows you to view information about the application.\n
+        The Tutorial allows you to view the tutorial for the application.
+    </string>
 </resources>

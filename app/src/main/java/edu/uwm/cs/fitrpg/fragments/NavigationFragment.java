@@ -22,6 +22,7 @@ import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.activity.FitnessActivityTracking;
 import edu.uwm.cs.fitrpg.activity.FitnessOverview;
 import edu.uwm.cs.fitrpg.activity.Home;
+import edu.uwm.cs.fitrpg.activity.SettingsActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,7 +69,7 @@ public class NavigationFragment extends Fragment{
                         navigationIDTag = 3;
                         return true;
                     case R.id.navigation_settings:
-                        intent = new Intent(getActivity(), SettingsFragment.class);
+                        intent = new Intent(getActivity(), SettingsActivity.class);
                         startActivity(intent);
                         navigationIDTag = 4;
                         return true;
@@ -77,36 +78,4 @@ public class NavigationFragment extends Fragment{
             }
         };
     }
-//
-//    public BottomNavigationView.OnNavigationItemSelectedListener OnNavigationItemSelectedListener
-//            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-//
-//        @Override
-//        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//            Intent intent;
-//            switch (item.getItemId()) {
-//                case R.id.navigation_home:
-//                    intent = new Intent(getActivity(), Home.class);
-//                    startActivity(intent);
-//                    navigationIDTag = 1;
-//                    return true;
-//                case R.id.navigation_fitness:
-//                    intent = new Intent(getActivity(), FitnessOverview.class);
-//                    startActivity(intent);
-//                    navigationIDTag = 2;
-//                    return true;
-//                case R.id.navigation_game_map:
-//                    intent = new Intent(getActivity(), MapActivity.class);
-//                    startActivity(intent);
-//                    navigationIDTag = 3;
-//                    return true;
-//                case R.id.navigation_settings:
-//                    intent = new Intent(getActivity(), SettingsFragment.class);
-//                    startActivity(intent);
-//                    navigationIDTag = 4;
-//                    return true;
-//            }
-//            return false;
-//        }
-//    };
 }

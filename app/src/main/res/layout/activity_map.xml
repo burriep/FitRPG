@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_green_dark"
     tools:context="edu.uwm.cs.fitrpg.MapActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -140,7 +139,7 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="FitnessActivities"
+                    android:text="Fitness Activities"
                     android:textAlignment="viewStart"
                     android:textColor="@color/black" />
             </LinearLayout>
@@ -190,7 +189,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="?android:attr/windowBackground"
             app:menu="@menu/navigation" />
 
     </LinearLayout>

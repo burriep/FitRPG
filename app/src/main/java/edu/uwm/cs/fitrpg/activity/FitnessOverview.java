@@ -10,20 +10,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.fragments.FitnessActivityHistoryFragment;
 import edu.uwm.cs.fitrpg.fragments.FitnessEntryFragment;
-import edu.uwm.cs.fitrpg.fragments.NavigationFragment;
-import edu.uwm.cs.fitrpg.fragments.SettingsFragment;
+import edu.uwm.cs.fitrpg.fragments.HistoryCalendarFragment;
+import edu.uwm.cs.fitrpg.graphics.Text;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
+import edu.uwm.cs.fitrpg.util.Utils;
 
 public class FitnessOverview extends AppCompatActivity implements FitnessActivityHistoryFragment.OnListFragmentInteractionListener {
     private int navigationIDTag;
     BottomNavigationView navigation;
+    Date selectedDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,31 +41,13 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
         navigation.getMenu().getItem(0).setChecked(false);
         navigation.getMenu().getItem(1).setChecked(true);
 
-
         Button recordData, trackData;
         recordData = findViewById(R.id.btn_add_activity);
         trackData = findViewById(R.id.btn_start_activity);
 
-        Calendar calendar = Calendar.getInstance();
-        Date now = calendar.getTime();
-        calendar.add(Calendar.DATE, -1);
-        Date yesterday = calendar.getTime();
-
-        FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
+        HistoryCalendarFragment fragment = new HistoryCalendarFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
 
-//        history.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Calendar calendar = Calendar.getInstance();
-//                Date now = calendar.getTime();
-//                calendar.add(Calendar.DATE, -1);
-//                Date yesterday = calendar.getTime();
-//
-//                FitnessActivityHistoryFragment fragment = FitnessActivityHistoryFragment.newInstance(yesterday, now);
-//                getSupportFragmentManager().beginTransaction().replace(R.id.fitness_frag_data, fragment).commit();
-//            }
-//        });
 
         recordData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +73,14 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
         navigation.getMenu().getItem(1).setChecked(true);
     }
 
+    public Date getSelectedDate() {
+        return selectedDate;
+    }
+
+    public void setSelectedDate(Date date) {
+        selectedDate = date;
+    }
+
     public BottomNavigationView.OnNavigationItemSelectedListener OnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -100,7 +96,10 @@ public class FitnessOverview extends AppCompatActivity implements FitnessActivit
                     finish();
                     return true;
                 case R.id.navigation_fitness:
+                    intent = new Intent(getApplicationContext(), FitnessOverview.class);
+                    startActivity(intent);
                     navigationIDTag = 2;
+                    finish();
                     return true;
                 case R.id.navigation_game_map:
                     intent = new Intent(getApplicationContext(), MapActivity.class);

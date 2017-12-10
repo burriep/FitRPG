@@ -12,42 +12,46 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/fitness_continue_pause_record"
+        app:layout_constraintBottom_toTopOf="@+id/ll_bottom"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
     </FrameLayout>
 
-    <Button
-        android:id="@+id/fitness_continue_pause_record"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/ll_bottom"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="8dp"
-        android:enabled="false"
-        android:text="@string/activity_tracking_start_record"
+        android:orientation="horizontal"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" >
+        <Button
+            android:id="@+id/fitness_continue_pause_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="8dp"
+            android:enabled="false"
+            android:text="@string/activity_tracking_start_record"/>
 
-    <Button
-        android:id="@+id/fitness_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="8dp"
-        android:text="Cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fitness_continue_pause_record" />
+        <Button
+            android:id="@+id/fitness_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="8dp"
+            android:text="Cancel"/>
 
-    <Button
-        android:id="@+id/fitness_stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="8dp"
-        android:enabled="false"
-        android:text="@string/activity_tracking_stop_record"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fitness_cancel" />
+        <Button
+            android:id="@+id/fitness_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="8dp"
+            android:enabled="false"
+            android:text="@string/activity_tracking_stop_record"/>
+
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

@@ -67,15 +67,22 @@ public class GameActivity extends Activity {
 
             intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", gv.getScene().getEnemy().GetSpeed() / loop);
 
-            if (status > 0) {
-                loop++;
-            }
-            finish();
             RpgChar playerChar = new RpgChar();
+            if (status > 0) {
+                intent.putExtra("edu.uwm.cs.fitrpg.refreshMap", 2);
+
+                playerChar.setLoopCount(loop+1);
+                playerChar.setCurrentMap(playerChar.getCurrentMap()+1);
+            }
+            else
+            {
+                intent.putExtra("edu.uwm.cs.fitrpg.refreshMap", 1);
+            }
             playerChar.setCurrentNode(0);
+
             playerChar.dbPush();
-            intent.putExtra("edu.uwm.cs.fitrpg.loopCount", loop);
             startActivity(intent);
+            finish();
         }
     }
 
@@ -88,11 +95,11 @@ public class GameActivity extends Activity {
 
         gv.getScene().setBackground(R.drawable.dark_grass1, 128, 32);
 
-        loop = intent.getIntExtra("edu.uwm.cs.fitrpg.mapLoop", 1);
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.player_ss_test);
         bm = Bitmap.createScaledBitmap(bm, 576, 384,false);
 
         RpgChar tempPlayer = new RpgChar();
+        loop = tempPlayer.getLoopCount();
         // Build the player
         gv.getScene().spawnPlayerCombatUnit(bm, /*tempPlayer.getStamina()*/10000,
                 tempPlayer.getStrength(),

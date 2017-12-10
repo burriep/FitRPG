@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:id="@+id/tutorial_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="4"></LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_tutorial_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Previous"/>
+        <Button
+            android:id="@+id/btn_tutorial_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home"/>
+        <Button
+            android:id="@+id/btn_tutorial_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="next"/>
+    </LinearLayout>
+
+</LinearLayout>

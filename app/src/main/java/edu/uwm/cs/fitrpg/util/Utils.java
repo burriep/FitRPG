@@ -40,6 +40,8 @@ public class Utils {
     public final static String SP_KEY_AVG_SPEED_UPDATES = "edu.uwm.cs.fitrpg.shared-preferences-track-realtime-avg-speed";
     public final static String SP_KEY_TOP_SPEED_UPDATES = "edu.uwm.cs.fitrpg.shared-preferences-track-realtime-top-speed";
     public final static String SP_KEY_DURATION_SECONDS_UPDATES = "edu.uwm.cs.fitrpg.shared-preferences-track-realtime-duration-seconds";
+    public static final String ISO_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    public static final String ISO_DATE_FORMAT = "yyyy-MM-dd";
 
     /**
      * Shows a {@link Snackbar} using {@code text}.
