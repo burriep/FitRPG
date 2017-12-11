@@ -32,6 +32,7 @@ public class GameThread extends Thread {
             Canvas c = null;
             try {
                 c = view.getHolder().lockCanvas();
+                if(c == null) return;
                 synchronized (view.getHolder()) {
                     beginTime = System.currentTimeMillis();
                     view.tick(deltaTime);
