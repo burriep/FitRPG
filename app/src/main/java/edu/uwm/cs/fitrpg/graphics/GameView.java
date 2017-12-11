@@ -41,11 +41,12 @@ public class GameView extends SurfaceView
             @Override
             public void surfaceDestroyed(SurfaceHolder holder)
             {
+                player.stop();
                 boolean retry = true;
                 thread.setRunning(false);
                 try {
                     thread.join();
-                    player.stop();
+
                     retry = false;
                 }catch(InterruptedException e)
                 {

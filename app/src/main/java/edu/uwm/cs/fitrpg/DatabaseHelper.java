@@ -435,7 +435,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if(c.moveToFirst()) {
                 while(!c.isAfterLast())
                 {
-                    int rowData[] = new int[9];
+                    int rowData[] = new int[8];
                     rowData[0] = c.getInt(1);       //map_id
                     rowData[1] = c.getInt(2);       //node_id
                     rowData[2] = c.getInt(3);       //nd_complete
@@ -444,7 +444,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     rowData[5] = c.getInt(6);       //adjusted x pos
                     rowData[6] = c.getInt(7);       //adjusted y pos
                     rowData[7] = c.getInt(8);       //challenge activity ID
-                    rowData[8] = c.getInt(9);       //boss flag
+                    rowData[8] = c.getInt(9);       //Boss flag
 
                     ret.add(rowData);
 

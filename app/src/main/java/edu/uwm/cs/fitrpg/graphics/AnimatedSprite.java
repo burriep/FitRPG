@@ -65,6 +65,15 @@ public class AnimatedSprite
         this.isLooped = isLooped;
     }
 
+    public int getWidth()
+    {
+        return this.spriteWidth * scale;
+    }
+    public int getHeight()
+    {
+        return this.spriteHeight * scale;
+    }
+
     public float getXpos()
     {
         return this.xpos;
@@ -121,9 +130,11 @@ public class AnimatedSprite
 
     public void triggerAnimation(int animInt)
     {
-        animationQueue.add(animInt);
         numFrames = 6;
         curFrame = 0;
+       // if(animationQueue.size() == 2){animationQueue.remove(1);}
+        animationQueue.add(animInt);
+
     }
 
     ////////////////////////////////////////////////////////////
@@ -151,9 +162,7 @@ public class AnimatedSprite
 
         if(onFinal && curFrame >= numFrames - 1 && animationQueue.size() <= 2)
         {
-            onFinal = onFinal;
             return;
-
         }
             if (animationQueue.size() >= 2) {
                 setSpriteSheetRow(animationQueue.get(1));
@@ -175,9 +184,8 @@ public class AnimatedSprite
             curFrame++;
             if (isLooped)
                 curFrame = curFrame % numFrames;
-            else if (curFrame >= numFrames && !onFinal) isDisposed = true;
-            spriteRect.left = curFrame * spriteWidth;
-            spriteRect.right = spriteRect.left + spriteWidth;
+            else if (curFrame >= numFrames && !onFinal && animationQueue.size() == 2) isDisposed = true;
+
 
             if (isDisposed) {
                 animationQueue.remove(1);
@@ -191,6 +199,9 @@ public class AnimatedSprite
 
     public void draw(Canvas canvas)
     {
+        spriteRect.left = curFrame * spriteWidth;
+        spriteRect.right = spriteRect.left + spriteWidth;
+
         Rect dest = new Rect((int)getXpos(), (int)getYpos(), (int)getXpos() + spriteWidth * scale, (int)getYpos() + spriteHeight * scale);
         canvas.drawBitmap(animation, spriteRect, dest, null);
     }
