@@ -26,10 +26,10 @@ import static edu.uwm.cs.fitrpg.R.*;
 
 public class Scene
 {
-    private enum State {IN_COMBAT, VICTORY, DEFEAT};
+    private enum State {IN_COMBAT, VICTORY, DEFEAT}
 
     private State curState;
-    Resources res;
+    private Resources res;
     private GameActivity listener;
     private ArrayList<AnimatedSprite> spriteList;
     private ArrayList<Particle> particleList;
@@ -85,7 +85,7 @@ public class Scene
         combatUnitList.add(addThis);
 
         maxenemyCd = (long)(((double)Math.log((double)(addThis.GetSpeed() + 1))));
-        maxenemyCd = (long)(((double)1.0/(double)maxenemyCd) * 500);
+        maxenemyCd = (long)((1.0/(double)maxenemyCd) * 500);
         curenemyCd = 0;
 
     }
@@ -233,7 +233,7 @@ public class Scene
         if(curState == State.IN_COMBAT)
             tickEnemies(deltaTime);
 
-        ArrayList<Particle> killThese = new ArrayList<Particle>();
+        ArrayList<Particle> killThese = new ArrayList<>();
         // update the animatedSprites, if they exist
         if(!spriteList.isEmpty())
             for (AnimatedSprite s : spriteList)
@@ -251,22 +251,21 @@ public class Scene
             }
 
             // remove the marked particles
-            for (Particle p: killThese)
-            {
-                particleList.remove(p);
-            }
+            particleList.removeAll(killThese);
         }
 
         // update the text
+        ArrayList<Text> removethis = new ArrayList<>();
         if(!textList.isEmpty())
         {
             for (Text t : textList)
             {
                 t.tick(deltaTime);
-                if(t.getYpos() < 0 || t.getXpos() < 0 || t.getLife() <= 0) textList.remove(t);
-
+                if(t.getYpos() < 0 || t.getXpos() < 0 || t.getLife() <= 0) removethis.add(t);
             }
         }
+
+        textList.removeAll(removethis);
 
         if(!combatUnitList.isEmpty())
             for (CombatUnit cu : combatUnitList)
