@@ -132,7 +132,7 @@ public class AnimatedSprite
     {
         numFrames = 6;
         curFrame = 0;
-       // if(animationQueue.size() == 2){animationQueue.remove(1);}
+        if(animationQueue.size() == 2){animationQueue.remove(1);}
         animationQueue.add(animInt);
 
     }
