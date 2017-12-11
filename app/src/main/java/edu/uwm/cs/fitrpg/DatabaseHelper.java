@@ -444,6 +444,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     rowData[5] = c.getInt(6);       //adjusted x pos
                     rowData[6] = c.getInt(7);       //adjusted y pos
                     rowData[7] = c.getInt(8);       //challenge activity ID
+                    rowData[8] = c.getInt(9);       //Boss flag
 
                     ret.add(rowData);
 
