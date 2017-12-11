@@ -132,4 +132,7 @@
         The AboutMe allows you to view information about the application.\n
         The Tutorial allows you to view the tutorial for the application.
     </string>
+
+    <string name="fitness_reminder_notification_title_template">Fitness Reminder</string>
+    <string name="fitness_reminder_notification_placeholder_text_template">Remember to log your exercise today</string>
 </resources>

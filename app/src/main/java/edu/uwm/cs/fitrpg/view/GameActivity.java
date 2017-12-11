@@ -2,6 +2,7 @@ package edu.uwm.cs.fitrpg.view;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -9,9 +10,11 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
+import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.RpgChar;
+import edu.uwm.cs.fitrpg.activity.Home;
 import edu.uwm.cs.fitrpg.game.CombatUnit;
 import edu.uwm.cs.fitrpg.graphics.GameView;
 
@@ -67,21 +70,22 @@ public class GameActivity extends Activity {
 
             intent.putExtra("edu.uwm.cs.fitrpg.enemySpeed", gv.getScene().getEnemy().GetSpeed() / loop);
 
-            RpgChar playerChar = new RpgChar();
+            SQLiteDatabase db = new DatabaseHelper(this).getWritableDatabase();
+            RpgChar playerChar = RpgChar.get(db, 1);
             if (status > 0) {
                 intent.putExtra("edu.uwm.cs.fitrpg.refreshMap", 2);
 
                 playerChar.setLoopCount(loop+1);
                 playerChar.setCurrentMap(playerChar.getCurrentMap()+1);
                 playerChar.setCurrentNode(0);
+                playerChar.update(db);
             }
             else
             {
                 intent.putExtra("edu.uwm.cs.fitrpg.refreshMap", 1);
             }
+            db.close();
 
-
-            playerChar.dbPush();
             startActivity(intent);
             finish();
         }
@@ -99,7 +103,9 @@ public class GameActivity extends Activity {
         Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.player_ss_test);
         bm = Bitmap.createScaledBitmap(bm, 576, 384,false);
 
-        RpgChar tempPlayer = new RpgChar();
+        SQLiteDatabase db = new DatabaseHelper(Home.appCon).getReadableDatabase();
+        RpgChar tempPlayer = RpgChar.get(db, 1);
+        db.close();
         loop = tempPlayer.getLoopCount();
         // Build the player
         gv.getScene().spawnPlayerCombatUnit(bm, tempPlayer.getStamina() * 1,
@@ -140,4 +146,3 @@ public class GameActivity extends Activity {
 
 
 }
-

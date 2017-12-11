@@ -133,15 +133,20 @@ public class FitnessActivityTracking extends AppCompatActivity implements Fitnes
     @Override
     public void onResume() {
         super.onResume();
-        // TODO: fix this
-        if (hasLocationPermission())
+        if (hasLocationPermission()) {
             LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver, new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
+        }
+        if (currentActivity != null && currentActivity.isTracking()) {
+            updateClockHandler.removeCallbacks(updateClockTask);
+            updateClockHandler.postDelayed(updateClockTask, 1000);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(myReceiver);
+        updateClockHandler.removeCallbacks(updateClockTask);
     }
 
     @Override

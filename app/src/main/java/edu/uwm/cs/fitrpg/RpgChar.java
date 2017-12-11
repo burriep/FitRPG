@@ -1,27 +1,31 @@
 package edu.uwm.cs.fitrpg;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import edu.uwm.cs.fitrpg.activity.Home;
 import edu.uwm.cs.fitrpg.model.FitnessActivity;
 import edu.uwm.cs.fitrpg.model.FitnessActivityType;
 import edu.uwm.cs.fitrpg.model.FitnessActivityUnit;
 import edu.uwm.cs.fitrpg.model.FitnessChallengeLevel;
 
+import static edu.uwm.cs.fitrpg.util.Utils.ISO_DATE_TIME_FORMAT;
 
 /**
  * Created by Jason on 11/8/17.
- *
+ * <p>
  * This class will represent the playable character - either the user's character, or an enemy character
  */
-
 public class RpgChar {
     private int id;
     private String name;
@@ -32,7 +36,6 @@ public class RpgChar {
     private int dexterity;
     private int stamina;
     private int endurance;
-    private DatabaseHelper db;
     private int loopCount;
     private int currentMap;
     private Date lastCheckedTime;
@@ -40,167 +43,121 @@ public class RpgChar {
     private int challengeDestinationNode;
     private int challengeFlag;  //0 is none, 1 is movement, 2 is boss
 
-    //constructor for player - the player's usr_id will always be 1
     public RpgChar() {
-        this.db = new DatabaseHelper(Home.appCon);
-        boolean exists = dbPull(1);
-
-        if (!exists) {
-            this.id = 1;
-            this.currentHealth = 0;
-            this.name = "";
-            this.currentNode = 2;
-            this.strength = 0;
-            this.speed = 0;
-            this.dexterity = 0;
-            this.stamina = 0;
-            this.endurance = 0;
-            this.loopCount =0;
-            this.currentMap = 0;
-            this.lastCheckedTime = new Date();
-            this.currentChallengeID = -1;
-            this.challengeFlag = 0;
-            this.challengeDestinationNode = 0;
-            dbPush();
-        }
-
+        currentChallengeID = -1;
     }
 
-    //constructor for enemies - use UNIQUE id's for new enemies, otherwise db constraint violation
-    //  create enemy character, set attributes, then push manually
-    public RpgChar(int x) {
-        this.db = new DatabaseHelper(Home.appCon);
-        boolean exists = dbPull(x);
-
-        if (!exists) {
-            this.id = x;
-            this.currentHealth = 0;
-            this.name = "";
-            this.currentNode = 0;
-            this.strength = 0;
-            this.speed = 0;
-            this.dexterity = 0;
-            this.stamina = 0;
-            this.endurance = 0;
-            this.loopCount =0;
-            this.currentMap = 0;
-            this.lastCheckedTime = new Date();
-            this.currentChallengeID = -1;
-            this.challengeFlag = 0;
-            this.challengeDestinationNode = 0;
-            dbPush();
-        }
-
-    }
-
-    /*|||||||||||||||||||||||||||||||||||||||||||||||||| DATABASE METHODS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
-    //this method will pull the RpgChar's stat-set from the db
-    public boolean dbPull(int id) {
-        Log.d("DBG", "in Char dbPull");
-        boolean ret = false;
-
-        this.name = db.getName(id);
-        this.strength = Integer.parseInt(db.getStrength(id));
-        this.stamina = Integer.parseInt(db.getStamina(id));
-        this.endurance = Integer.parseInt(db.getEndurance(id));
-        this.speed = Integer.parseInt(db.getSpeed(id));
-        this.dexterity = Integer.parseInt(db.getDexterity(id));
-        this.currentNode = Integer.parseInt(db.getNodePosition(id));
-        this.loopCount = Integer.parseInt(db.getLoopCount(id));
-        this.currentMap = Integer.parseInt(db.getCurrentMap(id));
-        this.challengeFlag = Integer.parseInt(db.getChallengeFlag(id));
-        this.challengeDestinationNode = Integer.parseInt(db.getChallengeDestNode(id));
+    public RpgChar(Cursor cursor) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US);
+        id = cursor.getInt(cursor.getColumnIndexOrThrow("usr_id"));
+        name = cursor.getString(cursor.getColumnIndexOrThrow("usr_nam"));
+        currentNode = cursor.getInt(cursor.getColumnIndexOrThrow("nd_pos"));
+        currentHealth = 0;
+        strength = cursor.getInt(cursor.getColumnIndexOrThrow("a_str"));
+        speed = cursor.getInt(cursor.getColumnIndexOrThrow("a_spd"));
+        stamina = cursor.getInt(cursor.getColumnIndexOrThrow("a_sta"));
+        dexterity = cursor.getInt(cursor.getColumnIndexOrThrow("a_dex"));
+        endurance = cursor.getInt(cursor.getColumnIndexOrThrow("a_end"));
+        loopCount = cursor.getInt(cursor.getColumnIndexOrThrow("loop_cnt"));
+        currentMap = cursor.getInt(cursor.getColumnIndexOrThrow("map_id"));
+        currentChallengeID = cursor.getInt(cursor.getColumnIndexOrThrow("current_challenge_id"));
+        challengeDestinationNode = cursor.getInt(cursor.getColumnIndexOrThrow("challenge_dest_node"));
+        challengeFlag = cursor.getInt(cursor.getColumnIndexOrThrow("challenge_flag"));
         try {
-            this.lastCheckedTime = MapActivity.mapDateFormat.parse(db.getLastCheckedTime(id));
+            lastCheckedTime = dateFormat.parse(cursor.getString(cursor.getColumnIndexOrThrow("last_check_time")));
+        } catch (ParseException e) {
+            lastCheckedTime = Calendar.getInstance().getTime();
         }
-        catch (Exception e)
-        {
-            Log.d("ERR", "Error getting checked time, setting to current time");
-            this.lastCheckedTime = new Date();
+    }
+
+    /**
+     * This method will pull the RpgChar's stat-set from the db.
+     *
+     * @param db
+     * @param id
+     * @return
+     */
+    public static RpgChar get(SQLiteDatabase db, int id) {
+        String sqlQuery = "SELECT usr_id,usr_nam,nd_pos,a_str,a_spd,a_sta,a_dex,a_end,loop_cnt,map_id,last_check_time,current_challenge_id,challenge_dest_node,challenge_flag FROM fr_char WHERE usr_id = ?";
+        String[] selectionArgs = {Integer.toString(id)};
+        Cursor c = db.rawQuery(sqlQuery, selectionArgs);
+        RpgChar u = null;
+        if (c.moveToNext()) {
+            u = new RpgChar(c);
         }
-        this.currentChallengeID = Integer.parseInt(db.getCurrentChallengeID(id));
+        c.close();
+        return u;
+    }
+
+    /**
+     * This method will delete an RpgChar as identified by id.
+     *
+     * @param db
+     * @param id
+     */
+    public static void delete(SQLiteDatabase db, int id) {
+        db.delete("fr_char", "usr_id = ?", new String[]{Integer.toString(id)});
+    }
+
+    /**
+     * This method will push the RpgChar's current stat-set to the db. If id > 0, this will be the new id, otherwise a new id will automatically be set.
+     *
+     * @param db
+     * @return
+     */
+    public boolean create(SQLiteDatabase db) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US);
+        ContentValues values = new ContentValues();
+        if (id > 0) {
+            values.put("usr_id", id);
+        }
+        values.put("usr_nam", name);
+        values.put("nd_pos", currentNode);
+        // currentHealth;
+        values.put("a_str", strength);
+        values.put("a_spd", speed);
+        values.put("a_sta", stamina);
+        values.put("a_dex", dexterity);
+        values.put("a_end", endurance);
+        values.put("loop_cnt", loopCount);
+        values.put("map_id", currentMap);
+        values.put("last_check_time", lastCheckedTime == null ? "" : dateFormat.format(lastCheckedTime));
+        id = (int) db.insert("fr_char", null, values);
+        return id > 0;
+    }
+
+    /**
+     * This method will push the RpgChar's current stat-set to the db, as identified by the id.
+     *
+     * @param db
+     */
+    public void update(SQLiteDatabase db) {
+        final SimpleDateFormat dateFormat = new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.US);
+        ContentValues values = new ContentValues();
+        values.put("usr_nam", name);
+        values.put("nd_pos", currentNode);
+        // currentHealth;
+        values.put("a_str", strength);
+        values.put("a_spd", speed);
+        values.put("a_sta", stamina);
+        values.put("a_dex", dexterity);
+        values.put("a_end", endurance);
+        values.put("loop_cnt", loopCount);
+        values.put("map_id", currentMap);
+        values.put("last_check_time", lastCheckedTime == null ? "" : dateFormat.format(lastCheckedTime));
+        db.update("fr_char", values, "usr_id = ?", new String[]{Integer.toString(id)});
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
         this.id = id;
-
-        if (this.name != null) {
-            ret = true;
-            Log.d("SCS", "Pull was successful");
-        } else {
-            Log.d("ERR", "Could not pull data from db");
-        }
-
-        return ret;
-
     }
 
-    //this method will push the RpgChar's current stat-set to the db
-    public void dbPush() {
-        Log.d("DBG", "in Char dbPush");
-        //successful sets return 0, otherwise it returns -1
-        int retStatus = 0;
-
-        db.getReadableDatabase();
-        this.db.createChar(this.id, this.currentNode, this.name, this.strength, this.speed, this.dexterity, this.endurance, this.stamina, this.loopCount);
-
-        retStatus += db.setStrength(this.strength, this.id);
-        retStatus += db.setStamina(this.stamina, this.id);
-        retStatus += db.setSpeed(this.speed, this.id);
-        retStatus += db.setEndurance(this.endurance, this.id);
-        retStatus += db.setDexterity(this.dexterity, this.id);
-        retStatus += db.setCurrentNode(this.currentNode, this.id);
-        retStatus += db.setLoopCount(this.loopCount, this.id);
-        retStatus += db.setCurrentMap(this.currentMap, this.id);
-        retStatus += db.setCheckTime(MapActivity.mapDateFormat.format(this.lastCheckedTime), this.id);
-        retStatus += db.setCurrentChallengeID(this.currentChallengeID, this.id);
-        retStatus += db.setChallengeFlag(this.challengeFlag, this.id);
-        retStatus += db.setChallengeDestNode(this.challengeDestinationNode, this.id);
-
-        if (retStatus == 0) {
-            Log.d("SCS", "Push was successful - sum(all sets) = 0");
-        } else {
-            Log.d("ERR", "Could not push data to db - now trying to create character");
-        }
-
-    }
-
-    /*|||||||||||||||||||||||||||||||||||||||||||||||||| GETTERS AND SETTERS ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
-    public void setStrength(int x) {
-
-        this.strength = x;
-    }
-
-    public void setEndurance(int x) {
-
-        this.endurance = x;
-    }
-
-    public void setSpeed(int x) {
-
-        this.speed = x;
-    }
-
-    public void setLoopCount(int x)
-    {
-        this.loopCount = x;
-    }
-
-    public void setCurrentMap(int x)
-    {
-        this.currentMap = x;
-    }
-
-    public void setDexterity(int x) {
-
-        this.dexterity = x;
-    }
-
-    public void setStamina(int x) {
-
-        this.stamina = x;
-    }
-
-    public void setHealth(int x) {
-
-        this.currentHealth = x;
+    public String getName() {
+        return this.name;
     }
 
     public void setName(String x) {
@@ -208,13 +165,22 @@ public class RpgChar {
         this.name = x;
     }
 
+    public int getCurrentNode() {
+        return this.currentNode;
+    }
+
     public void setCurrentNode(int x) {
         this.currentNode = x;
     }
 
-    public void setLastCheckedTime(Date x)
-    {
-        this.lastCheckedTime = x;
+    public int getHealth() {
+
+        return this.currentHealth;
+    }
+
+    public void setHealth(int x) {
+
+        this.currentHealth = x;
     }
 
     public void setCurrentChallengeID(int x) {this.currentChallengeID = x;}
@@ -228,9 +194,9 @@ public class RpgChar {
         return this.strength;
     }
 
-    public int getEndurance() {
+    public void setStrength(int x) {
 
-        return this.endurance;
+        this.strength = x;
     }
 
     public int getSpeed() {
@@ -238,9 +204,19 @@ public class RpgChar {
         return this.speed;
     }
 
+    public void setSpeed(int x) {
+
+        this.speed = x;
+    }
+
     public int getDexterity() {
 
         return this.dexterity;
+    }
+
+    public void setDexterity(int x) {
+
+        this.dexterity = x;
     }
 
     public int getStamina() {
@@ -248,22 +224,27 @@ public class RpgChar {
         return this.stamina;
     }
 
-    public int getHealth() {
+    public void setStamina(int x) {
 
-        return this.currentHealth;
+        this.stamina = x;
     }
 
-    public String getName() {
-        return this.name;
+    public int getEndurance() {
+
+        return this.endurance;
     }
 
-    public Date getLastCheckedTime()
-    {
+    public void setEndurance(int x) {
+
+        this.endurance = x;
+    }
+
+    public Date getLastCheckedTime() {
         return lastCheckedTime;
     }
 
-    public int getCurrentNode() {
-        return this.currentNode;
+    public void setLastCheckedTime(Date x) {
+        this.lastCheckedTime = x;
     }
 
     public int getCurrentChallengeID(){return this.currentChallengeID;}
@@ -272,19 +253,25 @@ public class RpgChar {
 
     public int getChallengeDestinationNode(){return this.challengeDestinationNode;}
 
-    public int getId() {
-        return this.id;
+    public int getLoopCount() {
+        return this.loopCount;
     }
 
-    public int getLoopCount(){ return this.loopCount;}
+    public void setLoopCount(int x) {
+        this.loopCount = x;
+    }
 
-    public int getCurrentMap(){return this.currentMap;}
+    public int getCurrentMap() {
+        return this.currentMap;
+    }
 
-    /*/////////////////////////////////////////////////////////////////////////////////////////////*/
+    public void setCurrentMap(int x) {
+        this.currentMap = x;
+    }
 
-    public void updateStatsFromActivities(Date startDate, Date endDate) {
+    public void updateStatsFromActivities(SQLiteDatabase db, Date startDate, Date endDate) {
         // calculate stat increase
-        int[] updatedStats = peekStatsFromActivities(startDate, endDate);
+        int[] updatedStats = peekStatsFromActivities(db, startDate, endDate);
         // update stats
         strength += updatedStats[0];
         endurance += updatedStats[1];
@@ -293,9 +280,8 @@ public class RpgChar {
         stamina += updatedStats[4];
     }
 
-    public int[] peekStatsFromActivities(Date startDate, Date endDate) {
-        SQLiteDatabase readDb = db.getReadableDatabase();
-        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, startDate, endDate);
+    public int[] peekStatsFromActivities(SQLiteDatabase db, Date startDate, Date endDate) {
+        List<FitnessActivity> activities = FitnessActivity.getAllByDate(db, 1, startDate, endDate);
         // group activities by type so that smaller activities can get added together
         Map<FitnessActivityType, List<FitnessActivity>> groups = new HashMap<>(activities.size());
         for (FitnessActivity activity : activities) {
@@ -349,9 +335,9 @@ public class RpgChar {
         return returnVal;
     }
 
-    public void updateChallengeStatsFromActivities(Date startDate, Date endDate, FitnessChallengeLevel challenge) {
+    public void updateChallengeStatsFromActivities(SQLiteDatabase db, Date startDate, Date endDate, FitnessChallengeLevel challenge) {
         // calculate stat increase
-        int[] updatedStats = peekChallengeStatsFromActivities(startDate, endDate, challenge);
+        int[] updatedStats = peekChallengeStatsFromActivities(db, startDate, endDate, challenge);
         // update stats
         strength += updatedStats[0];
         endurance += updatedStats[1];
@@ -360,8 +346,8 @@ public class RpgChar {
         stamina += updatedStats[4];
     }
 
-    public int[] peekChallengeStatsFromActivities(Date startDate, Date endDate, FitnessChallengeLevel challenge) {
-        boolean completedChallenge = challengeIsCompleted(startDate, endDate, challenge);
+    public int[] peekChallengeStatsFromActivities(SQLiteDatabase db, Date startDate, Date endDate, FitnessChallengeLevel challenge) {
+        boolean completedChallenge = challengeIsCompleted(db, startDate, endDate, challenge);
         int[] returnVal = new int[5];
         if (completedChallenge) {
             // Strength
@@ -378,10 +364,9 @@ public class RpgChar {
         return returnVal;
     }
 
-    public boolean challengeIsCompleted(Date startDate, Date endDate, FitnessChallengeLevel challenge) {
-        SQLiteDatabase readDb = db.getReadableDatabase();
+    public boolean challengeIsCompleted(SQLiteDatabase db, Date startDate, Date endDate, FitnessChallengeLevel challenge) {
         FitnessActivityType type = challenge.getActivityType();
-        List<FitnessActivity> activities = FitnessActivity.getAllByDateType(readDb, 1, startDate, endDate, type.getId());
+        List<FitnessActivity> activities = FitnessActivity.getAllByDateType(db, 1, startDate, endDate, type.getId());
         double distance = 0;
         int duration = 0;
         int reps = 0;

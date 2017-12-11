@@ -128,21 +128,23 @@ public class MapActivity extends AppCompatActivity {
         loop = mapView.board.player.getLoopCount();
         Log.d("MapA", "in OnCreate - Loop: " + loop);
         //PS TODO Check for in combat, travelling, in menu, etc.
+        SQLiteDatabase db = myDB.getWritableDatabase();
         if(intent.getIntExtra("edu.uwm.cs.fitrpg.refreshMap", 0) == 1 || mapView.board.player.getChallengeFlag() == 2) {
             menuIsVisible = true;
             if(mapView.board.player.getChallengeFlag() != 2) {
-                FitnessChallengeLevel.increaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
-                FitnessChallengeLevel.increaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
-                challenges = FitnessChallengeLevel.getRandomChallenges(myDB.getReadableDatabase(), MapView.board.player.getId(), 1);
+                FitnessChallengeLevel.increaseAllChallengeLevels(db, mapView.board.player.getId());
+                FitnessChallengeLevel.increaseAllChallengeLevels(db, mapView.board.player.getId());
+                challenges = FitnessChallengeLevel.getRandomChallenges(db, MapView.board.player.getId(), 1);
                 mapView.board.player.setLastCheckedTime(new Date());
                 mapView.board.player.setChallengeFlag(2);
                 mapView.board.player.setCurrentChallengeID(challenges.get(0).getFitnessTypeId());
-                mapView.board.player.dbPush();
+                mapView.board.player.update(db);
+                db.close();
             }
             else
             {
                 challenges = new ArrayList<>(numberOfChallenges);
-                challenges.add(FitnessChallengeLevel.get(myDB.getReadableDatabase(), mapView.board.player.getId(), mapView.board.player.getCurrentChallengeID()));
+                challenges.add(FitnessChallengeLevel.get(db, mapView.board.player.getId(), mapView.board.player.getCurrentChallengeID()));
 
             }
             menuTopBarText.setText("Game Over");
@@ -151,7 +153,7 @@ public class MapActivity extends AppCompatActivity {
                     +                    "Otherwise you will be placed at the beginning of the map.\n"
                     +                    "Challenge: " + challenges.get(0).toString());
 
-            if(mapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
+            if(mapView.board.player.challengeIsCompleted(db, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
                 menuBodyText.append(" Complete!");
             }
             else
@@ -168,29 +170,33 @@ public class MapActivity extends AppCompatActivity {
             menuLeftButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
+                    SQLiteDatabase db = myDB.getWritableDatabase();
+                    if(mapView.board.player.challengeIsCompleted(db, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
 
                         FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
                         FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
                         mapView.board.player.setCurrentChallengeID(-1);
                         mapView.board.player.setChallengeFlag(0);
-                        mapView.board.player.dbPush();
+                        mapView.board.player.update(db);
                         LaunchCombat();
                         CloseMenu();
                     }
+                    db.close();
                 }
             });
             menuRightButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
-                    FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
+                    SQLiteDatabase db = myDB.getWritableDatabase();
+                    FitnessChallengeLevel.decreaseAllChallengeLevels(db, mapView.board.player.getId());
+                    FitnessChallengeLevel.decreaseAllChallengeLevels(db, mapView.board.player.getId());
                     mapView.board.player.setCurrentNode(0);
                     mapView.setCurrentNode(0);
                     mapView.board.player.setCurrentChallengeID(-1);
                     mapView.board.player.setChallengeFlag(0);
-                    mapView.board.player.dbPush();
+                    mapView.board.player.update(db);
                     CloseMenu();
+                    db.close();
                 }
             });
         }
@@ -198,14 +204,14 @@ public class MapActivity extends AppCompatActivity {
         {
             menuIsVisible = true;
             challenges = new ArrayList<>(numberOfChallenges);
-            challenges.add(FitnessChallengeLevel.get(myDB.getReadableDatabase(), mapView.board.player.getId(), mapView.board.player.getCurrentChallengeID()));
+            challenges.add(FitnessChallengeLevel.get(db, mapView.board.player.getId(), mapView.board.player.getCurrentChallengeID()));
             destinationNode = mapView.board.player.getChallengeDestinationNode();
             menuTopBarText.setText("Node Too Far");
             menuBodyText.setText("This node is too far from your current node \n"
                     +                    "Would you like to do a difficult challenge to travel here?\n"
                     +                    "Otherwise you cannot travel this far. \n"
                     +                    "Challenge: " + challenges.get(0).toString());
-            if(mapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
+            if(mapView.board.player.challengeIsCompleted(db, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
                 menuBodyText.append(" Complete!");
             }
             else
@@ -225,10 +231,11 @@ public class MapActivity extends AppCompatActivity {
             menuLeftButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(mapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
+                    SQLiteDatabase db = myDB.getWritableDatabase();
+                    if(mapView.board.player.challengeIsCompleted(db, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
 
-                        FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
-                        FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
+                        FitnessChallengeLevel.decreaseAllChallengeLevels(db, mapView.board.player.getId());
+                        FitnessChallengeLevel.decreaseAllChallengeLevels(db, mapView.board.player.getId());
                         int index = 0;
                         mapView.board.player.setCurrentNode(index);
                         while (!mapView.getConnectedToCurrentNode(destinationNode)) {
@@ -237,20 +244,23 @@ public class MapActivity extends AppCompatActivity {
                         }
                         mapView.board.player.setCurrentChallengeID(-1);
                         mapView.board.player.setChallengeFlag(0);
-                        mapView.board.player.dbPush();
+                        mapView.board.player.update(db);
                         MoveCharacter();
                     }
+                    db.close();
                 }
             });
             menuRightButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
-                    FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
+                    SQLiteDatabase db = myDB.getWritableDatabase();
+                    FitnessChallengeLevel.decreaseAllChallengeLevels(db, mapView.board.player.getId());
+                    FitnessChallengeLevel.decreaseAllChallengeLevels(db, mapView.board.player.getId());
                     mapView.board.player.setCurrentChallengeID(-1);
                     mapView.board.player.setChallengeFlag(0);
-                    mapView.board.player.dbPush();
+                    mapView.board.player.update(db);
                     CloseMenu();
+                    db.close();
                 }
             });
         }
@@ -269,8 +279,10 @@ public class MapActivity extends AppCompatActivity {
             menuLeftButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FitnessChallengeLevel.increaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
+                    SQLiteDatabase db = myDB.getReadableDatabase();
+                    FitnessChallengeLevel.increaseAllChallengeLevels(db, mapView.board.player.getId());
                     CloseMenu();
+                    db.close();
                 }
             });
             menuRightButton.setOnClickListener(new View.OnClickListener() {
@@ -310,6 +322,7 @@ public class MapActivity extends AppCompatActivity {
             mapView.AdjustImage();
             lastCheckedTime = mapView.board.player.getLastCheckedTime();
         }
+        db.close();
         passedContext = this;
 
         mapNodes = new View[mapView.getNumOfNodes()];
@@ -360,7 +373,7 @@ public class MapActivity extends AppCompatActivity {
 
     public void ClickNode(View view)
     {
-
+        SQLiteDatabase db = myDB.getWritableDatabase();
         if(!menuIsVisible) {
             if(!mapView.getIsTraveling()) {
                 destinationNode = 3;
@@ -415,9 +428,9 @@ public class MapActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    FitnessChallengeLevel.increaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
-                    FitnessChallengeLevel.increaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
-                    challenges = FitnessChallengeLevel.getRandomChallenges(myDB.getReadableDatabase(), MapView.board.player.getId(), 1);
+                    FitnessChallengeLevel.increaseAllChallengeLevels(db, mapView.board.player.getId());
+                    FitnessChallengeLevel.increaseAllChallengeLevels(db, mapView.board.player.getId());
+                    challenges = FitnessChallengeLevel.getRandomChallenges(db, MapView.board.player.getId(), 1);
 
                     menuTopBarText.setText("Node Too Far");
                     menuBodyText.setText("This node is too far from your current node \n"
@@ -428,8 +441,8 @@ public class MapActivity extends AppCompatActivity {
                     mapView.board.player.setCurrentChallengeID(challenges.get(0).getFitnessTypeId());
                     mapView.board.player.setChallengeFlag(1);
                     mapView.board.player.setChallengeDestinationNode(destinationNode);
-                    mapView.board.player.dbPush();
-                    if(mapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
+                    mapView.board.player.update(db);
+                    if(mapView.board.player.challengeIsCompleted(db, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
                         menuBodyText.append(" Complete!");
                     }
                     else
@@ -445,10 +458,11 @@ public class MapActivity extends AppCompatActivity {
                     menuLeftButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(mapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
+                            SQLiteDatabase db = myDB.getWritableDatabase();
+                            if(mapView.board.player.challengeIsCompleted(db, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
 
-                                FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
-                                FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
+                                FitnessChallengeLevel.decreaseAllChallengeLevels(db, mapView.board.player.getId());
+                                FitnessChallengeLevel.decreaseAllChallengeLevels(db, mapView.board.player.getId());
                                 int index = 0;
                                 mapView.board.player.setCurrentNode(index);
                                 while (!mapView.getConnectedToCurrentNode(destinationNode)) {
@@ -457,20 +471,23 @@ public class MapActivity extends AppCompatActivity {
                                 }
                                 mapView.board.player.setCurrentChallengeID(-1);
                                 mapView.board.player.setChallengeFlag(0);
-                                mapView.board.player.dbPush();
+                                mapView.board.player.update(db);
                                 MoveCharacter(passedView);
                             }
+                            db.close();
                         }
                     });
                     menuRightButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
-                            FitnessChallengeLevel.decreaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
+                            SQLiteDatabase db = myDB.getWritableDatabase();
+                            FitnessChallengeLevel.decreaseAllChallengeLevels(db, mapView.board.player.getId());
+                            FitnessChallengeLevel.decreaseAllChallengeLevels(db, mapView.board.player.getId());
                             mapView.board.player.setCurrentChallengeID(-1);
                             mapView.board.player.setChallengeFlag(0);
-                            mapView.board.player.dbPush();
+                            mapView.board.player.update(db);
                             CloseMenu();
+                            db.close();
                         }
                     });
                 }
@@ -491,8 +508,10 @@ public class MapActivity extends AppCompatActivity {
         {
             menuLayout.setVisibility(View.INVISIBLE);
             menuIsVisible = false;
+            SQLiteDatabase db = myDB.getWritableDatabase();
             mapView.board.player.setChallengeFlag(0);
-            mapView.board.player.dbPush();
+            mapView.board.player.update(db);
+            db.close();
         }
     }
 
@@ -512,7 +531,9 @@ public class MapActivity extends AppCompatActivity {
             mapView.board.player.setSpeed(mapView.board.player.getSpeed()+val);
             mapView.board.player.setDexterity(mapView.board.player.getDexterity()+val);
             mapView.board.player.setEndurance(mapView.board.player.getEndurance()+val);
-            mapView.board.player.dbPush();
+            SQLiteDatabase db = myDB.getWritableDatabase();
+            mapView.board.player.update(db);
+            db.close();
             mapView.board.getNodes().get(mapView.board.player.getCurrentNode()).setNodeStatus(1);
             mapView.board.dbPush();
             mapView.AdjustImage();
@@ -559,7 +580,7 @@ public class MapActivity extends AppCompatActivity {
 
             for (int i = 0; i < numberOfChallenges; i++) {
                 if (!challengeComplete[i]) {
-                    challengeComplete[i] = MapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(i));
+                    challengeComplete[i] = MapView.board.player.challengeIsCompleted(readDb, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(i));
                 }
             }
             for (int i = 0; i < challengeComplete.length; i++) {
@@ -579,13 +600,16 @@ public class MapActivity extends AppCompatActivity {
             menuLeftButton.setVisibility(View.GONE);
         }
         menuBodyText.setText(tempMenuBodyText);
+        readDb.close();
     }
 
     public void MoveCharacter()
     {
         if(!mapView.getIsTraveling()) {
+            SQLiteDatabase db = myDB.getWritableDatabase();
             mapView.board.player.setChallengeDestinationNode(destinationNode);
-            mapView.board.player.dbPush();
+            mapView.board.player.update(db);
+            db.close();
             mapView.setDestinationNode(destinationNode);
             mapView.setIsTraveling(true);
             mapView.setTravelProgress(0);
@@ -614,7 +638,9 @@ public class MapActivity extends AppCompatActivity {
                 }
             }
             mapView.board.player.setChallengeDestinationNode(destinationNode);
-            mapView.board.player.dbPush();
+            SQLiteDatabase db = myDB.getWritableDatabase();
+            mapView.board.player.update(db);
+            db.close();
             mapView.setDestinationNode(destinationNode);
             mapView.setIsTraveling(true);
             mapView.setTravelProgress(0);
@@ -658,7 +684,9 @@ public class MapActivity extends AppCompatActivity {
                         menuBodyText.setText("Travel Time Remaining: " + (endTravelTime.getTime() - currentTime.getTime()) / 1000 + " seconds");
                         List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, startTravelTime, currentTime);
                         mapView.board.player.setLastCheckedTime(new Date());
-                        mapView.board.player.dbPush();
+                        SQLiteDatabase db = myDB.getWritableDatabase();
+                        mapView.board.player.update(db);
+                        db.close();
                         menuTravelFitnessLog.setText("Recent Fitness Activities:");
                         for (int i = 0; i < Math.min(2, activities.size()); i++) {
                             menuTravelFitnessLog.append("\nDate: " + activities.get(i).getStartDate() + "\nActivity Type: " + activities.get(i).getType().getName());
@@ -681,7 +709,9 @@ public class MapActivity extends AppCompatActivity {
         destinationNode = mapView.board.player.getChallengeDestinationNode();
         mapView.setCurrentNode(destinationNode);
         //PS TODO Move to travel complete
-        mapView.board.player.dbPush();
+        SQLiteDatabase db = myDB.getWritableDatabase();
+        mapView.board.player.update(db);
+        db.close();
         mapView.setIsTraveling(false);
         mapView.setTravelProgress(0);
         menuTravelProgressBar.setProgress(0);
@@ -691,7 +721,9 @@ public class MapActivity extends AppCompatActivity {
 
     private void TravelComplete()
     {
-        int[] updatedStats = mapView.board.player.peekStatsFromActivities(startTravelTime, endTravelTime);
+        SQLiteDatabase readDb = myDB.getReadableDatabase();
+        int[] updatedStats = mapView.board.player.peekStatsFromActivities(readDb, startTravelTime, endTravelTime);
+        readDb.close();
         final int strengthGain = updatedStats[0], enduranceGain = updatedStats[1], dexterityGain = updatedStats[2], speedGain = updatedStats[3], staminaGain = updatedStats[4] ;
         menuBodyText.setText("Travel Complete!\nGains: Sta +" + staminaGain + " Spd +" + speedGain + " Str +" + strengthGain + " End +" + enduranceGain + " Dex +" + dexterityGain);
         menuLeftButton.setVisibility(View.VISIBLE);
@@ -705,8 +737,10 @@ public class MapActivity extends AppCompatActivity {
         menuLeftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mapView.board.player.updateStatsFromActivities(startTravelTime, endTravelTime);
-                mapView.board.player.dbPush();
+                SQLiteDatabase db = myDB.getWritableDatabase();
+                mapView.board.player.updateStatsFromActivities(db, startTravelTime, endTravelTime);
+                mapView.board.player.update(db);
+                db.close();
                 if(mapView.board.getNodes().get(destinationNode).getIsBoss()==1)
                 {
                     menuLeftButton.setText(getResources().getString(R.string.confirm_button_string));

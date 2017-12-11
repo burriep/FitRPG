@@ -1,6 +1,9 @@
 package edu.uwm.cs.fitrpg.activity;
 
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -8,77 +11,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import edu.uwm.cs.fitrpg.DatabaseHelper;
 import edu.uwm.cs.fitrpg.MapActivity;
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.model.User;
+import edu.uwm.cs.fitrpg.util.NotificationHandler;
+import edu.uwm.cs.fitrpg.util.Utils;
 
 import static edu.uwm.cs.fitrpg.util.Utils.ISO_DATE_TIME_FORMAT;
 
-public class SettingsActivity extends AppCompatActivity{
-    private int navigationIDTag;
-
-
-    public EditText etName, etWeight, etHeight;
-    public TextView tvUpdateDate, tutorial, aboutMe;
-    public Button btnSave, btnReset;
-    private User user;
-    private DatabaseHelper db;
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(ISO_DATE_TIME_FORMAT);
-
-    private String name;
-    private int weight, height;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-
-        navigationIDTag = 0;
-
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
-
-        navigation.getMenu().getItem(0).setChecked(false);
-        navigation.getMenu().getItem(3).setChecked(true);
-
-        db = new DatabaseHelper(this);
-
-        if (db.hasUser())
-            getUser();
-        else
-         initUser();
-
-        name = user.getName();
-        weight = user.getWeight();
-        height = user.getHeight();
-
-        etName = findViewById(R.id.settings_name);
-        etWeight = findViewById(R.id.settings_weight);
-        etHeight = findViewById(R.id.settings_height);
-        tvUpdateDate = findViewById(R.id.settings_last_updated);
-        btnReset = findViewById(R.id.btn_settings_reset);
-        btnSave = findViewById(R.id.btn_settings_save);
-
-        tutorial = findViewById(R.id.tutorial);
-        aboutMe = findViewById(R.id.about_me);
-
-        //updateFakeUser();
-        resetSettings();
-
-        createListeners();
-
-    }
-
-    public BottomNavigationView.OnNavigationItemSelectedListener OnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+public class SettingsActivity extends AppCompatActivity {
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.ENGLISH);
+    private EditText etName, etWeight, etHeight, etReminderTime;
+    private CheckBox cbReminder;
+    private TextView tvUpdateDate, tutorial, aboutMe;
+    private Button btnSave, btnReset;
+    private Calendar reminderCalendar;
+    public BottomNavigationView.OnNavigationItemSelectedListener OnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -87,106 +46,63 @@ public class SettingsActivity extends AppCompatActivity{
                 case R.id.navigation_home:
                     intent = new Intent(getApplicationContext(), Home.class);
                     startActivity(intent);
-                    navigationIDTag = 1;
                     finish();
                     return true;
                 case R.id.navigation_fitness:
                     intent = new Intent(getApplicationContext(), FitnessOverview.class);
                     startActivity(intent);
-                    navigationIDTag = 2;
                     finish();
                     return true;
                 case R.id.navigation_game_map:
                     intent = new Intent(getApplicationContext(), MapActivity.class);
                     startActivity(intent);
-                    navigationIDTag = 3;
                     finish();
                     return true;
                 case R.id.navigation_settings:
-                    navigationIDTag = 4;
                     return true;
             }
             return false;
         }
     };
+    private User user;
+    private DatabaseHelper dbHelper;
 
     @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), Home.class);
-        startActivity(intent);
-        navigationIDTag = 1;
-        finish();
-    }
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
 
-    private boolean hasUser() {
-        if (db.getUser() == null)
-            return false;
-        else
-            return true;
-    }
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(OnNavigationItemSelectedListener);
 
-    private void getUser() {
-        user = db.getUser();
-        closeDatabase();
-    }
+        navigation.getMenu().getItem(3).setChecked(true);
 
-    private void initUser() {
-        user = new User("User", 1);
-        updateFakeUser();
-    }
+        etName = findViewById(R.id.settings_name);
+        etWeight = findViewById(R.id.settings_weight);
+        etHeight = findViewById(R.id.settings_height);
+        tvUpdateDate = findViewById(R.id.settings_last_updated);
+        btnReset = findViewById(R.id.btn_settings_reset);
+        btnSave = findViewById(R.id.btn_settings_save);
+        tutorial = findViewById(R.id.tutorial);
+        aboutMe = findViewById(R.id.about_me);
+        cbReminder = findViewById(R.id.settings_reminders);
+        etReminderTime = findViewById(R.id.settings_reminders_time);
 
-    private void updateFakeUser() {
-        user.setHeight(75);
-        user.setWeight(200);
-        user.setLastUpdateDate(new SimpleDateFormat(ISO_DATE_TIME_FORMAT).format(Calendar.getInstance().getTime()));
-    }
-
-    private void resetSettings() {
-        etName.setText("");
-        etName.setHint(user.getName());
-        etWeight.setText("");
-        etWeight.setHint(Integer.toString(user.getWeight()));
-        etHeight.setText("");
-        etHeight.setHint(Integer.toString(user.getHeight()));
-        tvUpdateDate.setText("Last updated: " + user.getLastUpdateDate());
-    }
-
-    public void createListeners() {
-        btnReset.setOnClickListener(new View.OnClickListener() {
+        reminderCalendar = Calendar.getInstance();
+        new Thread(new Runnable() {
             @Override
-            public void onClick(View view) {
-                resetSettings();
+            public void run() {
+                dbHelper = new DatabaseHelper(SettingsActivity.this);
+                SQLiteDatabase db = dbHelper.getReadableDatabase();
+                user = User.get(db, 1);
+                SettingsActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        initUserInterface();
+                    }
+                });
             }
-        });
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean changed = false;
-                if(etName.getText().length() > 0) {
-                    name = etName.getText().toString();
-                    changed = true;
-                }
-                if(etWeight.getText().length() > 0) {
-                    weight = Integer.parseInt(etWeight.getText().toString());
-                    changed = true;
-                }
-                if(etHeight.getText().length() > 0) {
-                    height = Integer.parseInt(etHeight.getText().toString());
-                    changed = true;
-                }
-                if(changed) {
-                    tvUpdateDate.setText(DATE_FORMAT.format(Calendar.getInstance().getTime()));
-                    updateSettings();
-                    resetSettings();
-                    Toast.makeText(getApplicationContext(), "Updated user", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), "Nothing to update", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
+        }).run();
 
         tutorial.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,20 +121,91 @@ public class SettingsActivity extends AppCompatActivity{
         });
     }
 
-    private void updateSettings() {
-        user.setLastUpdateDate(DATE_FORMAT.format(Calendar.getInstance().getTime()));
-        user.setName(name);
-        user.setWeight(weight);
-        user.setHeight(height);
-        user.updateUser(db);
-        closeDatabase();
-        //Add calls to update user in database
-        // ...
+    private void initUserInterface() {
+        resetSettings();
+        btnReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                resetSettings();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveSettings();
+            }
+        });
+
+        final TimePickerDialog.OnTimeSetListener time = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                reminderCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                reminderCalendar.set(Calendar.MINUTE, minute);
+                updateReminderTimeField();
+            }
+        };
+
+        etReminderTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TimePickerDialog(SettingsActivity.this, time, reminderCalendar.get(Calendar.HOUR_OF_DAY), reminderCalendar.get(Calendar.MINUTE), false).show();
+            }
+        });
     }
 
-    private void closeDatabase() {
-        db.close();
+    public void saveSettings() {
+        user.setLastUpdateDate(Calendar.getInstance().getTime());
+        user.setName(etName.getText().toString());
+        user.setWeight(Utils.getIntegerField(etWeight, 0));
+        user.setHeight(Utils.getIntegerField(etHeight, 0));
+        user.setFitnessReminderDate(reminderCalendar.getTime());
+        user.setFitnessReminders(cbReminder.isChecked());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                user.update(db);
+                db.close();
+                tvUpdateDate.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        tvUpdateDate.setText(DATE_FORMAT.format(user.getLastUpdateDate()));
+                        Context context = SettingsActivity.this;
+                        if (user.isFitnessReminders()) {
+                            NotificationHandler.setEnabledState(context,true);
+                            NotificationHandler.setReminder(context, reminderCalendar.getTime());
+                        } else {
+                            NotificationHandler.setEnabledState(context,false);
+                            NotificationHandler.cancelReminder(context);
+                        }
+                        Toast.makeText(getApplicationContext(), "Updated user", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }).run();
     }
 
+    private void updateReminderTimeField() {
+        etReminderTime.setText(new SimpleDateFormat("h:mm a", Locale.US).format(reminderCalendar.getTime()));
+    }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), Home.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void resetSettings() {
+        etName.setText(user.getName());
+        etWeight.setText(Integer.toString(user.getWeight()));
+        etHeight.setText(Integer.toString(user.getHeight()));
+        tvUpdateDate.setText("Last updated: " + new SimpleDateFormat(ISO_DATE_TIME_FORMAT, Locale.ENGLISH).format(user.getLastUpdateDate()));
+
+        cbReminder.setChecked(user.isFitnessReminders());
+        reminderCalendar.setTime(user.getFitnessReminderDate());
+        updateReminderTimeField();
+    }
 }
