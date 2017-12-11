@@ -155,14 +155,14 @@ public class MapActivity extends AppCompatActivity {
 
             if(mapView.board.player.challengeIsCompleted(db, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
                 menuBodyText.append(" Complete!");
+                menuLeftButton.setVisibility(View.VISIBLE);
             }
             else
             {
                 menuBodyText.append(" Not Yet Complete");
-
+                menuLeftButton.setVisibility(View.GONE);
             }
             menuTravelProgressBar.setVisibility(View.GONE);
-            menuLeftButton.setVisibility(View.VISIBLE);
             menuRightButton.setVisibility(View.VISIBLE);
             menuTravelFitnessLog.setVisibility(View.GONE);
             menuLeftButton.setText("Complete Challenge");
@@ -213,15 +213,15 @@ public class MapActivity extends AppCompatActivity {
                     +                    "Challenge: " + challenges.get(0).toString());
             if(mapView.board.player.challengeIsCompleted(db, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
                 menuBodyText.append(" Complete!");
+                menuLeftButton.setVisibility(View.VISIBLE);
             }
             else
             {
                 menuBodyText.append(" Not Yet Complete");
-
+                menuLeftButton.setVisibility(View.GONE);
             }
             menuTravelProgressBar.setVisibility(View.GONE);
 
-            menuLeftButton.setVisibility(View.VISIBLE);
             menuRightButton.setVisibility(View.VISIBLE);
 
             menuTravelFitnessLog.setVisibility(View.GONE);
@@ -444,14 +444,14 @@ public class MapActivity extends AppCompatActivity {
                     mapView.board.player.update(db);
                     if(mapView.board.player.challengeIsCompleted(db, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(0))) {
                         menuBodyText.append(" Complete!");
+                        menuLeftButton.setVisibility(View.VISIBLE);
                     }
                     else
                     {
                         menuBodyText.append(" Not Yet Complete");
-
+                        menuLeftButton.setVisibility(View.GONE);
                     }
                     menuTravelProgressBar.setVisibility(View.GONE);
-                    menuLeftButton.setVisibility(View.VISIBLE);
                     menuRightButton.setVisibility(View.VISIBLE);
                     menuLeftButton.setText("Complete Challenge");
                     menuRightButton.setText("Cancel");
@@ -677,16 +677,14 @@ public class MapActivity extends AppCompatActivity {
             public void run() {
                     if(!quitHandler) {
                         Date currentTime = new Date();
-
+                        SQLiteDatabase db = myDB.getReadableDatabase();
                         travelProgress = (int) (currentTime.getTime() - startTravelTime.getTime());
                         mapView.setTravelProgress((travelProgress * 100) / (int) (endTravelTime.getTime() - startTravelTime.getTime()));
                         menuTravelProgressBar.setProgress(mapView.getTravelProgress());
                         menuBodyText.setText("Travel Time Remaining: " + (endTravelTime.getTime() - currentTime.getTime()) / 1000 + " seconds");
-                        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, startTravelTime, currentTime);
+                        List<FitnessActivity> activities = FitnessActivity.getAllByDate(db, 1, startTravelTime, currentTime);
                         mapView.board.player.setLastCheckedTime(new Date());
-                        SQLiteDatabase db = myDB.getWritableDatabase();
                         mapView.board.player.update(db);
-                        db.close();
                         menuTravelFitnessLog.setText("Recent Fitness Activities:");
                         for (int i = 0; i < Math.min(2, activities.size()); i++) {
                             menuTravelFitnessLog.append("\nDate: " + activities.get(i).getStartDate() + "\nActivity Type: " + activities.get(i).getType().getName());
@@ -696,6 +694,7 @@ public class MapActivity extends AppCompatActivity {
                         } else {
                             StopMoving();
                         }
+                        db.close();
                     }
                 /*travelProgress += 500;
                 mapView.setTravelProgress((travelProgress*100)/travelDuration);

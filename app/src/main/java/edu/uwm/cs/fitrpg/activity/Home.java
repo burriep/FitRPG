@@ -131,6 +131,11 @@ public class Home extends AppCompatActivity {
         character = new RpgChar();
         character.setId(1);
         character.setName("Defaultio");
+        character.setStamina(10);
+        character.setSpeed(10);
+        character.setStrength(10);
+        character.setDexterity(10);
+        character.setEndurance(10);
         character.setLoopCount(1);
         character.create(db);
         // fitness challenge levels
