@@ -139,7 +139,6 @@ public class MapActivity extends AppCompatActivity {
                 mapView.board.player.setChallengeFlag(2);
                 mapView.board.player.setCurrentChallengeID(challenges.get(0).getFitnessTypeId());
                 mapView.board.player.update(db);
-                db.close();
             }
             else
             {
