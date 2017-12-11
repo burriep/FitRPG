@@ -123,8 +123,8 @@ public class MapView extends View {
     protected void onDraw(Canvas canvas)
     {
         super.onDraw(canvas);
-        float adjustmentX = (float)canvas.getWidth()/(int)screenDimensions.first;
-        float adjustmentY = (float)canvas.getHeight()/(int)screenDimensions.second;
+        float adjustmentX = 1.0f;//(float)canvas.getWidth()/(int)screenDimensions.first;
+        float adjustmentY = 1.0f;//(float)canvas.getHeight()/(int)screenDimensions.second;
 
         for(int i = 0; i < numOfNodes; i++)
         {
