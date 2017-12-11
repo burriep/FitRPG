@@ -75,7 +75,7 @@ public class MapActivity extends AppCompatActivity {
     List<FitnessChallengeLevel> challenges;
     Boolean[] challengeComplete;
     int countComplete;
-    int numberOfChallenges = 3;
+    int numberOfChallenges = 1;
 
     public static SimpleDateFormat mapDateFormat = new SimpleDateFormat(Utils.ISO_DATE_TIME_FORMAT);
     private boolean quitHandler = false;
@@ -336,7 +336,6 @@ public class MapActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    //PS TODO Add ability to do challenge to connect node
                     FitnessChallengeLevel.increaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
                     FitnessChallengeLevel.increaseAllChallengeLevels(myDB.getReadableDatabase(), mapView.board.player.getId());
                     challenges = FitnessChallengeLevel.getRandomChallenges(myDB.getReadableDatabase(), MapView.board.player.getId(), 1);
@@ -423,32 +422,65 @@ public class MapActivity extends AppCompatActivity {
             mapView.board.player.setDexterity(mapView.board.player.getDexterity()+val);
             mapView.board.player.setEndurance(mapView.board.player.getEndurance()+val);
             mapView.board.player.dbPush();
+            mapView.board.getNodes().get(mapView.board.player.getCurrentNode()).setNodeStatus(1);
+            mapView.board.dbPush();
+            mapView.AdjustImage();
             menuLeftButton.setVisibility(View.GONE);
         }
     }
 
     public void SetCurrentNodeChallenges()
     {
-        //PS TODO Set Challenges per Paul's new Stuff (Generate FitnessChallengeLevel, send to RPGchar, get units from FitnessChallengeLevel)
         SQLiteDatabase readDb = myDB.getReadableDatabase();
         menuTopBarText.setText("Current Node");
-        String tempMenuBodyText = "This is your current location\nChallenges:\n";
-        List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, mapView.board.player.getLastCheckedTime(), new Date());
+        String tempMenuBodyText = "This is your current location\n";
+        MapNode currentNodeInfo = mapView.board.getNodes().get(mapView.board.player.getCurrentNode());
+        if(currentNodeInfo.getNodeStatus() != 1) {
+            tempMenuBodyText += "Challenges:\n";
+            if(currentNodeInfo.getChallengeID() < 0) {
 
-        for(int i = 0; i < challengeComplete.length; i++)
-        {
-            if(!challengeComplete[i])
+                challenges = FitnessChallengeLevel.getRandomChallenges(readDb, MapView.board.player.getId(), numberOfChallenges);
+
+                challengeComplete = new Boolean[numberOfChallenges];
+                countComplete = 0;
+                for (int i = 0; i < challenges.size(); i++) {
+                    challengeComplete[i] = false;
+                    currentNodeInfo.setChallengeID(challenges.get(i).getFitnessTypeId());
+                }
+                mapView.board.dbPush();
+
+            }
+            else
             {
-                challengeComplete[i] = MapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(i));
+                challenges = new ArrayList<>(numberOfChallenges);
+                challengeComplete = new Boolean[numberOfChallenges];
+                countComplete = 0;
+                for(int i = 0 ; i < numberOfChallenges; i++) {
+                    challengeComplete[i] = false;
+                    challenges.add(FitnessChallengeLevel.get(readDb, mapView.board.player.getId(), currentNodeInfo.getChallengeID()));
+                }
+
+            }
+
+            List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, mapView.board.player.getLastCheckedTime(), new Date());
+
+            for (int i = 0; i < numberOfChallenges; i++) {
+                if (!challengeComplete[i]) {
+                    challengeComplete[i] = MapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(i));
+                }
+            }
+            for (int i = 0; i < challengeComplete.length; i++) {
+                tempMenuBodyText += challenges.get(i).toString();
+                if (challengeComplete[i]) {
+                    tempMenuBodyText += " Complete!\n";
+                } else {
+                    tempMenuBodyText += " Not Done\n";
+                }
             }
         }
-        for(int i = 0; i < challengeComplete.length; i++) {
-            tempMenuBodyText += challenges.get(i).toString();
-            if (challengeComplete[i]) {
-                tempMenuBodyText += " Complete!\n";
-            } else {
-                tempMenuBodyText += " Not Done\n";
-            }
+        else
+        {
+            tempMenuBodyText += "You have already completed the challenges here!";
         }
         menuBodyText.setText(tempMenuBodyText);
     }
@@ -545,18 +577,6 @@ public class MapActivity extends AppCompatActivity {
         final int strengthGain = updatedStats[0], enduranceGain = updatedStats[1], dexterityGain = updatedStats[2], speedGain = updatedStats[3], staminaGain = updatedStats[4] ;
         menuBodyText.setText("Travel Complete!\nGains: Sta +" + staminaGain + " Spd +" + speedGain + " Str +" + strengthGain + " End +" + enduranceGain + " Dex +" + dexterityGain);
         menuLeftButton.setVisibility(View.VISIBLE);
-        Log.d("DBG", "MapActivity - Before Challenges " );
-        SQLiteDatabase readDB = myDB.getReadableDatabase();
-        challenges = FitnessChallengeLevel.getRandomChallenges(readDB, MapView.board.player.getId(), numberOfChallenges);     //PS DEBUG CODE
-        Log.d("DBG", "MapActivity - After Challenges ");
-
-        challengeComplete = new Boolean[numberOfChallenges];     //PS DEBUG CODE
-        countComplete = 0;     //PS DEBUG CODE
-        for (int i = 0; i < challenges.size(); i++)
-        {
-            Log.d("DBG", "MapActivity - In challenge loop " + i);
-            challengeComplete[i] = false;     //PS DEBUG CODE
-        }
         if(mapView.board.getNodes().get(destinationNode).getIsBoss()==1)
         {
             menuLeftButton.setText(getResources().getString(R.string.combat_start_button));
