@@ -3,6 +3,8 @@
     package="edu.uwm.cs.fitrpg">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -11,13 +13,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <!--<activity android:name=".MainActivity">-->
-            <!--&lt;!&ndash;<intent-filter>&ndash;&gt;-->
-                <!--&lt;!&ndash;<action android:name="android.intent.action.MAIN" />&ndash;&gt;-->
-
-                <!--&lt;!&ndash;<category android:name="android.intent.category.LAUNCHER" />&ndash;&gt;-->
-            <!--&lt;!&ndash;</intent-filter>&ndash;&gt;-->
-        <!--</activity>-->
         <activity android:name=".activity.Home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,6 +37,13 @@
             android:name=".service.LocationUpdatesService"
             android:enabled="true" />
 
+        <receiver
+            android:name=".util.NotificationHandler"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

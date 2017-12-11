@@ -1,6 +1,7 @@
 package edu.uwm.cs.fitrpg;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -49,7 +50,9 @@ public class CombatActivity extends AppCompatActivity {
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
         myDB = new DatabaseHelper(this);
-        playerChar = new RpgChar();
+        SQLiteDatabase db = myDB.getReadableDatabase();
+        playerChar = RpgChar.get(db, 1);
+        db.close();
 
         playerUnit = new CombatUnit(playerChar.getStamina(),
                 playerChar.getStrength(),
@@ -143,7 +146,9 @@ public class CombatActivity extends AppCompatActivity {
             if(!isTransferring) {
                 isTransferring = true;
                 playerChar.setCurrentNode(0);
-                playerChar.dbPush();
+                SQLiteDatabase db = myDB.getWritableDatabase();
+                playerChar.update(db);
+                db.close();
                 Intent intent = new Intent(this, MapActivity.class);
                 intent.putExtra("edu.uwm.cs.fitrpg.enemyStamina", enemyUnit.GetStamina() / loop);
 

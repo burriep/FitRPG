@@ -91,6 +91,39 @@
         app:layout_constraintTop_toBottomOf="@+id/settings_height_label" />
 
 
+    <CheckBox
+        android:id="@+id/settings_reminders"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Daily Fitness Reminder"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_weight" />
+
+    <TextView
+        android:id="@+id/settings_reminders_time_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Reminder Time"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_reminders" />
+
+    <EditText
+        android:id="@+id/settings_reminders_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:ems="6"
+        android:focusable="false"
+        android:inputType="time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_reminders_time_label" />
+
     <TextView
         android:id="@+id/settings_last_updated"
         android:layout_width="0dp"
@@ -111,20 +144,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="Save"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_weight" />
+        app:layout_constraintTop_toBottomOf="@+id/settings_reminders_time" />
 
     <Button
         android:id="@+id/btn_settings_reset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="Clear"
         app:layout_constraintStart_toEndOf="@+id/btn_settings_save"
-        app:layout_constraintTop_toBottomOf="@+id/settings_weight" />
+        app:layout_constraintTop_toBottomOf="@+id/settings_reminders_time" />
 
 
     <TextView

@@ -332,7 +332,9 @@ public class MapActivity extends AppCompatActivity {
             mapView.board.player.setSpeed(mapView.board.player.getSpeed()+val);
             mapView.board.player.setDexterity(mapView.board.player.getDexterity()+val);
             mapView.board.player.setEndurance(mapView.board.player.getEndurance()+val);
-            mapView.board.player.dbPush();
+            SQLiteDatabase db = myDB.getWritableDatabase();
+            mapView.board.player.update(db);
+            db.close();
             menuLeftButton.setVisibility(View.GONE);
         }
     }
@@ -349,7 +351,9 @@ public class MapActivity extends AppCompatActivity {
         {
             if(!challengeComplete[i])
             {
-                challengeComplete[i] = MapView.board.player.challengeIsCompleted(mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(i));
+                SQLiteDatabase db = myDB.getReadableDatabase();
+                challengeComplete[i] = MapView.board.player.challengeIsCompleted(db, mapView.board.player.getLastCheckedTime(), new Date(), challenges.get(i));
+                db.close();
             }
         }
         for(int i = 0; i < challengeComplete.length; i++) {
@@ -419,7 +423,9 @@ public class MapActivity extends AppCompatActivity {
                         menuBodyText.setText("Travel Time Remaining: " + (endTravelTime.getTime() - currentTime.getTime()) / 1000 + " seconds");
                         List<FitnessActivity> activities = FitnessActivity.getAllByDate(readDb, 1, startTravelTime, currentTime);
                         mapView.board.player.setLastCheckedTime(new Date());
-                        mapView.board.player.dbPush();
+                        SQLiteDatabase db = myDB.getWritableDatabase();
+                        mapView.board.player.update(db);
+                        db.close();
                         menuTravelFitnessLog.setText("Recent Fitness Activities:");
                         for (int i = 0; i < Math.min(2, activities.size()); i++) {
                             menuTravelFitnessLog.append("\nDate: " + activities.get(i).getStartDate() + "\nActivity Type: " + activities.get(i).getType().getName());
@@ -441,7 +447,9 @@ public class MapActivity extends AppCompatActivity {
     {
         mapView.setCurrentNode(destinationNode);
         //PS TODO Move to travel complete
-        mapView.board.player.dbPush();
+        SQLiteDatabase db = myDB.getWritableDatabase();
+        mapView.board.player.update(db);
+        db.close();
         mapView.setIsTraveling(false);
         mapView.setTravelProgress(0);
         menuTravelProgressBar.setProgress(0);
@@ -451,14 +459,15 @@ public class MapActivity extends AppCompatActivity {
 
     private void TravelComplete()
     {
-        int[] updatedStats = mapView.board.player.peekStatsFromActivities(startTravelTime, endTravelTime);
+        SQLiteDatabase db = myDB.getReadableDatabase();
+        int[] updatedStats = mapView.board.player.peekStatsFromActivities(db, startTravelTime, endTravelTime);
         final int strengthGain = updatedStats[0], enduranceGain = updatedStats[1], dexterityGain = updatedStats[2], speedGain = updatedStats[3], staminaGain = updatedStats[4] ;
         menuBodyText.setText("Travel Complete!\nGains: Sta +" + staminaGain + " Spd +" + speedGain + " Str +" + strengthGain + " End +" + enduranceGain + " Dex +" + dexterityGain);
         menuLeftButton.setVisibility(View.VISIBLE);
         Log.d("DBG", "MapActivity - Before Challenges " );
-        SQLiteDatabase readDB = myDB.getReadableDatabase();
-        challenges = FitnessChallengeLevel.getRandomChallenges(readDB, MapView.board.player.getId(), numberOfChallenges);     //PS DEBUG CODE
+        challenges = FitnessChallengeLevel.getRandomChallenges(db, MapView.board.player.getId(), numberOfChallenges);     //PS DEBUG CODE
         Log.d("DBG", "MapActivity - After Challenges ");
+        db.close();
 
         challengeComplete = new Boolean[numberOfChallenges];     //PS DEBUG CODE
         countComplete = 0;     //PS DEBUG CODE
@@ -474,8 +483,10 @@ public class MapActivity extends AppCompatActivity {
         menuLeftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mapView.board.player.updateStatsFromActivities(startTravelTime, endTravelTime);
-                mapView.board.player.dbPush();
+                SQLiteDatabase db = myDB.getWritableDatabase();
+                mapView.board.player.updateStatsFromActivities(db, startTravelTime, endTravelTime);
+                mapView.board.player.update(db);
+                db.close();
                 if(mapView.board.getNodes().get(destinationNode).getIsBoss()==1)
                 {
                     menuLeftButton.setText(getResources().getString(R.string.confirm_button_string));

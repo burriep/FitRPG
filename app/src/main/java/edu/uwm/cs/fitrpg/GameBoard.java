@@ -1,5 +1,6 @@
 package edu.uwm.cs.fitrpg;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
@@ -23,7 +24,7 @@ public class GameBoard {
     public ArrayList<MapNode> nodeList = new ArrayList<MapNode>();
     public ArrayList<MapPath> pathList = new ArrayList<MapPath>();
     private int mapID;
-    private DatabaseHelper db;
+    private DatabaseHelper dbHelper;
     public RpgChar player;
     final private WindowManager w = (WindowManager) Home.appCon.getSystemService(Home.appCon.WINDOW_SERVICE);
     final private Display d = w.getDefaultDisplay();
@@ -31,8 +32,10 @@ public class GameBoard {
 
 
     public GameBoard() {
-        db = new DatabaseHelper(Home.appCon);
-        this.player = new RpgChar();
+        dbHelper = new DatabaseHelper(Home.appCon);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        this.player = RpgChar.get(db, 1);
+        db.close();
         boolean exists = dbPull(this.player.getCurrentMap());
 
         if (!exists) {
@@ -48,8 +51,10 @@ public class GameBoard {
 
     public GameBoard(int x)
     {
-        db = new DatabaseHelper(Home.appCon);
-        this.player = new RpgChar();
+        dbHelper = new DatabaseHelper(Home.appCon);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        this.player = RpgChar.get(db, 1);
+        db.close();
         boolean exists = dbPull(x);
 
         if (!exists) {
@@ -81,14 +86,14 @@ public class GameBoard {
         Log.d("DBG", "in GameBoard dbPush - Pushing Nodes");
         this.printNodes();
         for (MapNode temp : this.nodeList) {
-            db.updateNode(1, this.mapID, temp.getNodeId(), temp.getNodeStatus(), temp.getX(), temp.getY(), temp.getAdjX(), temp.getAdjY(), temp.getChallengeID(), temp.getIsBoss());
+            dbHelper.updateNode(1, this.mapID, temp.getNodeId(), temp.getNodeStatus(), temp.getX(), temp.getY(), temp.getAdjX(), temp.getAdjY(), temp.getChallengeID(), temp.getIsBoss());
         }
 
         Log.d("DBG", "in GameBoard dbPush - Pushing Paths");
         this.printPaths();
         this.printPaths();
         for (MapPath temp : this.pathList) {
-            db.updatePath(this.mapID, temp.getNodeA(), temp.getNodeB(), temp.getStatus(), temp.getStartTime(), temp.getEndTime());
+            dbHelper.updatePath(this.mapID, temp.getNodeA(), temp.getNodeB(), temp.getStatus(), temp.getStartTime(), temp.getEndTime());
         }
     }
 
@@ -99,9 +104,9 @@ public class GameBoard {
         boolean ret = false;
 
         //temp will hold all nodes associated with the map
-        ArrayList<int[]> temp = db.getMapData(1, map_id);
+        ArrayList<int[]> temp = dbHelper.getMapData(1, map_id);
         //temp2 will hold all paths between the map's nodes
-        ArrayList<String[]> temp2 = db.getPathData(map_id);
+        ArrayList<String[]> temp2 = dbHelper.getPathData(map_id);
 
         //check if we have nodes
         if (temp != null && temp2 != null) {
@@ -166,12 +171,12 @@ public class GameBoard {
 
         if (found[1] != -1) {
             this.pathList.remove(found[1]);
-            db.deletePath(this.mapID, b, a);
+            dbHelper.deletePath(this.mapID, b, a);
             Log.d("DBG", "removed path[1] from pathlist");
         }
         if (found[0] != -1) {
             this.pathList.remove(found[0]);
-            db.deletePath(this.mapID, a, b);
+            dbHelper.deletePath(this.mapID, a, b);
             Log.d("DBG", "removed path[0] from pathlist");
         } else {
             Log.d("DBG", "Path was not in pathlist - could not remove");
@@ -482,7 +487,10 @@ public class GameBoard {
         this.player.setCurrentMap(map_id);
         this.mapID = map_id;
 
-        this.player.dbPush();
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        this.player.update(db);
+        db.close();
+
         this.dbPush();
 
     }

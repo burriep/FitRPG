@@ -59,9 +59,7 @@ public class FitnessEntryTimeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fitness_entry_time, container, false);
         dateField = view.findViewById(R.id.activity_entry_date);
-        dateField.setFocusable(false);
         timeField = view.findViewById(R.id.activity_entry_time);
-        timeField.setFocusable(false);
         durationHourField = view.findViewById(R.id.activity_entry_duration_hours);
         durationMinuteField = view.findViewById(R.id.activity_entry_duration_minutes);
         durationSecondField = view.findViewById(R.id.activity_entry_duration_seconds);

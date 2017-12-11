@@ -45,6 +45,7 @@ import com.google.android.gms.tasks.Task;
 
 import edu.uwm.cs.fitrpg.R;
 import edu.uwm.cs.fitrpg.activity.FitnessActivityTracking;
+import edu.uwm.cs.fitrpg.util.NotificationHandler;
 import edu.uwm.cs.fitrpg.util.Utils;
 
 /**
@@ -228,7 +229,7 @@ public class LocationUpdatesService extends Service {
         PendingIntent activityPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, FitnessActivityTracking.class), 0);
 
-        return new NotificationCompat.Builder(this)
+        return new NotificationCompat.Builder(this, NotificationHandler.NOTIFICATION_CHANNEL_SERVICE_ID)
                 .addAction(R.drawable.ic_launch, getString(R.string.launch_activity),
                         activityPendingIntent)
                 .addAction(R.drawable.ic_cancel, getString(R.string.remove_location_updates),
@@ -237,7 +238,7 @@ public class LocationUpdatesService extends Service {
                 .setContentTitle(Utils.getLocationTitle(this))
                 .setOngoing(true)
                 .setPriority(Notification.PRIORITY_HIGH)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_fitness_reminder)
                 .setTicker(text)
                 .setWhen(System.currentTimeMillis()).build();
     }
