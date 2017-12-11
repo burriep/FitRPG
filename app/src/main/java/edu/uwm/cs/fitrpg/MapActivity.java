@@ -217,6 +217,7 @@ public class MapActivity extends AppCompatActivity {
 
             menuLeftButton.setVisibility(View.VISIBLE);
             menuRightButton.setVisibility(View.VISIBLE);
+
             menuTravelFitnessLog.setVisibility(View.GONE);
 
             menuLeftButton.setText("Complete Challenge");
@@ -372,7 +373,10 @@ public class MapActivity extends AppCompatActivity {
                 menuLayout.setVisibility(View.VISIBLE);
                 menuTravelProgressBar.setVisibility(View.GONE);
                 menuTravelFitnessLog.setVisibility(View.GONE);
+                menuLeftButton.setVisibility(View.VISIBLE);
                 menuRightButton.setVisibility(View.VISIBLE);
+                menuLeftButton.setText("Confirm");
+                menuRightButton.setText("Cancel");
                 menuIsVisible = true;
                 final View passedView = view;
                 Log.d("DBG", "in Click Node: Clicked: " + destinationNode + " Converted: " + mapView.board.getNodes().get(destinationNode).getNodeId() + " Current: " + mapView.getCurrentNode());
@@ -399,6 +403,9 @@ public class MapActivity extends AppCompatActivity {
                     menuBodyText.setText( "Travel to this node will take " + Integer.toString(travelDuration/1000) + " seconds\n" +
                             "Confirm Travel?");
                     menuLeftButton.setVisibility(View.VISIBLE);
+                    menuRightButton.setVisibility(View.VISIBLE);
+                    menuLeftButton.setText("Confirm");
+                    menuRightButton.setText("Cancel");
                     menuLeftButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -688,6 +695,9 @@ public class MapActivity extends AppCompatActivity {
         final int strengthGain = updatedStats[0], enduranceGain = updatedStats[1], dexterityGain = updatedStats[2], speedGain = updatedStats[3], staminaGain = updatedStats[4] ;
         menuBodyText.setText("Travel Complete!\nGains: Sta +" + staminaGain + " Spd +" + speedGain + " Str +" + strengthGain + " End +" + enduranceGain + " Dex +" + dexterityGain);
         menuLeftButton.setVisibility(View.VISIBLE);
+        menuLeftButton.setVisibility(View.VISIBLE);
+        menuLeftButton.setText("Confirm");
+        menuRightButton.setText("Cancel");
         if(mapView.board.getNodes().get(destinationNode).getIsBoss()==1)
         {
             menuLeftButton.setText(getResources().getString(R.string.combat_start_button));
