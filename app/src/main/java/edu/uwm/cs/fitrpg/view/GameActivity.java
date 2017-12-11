@@ -73,12 +73,13 @@ public class GameActivity extends Activity {
 
                 playerChar.setLoopCount(loop+1);
                 playerChar.setCurrentMap(playerChar.getCurrentMap()+1);
+                playerChar.setCurrentNode(0);
             }
             else
             {
                 intent.putExtra("edu.uwm.cs.fitrpg.refreshMap", 1);
             }
-            playerChar.setCurrentNode(0);
+
 
             playerChar.dbPush();
             startActivity(intent);
@@ -101,7 +102,7 @@ public class GameActivity extends Activity {
         RpgChar tempPlayer = new RpgChar();
         loop = tempPlayer.getLoopCount();
         // Build the player
-        gv.getScene().spawnPlayerCombatUnit(bm, /*tempPlayer.getStamina()*/10000,
+        gv.getScene().spawnPlayerCombatUnit(bm, tempPlayer.getStamina(),//10000,
                 tempPlayer.getStrength(),
                 tempPlayer.getEndurance(),
                 tempPlayer.getDexterity(),
