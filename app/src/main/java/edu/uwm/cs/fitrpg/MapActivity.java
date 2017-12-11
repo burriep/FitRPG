@@ -38,7 +38,7 @@ public class MapActivity extends AppCompatActivity {
 
     private MapView mapView;                    //PS The map view object in app that controls the visuals, as well as stores the current node and boss node
     private View[] mapNodes;                    //PS Stores the buttons associated with the map nodes
-    private int travelDuration = 1000;         //PS How long in milliseconds it takes currently to travel
+    private int travelDuration = 20000;         //PS How long in milliseconds it takes currently to travel
     private int travelProgress = 0;            //PS A number between 0-100 representing the percentage of how far along the current travel is
     private int destinationNode = 0;           //PS The node the player is currently traveling to
 
@@ -576,6 +576,8 @@ public class MapActivity extends AppCompatActivity {
     public void MoveCharacter()
     {
         if(!mapView.getIsTraveling()) {
+            mapView.board.player.setChallengeDestinationNode(destinationNode);
+            mapView.board.player.dbPush();
             mapView.setDestinationNode(destinationNode);
             mapView.setIsTraveling(true);
             mapView.setTravelProgress(0);
@@ -603,6 +605,8 @@ public class MapActivity extends AppCompatActivity {
                     break;
                 }
             }
+            mapView.board.player.setChallengeDestinationNode(destinationNode);
+            mapView.board.player.dbPush();
             mapView.setDestinationNode(destinationNode);
             mapView.setIsTraveling(true);
             mapView.setTravelProgress(0);
@@ -666,6 +670,7 @@ public class MapActivity extends AppCompatActivity {
 
     private void StopMoving()
     {
+        destinationNode = mapView.board.player.getChallengeDestinationNode();
         mapView.setCurrentNode(destinationNode);
         //PS TODO Move to travel complete
         mapView.board.player.dbPush();
