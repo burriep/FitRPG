@@ -435,7 +435,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if(c.moveToFirst()) {
                 while(!c.isAfterLast())
                 {
-                    int rowData[] = new int[8];
+                    int rowData[] = new int[9];
                     rowData[0] = c.getInt(1);       //map_id
                     rowData[1] = c.getInt(2);       //node_id
                     rowData[2] = c.getInt(3);       //nd_complete
