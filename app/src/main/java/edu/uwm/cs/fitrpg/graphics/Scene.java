@@ -341,9 +341,17 @@ public class Scene
             }
             else
             {
-                writeText(dmg + "", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING, 100);
+                int color = Color.WHITE;
+                int life = 100;
+                if(combatUnitList.get(0).GetCurrentHP() == 0)
+                {
+                    color = Color.RED;
+                    life *= 2;
+                    defeatScene();
+                }
+                writeText(dmg + "", color, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING, life);
                 sfx.playSound(raw.hit);
-                if(combatUnitList.get(0).GetCurrentHP() == 0) defeatScene();
+
             }
             curenemyCd = 0;
         }
@@ -359,13 +367,15 @@ public class Scene
                         combatUnitList.get(1).getY() + combatUnitList.get(1).getSprite().getHeight(),
                         80, Text.Behavior.FALLING, 100);
             } else {
-                writeText(dmg + "", Color.WHITE,
-                        combatUnitList.get(1).getx() + combatUnitList.get(1).getSprite().getWidth(),
-                        combatUnitList.get(1).getY() + combatUnitList.get(1).getSprite().getHeight(),
-                        80, Text.Behavior.FALLING, 100);
-                sfx.playSound(raw.hit);
-                if (combatUnitList.get(1).GetCurrentHP() == 0) victoryScene();
+                int color = Color.WHITE;
 
+                if(combatUnitList.get(1).GetCurrentHP() == 0)
+                {
+                    color = Color.RED;
+                    victoryScene();
+                }
+                writeText(dmg + "", color, combatUnitList.get(1).getx(), combatUnitList.get(1).getY(), 80, Text.Behavior.FALLING, 100);
+                sfx.playSound(raw.hit);
             }
             cdbar.reset();
         } else if (curState == State.DEFEAT) {
