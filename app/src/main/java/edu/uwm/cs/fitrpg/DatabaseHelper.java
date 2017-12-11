@@ -59,6 +59,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "a_end INTEGER(2), " +
                 "loop_cnt INTEGER,"+
                 "last_check_time TEXT,"+
+                "current_challenge_id INTEGER(2),"+
+                "challenge_flag INTEGER(2),"+
+                "challenge_dest_node INTEGER(2),"+
                 "map_id INTEGER)  ");
 
         db.execSQL("create table fr_user (usr_id INTEGER(3) PRIMARY KEY, " +
@@ -286,6 +289,77 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return ret;
     }
+
+    public String getCurrentChallengeID(int x)
+    {
+        String ret = "";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select current_challenge_id from fr_char";
+        sqlQuery += " where usr_id = " + x + "";
+
+        Log.d("SQLString", sqlQuery);
+
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            ret = "" + c.getInt(0);
+        }
+        else {
+            Log.d("ERR", "Error getting challenge id from db - returning -1");
+            ret = "-1";
+        }
+
+        db.close();
+        return ret;
+    }
+
+    public String getChallengeFlag(int x)
+    {
+        String ret = "";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select challenge_flag from fr_char";
+        sqlQuery += " where usr_id = " + x + "";
+
+        Log.d("SQLString", sqlQuery);
+
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            ret = "" + c.getInt(0);
+        }
+        else {
+            Log.d("ERR", "Error getting challenge flag from db - returning -1");
+            ret = "-1";
+        }
+
+        db.close();
+        return ret;
+    }
+
+    public String getChallengeDestNode(int x)
+    {
+        String ret = "";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sqlQuery = "select challenge_dest_node from fr_char";
+        sqlQuery += " where usr_id = " + x + "";
+
+        Log.d("SQLString", sqlQuery);
+
+        Cursor c = db.rawQuery(sqlQuery, null);
+        if(c.moveToFirst()) {
+            ret = "" + c.getInt(0);
+        }
+        else {
+            Log.d("ERR", "Error getting challenge destination node from db - returning -1");
+            ret = "-1";
+        }
+
+        db.close();
+        return ret;
+    }
+
+
 
     public String getCurrentMap(int x) {
         String ret = "";
@@ -790,6 +864,79 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return ret;
     }
+
+    public int setCurrentChallengeID(int challengeID, int id)
+    {
+        int ret = -1;
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("current_challenge_id", challengeID);
+        Log.d("Values are:", "current_challenge_id: " + challengeID + ", id: " + id);
+
+        if(db.update("fr_char", values, "usr_id = " + id + "", null) > 0)
+        {
+            Log.d("SCS", "Challenge ID was sucessfully updated");
+            db.close();
+            ret = 0;
+        }
+        else
+        {
+            db.close();
+            Log.d("ERR", "Error Updating Challenge ID");
+        }
+
+
+        return ret;
+    }
+
+    public int setChallengeFlag(int flag, int id)
+    {
+        int ret = -1;
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("current_challenge_id", flag);
+        Log.d("Values are:", "challenge_flag: " + flag + ", id: " + id);
+
+        if(db.update("fr_char", values, "usr_id = " + id + "", null) > 0)
+        {
+            Log.d("SCS", "Challenge Flag was sucessfully updated");
+            db.close();
+            ret = 0;
+        }
+        else
+        {
+            db.close();
+            Log.d("ERR", "Error Updating Challenge Flag");
+        }
+
+
+        return ret;
+    }
+
+    public int setChallengeDestNode(int node_id, int id)
+    {
+        int ret = -1;
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("challenge_dest_node", node_id);
+        Log.d("Values are:", "challenge_dest_node: " + node_id + ", id: " + id);
+
+        if(db.update("fr_char", values, "usr_id = " + id + "", null) > 0)
+        {
+            Log.d("SCS", "Challenge Dest Node was sucessfully updated");
+            db.close();
+            ret = 0;
+        }
+        else
+        {
+            db.close();
+            Log.d("ERR", "Error Updating Challenge Dest Node");
+        }
+
+
+        return ret;
+    }
+
 
     public void setNodeCoord(Point coord, Point coord2, int map_id, int nd_id, int id, int nd_cmp, int challengeID, int isBoss)
     {

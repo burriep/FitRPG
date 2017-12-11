@@ -141,7 +141,7 @@ public class MapView extends View {
         }
         for(int i = 0; i < numOfNodes; i++)
         {
-            if(board.getNodes().get(i).getNodeId() == board.getNodes().get(board.player.getCurrentNode()).getNodeId())
+            if(board.getNodes().get(i).getNodeId() == board.getNodes().get(board.player.getCurrentNode()).getNodeId() && board.player.getChallengeFlag() == 0)
             {
                 mapNodeImage.setColorFilter(getResources().getColor(R.color.cyan), android.graphics.PorterDuff.Mode.MULTIPLY);
             }

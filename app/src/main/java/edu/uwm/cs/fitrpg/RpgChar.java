@@ -36,6 +36,9 @@ public class RpgChar {
     private int loopCount;
     private int currentMap;
     private Date lastCheckedTime;
+    private int currentChallengeID;
+    private int challengeDestinationNode;
+    private int challengeFlag;  //0 is none, 1 is movement, 2 is boss
 
     //constructor for player - the player's usr_id will always be 1
     public RpgChar() {
@@ -55,6 +58,9 @@ public class RpgChar {
             this.loopCount =0;
             this.currentMap = 0;
             this.lastCheckedTime = new Date();
+            this.currentChallengeID = -1;
+            this.challengeFlag = 0;
+            this.challengeDestinationNode = 0;
             dbPush();
         }
 
@@ -79,6 +85,9 @@ public class RpgChar {
             this.loopCount =0;
             this.currentMap = 0;
             this.lastCheckedTime = new Date();
+            this.currentChallengeID = -1;
+            this.challengeFlag = 0;
+            this.challengeDestinationNode = 0;
             dbPush();
         }
 
@@ -99,6 +108,8 @@ public class RpgChar {
         this.currentNode = Integer.parseInt(db.getNodePosition(id));
         this.loopCount = Integer.parseInt(db.getLoopCount(id));
         this.currentMap = Integer.parseInt(db.getCurrentMap(id));
+        this.challengeFlag = Integer.parseInt(db.getChallengeFlag(id));
+        this.challengeDestinationNode = Integer.parseInt(db.getChallengeDestNode(id));
         try {
             this.lastCheckedTime = MapActivity.mapDateFormat.parse(db.getLastCheckedTime(id));
         }
@@ -107,6 +118,7 @@ public class RpgChar {
             Log.d("ERR", "Error getting checked time, setting to current time");
             this.lastCheckedTime = new Date();
         }
+        this.currentChallengeID = Integer.parseInt(db.getCurrentChallengeID(id));
         this.id = id;
 
         if (this.name != null) {
@@ -138,6 +150,9 @@ public class RpgChar {
         retStatus += db.setLoopCount(this.loopCount, this.id);
         retStatus += db.setCurrentMap(this.currentMap, this.id);
         retStatus += db.setCheckTime(MapActivity.mapDateFormat.format(this.lastCheckedTime), this.id);
+        retStatus += db.setCurrentChallengeID(this.currentChallengeID, this.id);
+        retStatus += db.setChallengeFlag(this.challengeFlag, this.id);
+        retStatus += db.setChallengeDestNode(this.challengeDestinationNode, this.id);
 
         if (retStatus == 0) {
             Log.d("SCS", "Push was successful - sum(all sets) = 0");
@@ -202,6 +217,12 @@ public class RpgChar {
         this.lastCheckedTime = x;
     }
 
+    public void setCurrentChallengeID(int x) {this.currentChallengeID = x;}
+
+    public void setChallengeFlag(int x){this.challengeFlag = x;}
+
+    public void setChallengeDestinationNode(int x){this.challengeDestinationNode = x;}
+
     public int getStrength() {
 
         return this.strength;
@@ -244,6 +265,12 @@ public class RpgChar {
     public int getCurrentNode() {
         return this.currentNode;
     }
+
+    public int getCurrentChallengeID(){return this.currentChallengeID;}
+
+    public int getChallengeFlag(){return this.challengeFlag;}
+
+    public int getChallengeDestinationNode(){return this.challengeDestinationNode;}
 
     public int getId() {
         return this.id;

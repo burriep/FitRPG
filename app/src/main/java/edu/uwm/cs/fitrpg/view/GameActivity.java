@@ -102,7 +102,7 @@ public class GameActivity extends Activity {
         RpgChar tempPlayer = new RpgChar();
         loop = tempPlayer.getLoopCount();
         // Build the player
-        gv.getScene().spawnPlayerCombatUnit(bm, tempPlayer.getStamina() * 100,
+        gv.getScene().spawnPlayerCombatUnit(bm, tempPlayer.getStamina() * 1,
                 tempPlayer.getStrength(),
                 tempPlayer.getEndurance(),
                 tempPlayer.getDexterity(),
