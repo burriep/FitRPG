@@ -34,6 +34,7 @@ public class FitnessChallengeLevel {
         String[] selectionArgs = {Integer.toString(userId), Integer.toString(fitnessTypeId)};
         Cursor cursor = db.rawQuery("SELECT usr_id, act_id, ch_level, ch_increment FROM fr_challenge WHERE usr_id = ? AND act_id = ?;", selectionArgs);
         FitnessChallengeLevel level = null;
+        List<FitnessActivityType> types = FitnessActivityType.getAll(db);
         while (cursor.moveToNext()) {
 
 
@@ -42,6 +43,11 @@ public class FitnessChallengeLevel {
             level.fitnessTypeId = cursor.getInt(cursor.getColumnIndexOrThrow("act_id"));
             level.level = cursor.getInt(cursor.getColumnIndexOrThrow("ch_level"));
             level.levelIncrement = cursor.getInt(cursor.getColumnIndexOrThrow("ch_increment"));
+            for(int i = 0; i < types.size(); i++)
+                if(types.get(i).getId() == fitnessTypeId) {
+                    level.activityType = types.get(i);
+                    break;
+                }
         }
         cursor.close();
         return level;

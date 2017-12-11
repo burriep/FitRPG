@@ -303,7 +303,7 @@ public class MapActivity extends AppCompatActivity {
                 menuRightButton.setVisibility(View.VISIBLE);
                 menuIsVisible = true;
                 final View passedView = view;
-                Log.d("MapA", "in Click Node: Clicked: " + destinationNode + " Converted: " + mapView.board.getNodes().get(destinationNode).getNodeId() + " Current: " + mapView.getCurrentNode());
+                Log.d("DBG", "in Click Node: Clicked: " + destinationNode + " Converted: " + mapView.board.getNodes().get(destinationNode).getNodeId() + " Current: " + mapView.getCurrentNode());
                 if(mapView.board.getNodes().get(destinationNode).getNodeId() == mapView.board.getNodes().get(mapView.getCurrentNode()).getNodeId()) {
                     SetCurrentNodeChallenges();
                     menuLeftButton.setOnClickListener(new View.OnClickListener() {
@@ -445,6 +445,7 @@ public class MapActivity extends AppCompatActivity {
                 countComplete = 0;
                 for (int i = 0; i < challenges.size(); i++) {
                     challengeComplete[i] = false;
+                    Log.d("DBG", "in set node challenges - Setting Orig Fitness ID: " + challenges.get(i).getFitnessTypeId());
                     currentNodeInfo.setChallengeID(challenges.get(i).getFitnessTypeId());
                 }
                 mapView.board.dbPush();
@@ -457,6 +458,8 @@ public class MapActivity extends AppCompatActivity {
                 countComplete = 0;
                 for(int i = 0 ; i < numberOfChallenges; i++) {
                     challengeComplete[i] = false;
+                    Log.d("DBG", "in set node challenges - Getting Fitness ID: " + currentNodeInfo.getChallengeID());
+
                     challenges.add(FitnessChallengeLevel.get(readDb, mapView.board.player.getId(), currentNodeInfo.getChallengeID()));
                 }
 
@@ -477,10 +480,13 @@ public class MapActivity extends AppCompatActivity {
                     tempMenuBodyText += " Not Done\n";
                 }
             }
+            menuLeftButton.setText("Complete Challenges");
+            menuLeftButton.setVisibility(View.VISIBLE);
         }
         else
         {
             tempMenuBodyText += "You have already completed the challenges here!";
+            menuLeftButton.setVisibility(View.GONE);
         }
         menuBodyText.setText(tempMenuBodyText);
     }
