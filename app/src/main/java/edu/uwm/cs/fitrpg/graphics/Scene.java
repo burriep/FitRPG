@@ -11,6 +11,7 @@ import android.icu.text.MessagePattern;
 import android.util.DisplayMetrics;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import edu.uwm.cs.fitrpg.Audio.SFXPlayer;
 import edu.uwm.cs.fitrpg.R;
@@ -39,7 +40,8 @@ public class Scene
     private BitmapDrawable bmDraw = null;
     private CooldownBar cdbar;
     private SFXPlayer sfx;
-
+    private long timer = 0;
+   
 
     public Scene(Resources res, SFXPlayer sfx)
     {
@@ -117,7 +119,7 @@ public class Scene
     public void setBackground(int resID, int width, int height)
     {
         Bitmap bm = BitmapFactory.decodeResource(res, resID);
-        bm = Bitmap.createScaledBitmap(bm, width, height,false);
+       // bm = Bitmap.createScaledBitmap(bm, width, height,false);
 
         bmDraw = new BitmapDrawable(res, bm);
         bmDraw.setTileModeX(Shader.TileMode.REPEAT);
@@ -155,6 +157,13 @@ public class Scene
     public void writeText(String text, int color, int x, int y, int size, Text.Behavior behavior)
     {
         Text addThis = new Text(text, x, y, size, color, behavior);
+        addThis.setLife(Integer.MAX_VALUE);
+        textList.add(addThis);
+    }
+    public void writeText(String text, int color, int x, int y, int size, Text.Behavior behavior,long life)
+    {
+        Text addThis = new Text(text, x, y, size, color, behavior);
+        addThis.setLife(life);
         textList.add(addThis);
     }
 
@@ -187,14 +196,7 @@ public class Scene
                 s.draw(c);
             }
 
-        // Draw the Particles
-        if(!particleList.isEmpty())
-        {
-            for (Particle p : particleList)
-            {
-                p.draw(c);
-            }
-        }
+
 
         if(!combatUnitList.isEmpty())
         for (CombatUnit cu : combatUnitList)
@@ -212,12 +214,24 @@ public class Scene
             }
         }
 
+        // Draw the Particles
+        if(!particleList.isEmpty())
+        {
+            for (Particle p : particleList)
+            {
+                p.draw(c);
+            }
+        }
+
 
 
     }
 
     public void tick(float deltaTime)
     {
+
+        if(curState == State.IN_COMBAT)
+            tickEnemies(deltaTime);
 
         ArrayList<Particle> killThese = new ArrayList<Particle>();
         // update the animatedSprites, if they exist
@@ -249,7 +263,8 @@ public class Scene
             for (Text t : textList)
             {
                 t.tick(deltaTime);
-                if(t.getYpos() < 0 || t.getXpos() < 0) textList.remove(t);
+                if(t.getYpos() < 0 || t.getXpos() < 0 || t.getLife() <= 0) textList.remove(t);
+
             }
         }
 
@@ -262,8 +277,56 @@ public class Scene
 
         cdbar.tick(deltaTime);
 
-        if(curState == State.IN_COMBAT)
-         tickEnemies(deltaTime);
+
+        if(curState == State.VICTORY)
+        {
+            timer += deltaTime;
+            if(timer >=  115)
+            {
+                Random random = new Random();
+
+                int xpos = random.nextInt(res.getDisplayMetrics().widthPixels + 1);
+                int ypos = random.nextInt(res.getDisplayMetrics().heightPixels + 1);
+
+                for (int i = 0; i < 20; ++i)
+                {
+                    int r = random.nextInt(255);
+                    int g = random.nextInt(255);
+                    int b = random.nextInt(255);
+
+                    double xspeed = random.nextGaussian();
+                    double yspeed = random.nextGaussian();
+
+                    spawnParticles(1, 100, (float)(5*xspeed), (float)(5*yspeed), xpos, ypos, Color.rgb(r, g, b), Particle.Behavior.DEFAULT);
+                }
+                timer = 0;
+            }
+        }
+
+        if(curState == State.DEFEAT)
+        {
+            timer += deltaTime;
+            if(timer >=  200)
+            {
+                Random random = new Random();
+
+
+                int ypos = 0;
+
+                for (int i = 0; i < 10; ++i)
+                {
+                    int r = 255;
+                    int g = 0;
+                    int b = 0;
+                    int xpos = random.nextInt(res.getDisplayMetrics().widthPixels + 1);
+                    double xspeed = 0;
+                    double yspeed = random.nextGaussian();
+
+                    spawnParticles(1, 100, (float)(5*xspeed), (float)(5*yspeed), xpos, ypos, Color.rgb(r, g, b), Particle.Behavior.DEFAULT);
+                }
+                timer = 0;
+            }
+        }
     }
 
     private void tickEnemies(float deltaTime)
@@ -275,11 +338,11 @@ public class Scene
             int dmg = combatUnitList.get(1).Attack(combatUnitList.get(0));
             if(dmg <= 0)
             {
-                writeText("MISS", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING);
+                writeText("MISS", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING, 100);
             }
             else
             {
-                writeText(dmg + "", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING);
+                writeText(dmg + "", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING, 100);
                 sfx.playSound(raw.hit);
                 if(combatUnitList.get(0).GetCurrentHP() == 0) defeatScene();
             }
@@ -292,9 +355,15 @@ public class Scene
             combatUnitList.get(0).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_ATTACK_NORTH);
             int dmg = combatUnitList.get(0).Attack(combatUnitList.get(1));
             if (dmg <= 0) {
-                writeText("MISS", Color.WHITE, combatUnitList.get(1).getx(), combatUnitList.get(1).getY(), 80, Text.Behavior.RISING);
+                writeText("MISS", Color.WHITE,
+                        combatUnitList.get(1).getx() + combatUnitList.get(1).getSprite().getWidth(),
+                        combatUnitList.get(1).getY() + combatUnitList.get(1).getSprite().getHeight(),
+                        80, Text.Behavior.FALLING, 100);
             } else {
-                writeText(dmg + "", Color.WHITE, combatUnitList.get(1).getx(), combatUnitList.get(1).getY(), 80, Text.Behavior.RISING);
+                writeText(dmg + "", Color.WHITE,
+                        combatUnitList.get(1).getx() + combatUnitList.get(1).getSprite().getWidth(),
+                        combatUnitList.get(1).getY() + combatUnitList.get(1).getSprite().getHeight(),
+                        80, Text.Behavior.FALLING, 100);
                 sfx.playSound(raw.hit);
                 if (combatUnitList.get(1).GetCurrentHP() == 0) victoryScene();
 
@@ -331,7 +400,7 @@ public class Scene
         textList.clear();
         disableHealth();
         curState = State.VICTORY;
-        setBackground(drawable.test, 96, 32);
+        setBackground(Color.BLACK);
         writeText("VICTORY", Color.BLACK, res.getDisplayMetrics().widthPixels/2, res.getDisplayMetrics().heightPixels/2, 160, Text.Behavior.SCROLLING);
         writeText("VICTORY", Color.parseColor("#FFD700"), res.getDisplayMetrics().widthPixels/2, res.getDisplayMetrics().heightPixels/2, 150, Text.Behavior.SCROLLING);
 

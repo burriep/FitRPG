@@ -81,7 +81,7 @@ public class GameBoard {
         Log.d("DBG", "in GameBoard dbPush - Pushing Nodes");
         this.printNodes();
         for (MapNode temp : this.nodeList) {
-            db.updateNode(1, this.mapID, temp.getNodeId(), temp.getNodeStatus(), temp.getX(), temp.getY(), temp.getAdjX(), temp.getAdjY());
+            db.updateNode(1, this.mapID, temp.getNodeId(), temp.getNodeStatus(), temp.getX(), temp.getY(), temp.getAdjX(), temp.getAdjY(), temp.getChallengeID(), temp.getIsBoss());
         }
 
         Log.d("DBG", "in GameBoard dbPush - Pushing Paths");
@@ -107,7 +107,7 @@ public class GameBoard {
         if (temp != null && temp2 != null) {
             nodeList.clear();
             for (int[] x : temp) {
-                this.nodeList.add(new MapNode(x[1], x[0], x[2], x[3], x[4], x[5], x[6]));
+                this.nodeList.add(new MapNode(x[1], x[0], x[2], x[3], x[4], x[5], x[6], x[7], x[8]));
             }
 
             //check if we have paths
@@ -303,8 +303,7 @@ public class GameBoard {
                     //coordinates for ending node (Situation 1 of 2)
                     y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
                     x = rand.nextInt(((maxX-50) - xMaxA) + 1) + xMaxA;
-                    MapNode bossNode = new MapNode(i, map_id, 0, x, y, 0, 0);
-                    bossNode.setIsBoss(1);
+                    MapNode bossNode = new MapNode(i, map_id, 0, x, y, 0, 0,0,1);
                     this.nodeList.add(bossNode);
                     Log.d("DBG", "End Node " + i + " New x: " + x + ", New y: "+ y);
 
@@ -326,7 +325,7 @@ public class GameBoard {
                     x = xStart;
                     y = yStart;
 
-                    this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
+                    this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0,0,0));
                     Log.d("DBG", "Start Node New x: " + x + ", New y: "+ y);
 
                 }
@@ -353,7 +352,7 @@ public class GameBoard {
                         this.pathList.add(new MapPath(map_id, i - 1, i, 0, "", ""));
                     }
                     Log.d("DBG", "Single New x: " + x + ", New y: "+ y);
-                    this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
+                    this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0,0,0));
                     paritionScheme = true;
 
                 }
@@ -365,7 +364,7 @@ public class GameBoard {
                     x = rand.nextInt(((prevMaxX + partitionSpacing) - (prevMaxX+50)) + 1) + (prevMaxX+50);
                     prevY = y;
                     Log.d("DBG", "Double New x: " + x + ", New y: "+ y);
-                    this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
+                    this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0,0,0));
 
                     i++;
 
@@ -426,7 +425,7 @@ public class GameBoard {
                         }
                     }
                     Log.d("DBG", "Double New x2: " + x + ", New y2: "+ y);
-                    this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
+                    this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0,0,0));
 
                     //last node partition was a single node - only one path to add
                     if (prevPartition)
@@ -451,7 +450,8 @@ public class GameBoard {
                         y = rand.nextInt((yMaxA - yMinA) + 1) + yMinA;
                         x = rand.nextInt(((maxX-50) - xMaxA) + 1) + xMaxA;
 
-                        this.nodeList.add(new MapNode(i, map_id, 0, x, y, 0, 0));
+                        MapNode bossNode = new MapNode(i, map_id, 0, x, y, 0, 0,0,1);
+                        this.nodeList.add(bossNode);
                         Log.d("DBG", "End Node2 New x: " + x + ", New y: "+ y);
 
                         //last node partition was a single node - only one path to add

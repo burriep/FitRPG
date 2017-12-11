@@ -109,6 +109,8 @@ public class GameActivity extends Activity {
                 tempPlayer.getSpeed());
 
         // Build the enemy
+        bm = BitmapFactory.decodeResource(getResources(), R.drawable.enemy_orc);
+        bm = Bitmap.createScaledBitmap(bm, 576, 384,false);
        gv.getScene().spawnEnemyCombatUnit(bm,intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStamina", 10) * loop,
                 intent.getIntExtra("edu.uwm.cs.fitrpg.enemyStrength", 10)* loop,
                 intent.getIntExtra("edu.uwm.cs.fitrpg.enemyEndurance", 10)* loop,

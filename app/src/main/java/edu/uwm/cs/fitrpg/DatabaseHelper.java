@@ -88,6 +88,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "nd_y_pos INTEGER DEFAULT 0, " +
                 "adj_nd_x_pos INTEGER DEFAULT 0, "+
                 "adj_nd_y_pos INTEGER DEFAULT 0, " +
+                "act_id INTEGER(2), "+
+                "boss_flg INTEGER(1), "+
                 "PRIMARY KEY(usr_id,map_id,nd_id))");
 
         //dates will be in YYYY-MM-DD HH:MM:SS.SSS format
@@ -349,26 +351,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return retCoord;
     }
 
-    public int getNodeStatus(int m_id, int n_id, int u_id)
+    public int[] getNodeStatus(int m_id, int n_id, int u_id)
     {
-        int retCoord = -1;
+        int[] retSts = new int[3];
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query("fr_map", new String[]{"nd_cmp"},"usr_id = " + u_id + " AND map_id = " + m_id +
+        Cursor cursor = db.query("fr_map", new String[]{"nd_cmp", "act_id", "boss_flg"},"usr_id = " + u_id + " AND map_id = " + m_id +
                 " AND  nd_id = " + n_id + "",null,null,null,null );
         try
         {
             cursor.moveToFirst();
-            retCoord = cursor.getInt(0);
+            retSts[0] = cursor.getInt(0);   //node status
+            retSts[1] = cursor.getInt(1);   //node challenge ID
+            retSts[2] = cursor.getInt(2);   //boss flag
             Log.d("MSG", "Node found in Database - returning status");
         }
         catch(Exception e)
         {
+            retSts = null;
             Log.d("ERR", "Error getting node Status - returning -1");
             Log.d("SYSMSG", e.toString());
         }
         db.close();
-        return retCoord;
+        return retSts;
     }
 
     public ArrayList<String[]> getPathData(int map_id)
@@ -430,7 +435,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if(c.moveToFirst()) {
                 while(!c.isAfterLast())
                 {
-                    int rowData[] = new int[7];
+                    int rowData[] = new int[8];
                     rowData[0] = c.getInt(1);       //map_id
                     rowData[1] = c.getInt(2);       //node_id
                     rowData[2] = c.getInt(3);       //nd_complete
@@ -438,6 +443,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     rowData[4] = c.getInt(5);       //node y pos
                     rowData[5] = c.getInt(6);       //adjusted x pos
                     rowData[6] = c.getInt(7);       //adjusted y pos
+                    rowData[7] = c.getInt(8);       //challenge activity ID
 
                     ret.add(rowData);
 
@@ -784,7 +790,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return ret;
     }
 
-    public void setNodeCoord(Point coord, Point coord2, int map_id, int nd_id, int id, int nd_cmp)
+    public void setNodeCoord(Point coord, Point coord2, int map_id, int nd_id, int id, int nd_cmp, int challengeID, int isBoss)
     {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values = new ContentValues();
@@ -793,6 +799,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("adj_nd_x_pos", coord2.x);
         values.put("adj_nd_y_pos", coord2.y);
         values.put("nd_cmp", nd_cmp);
+        values.put("act_id", challengeID);
+        values.put("boss_flg", isBoss);
 
         if(db.update("fr_map", values, "usr_id = " + id + " and map_id = " + map_id + " and nd_id = " + nd_id + "", null) > 0)
             {
@@ -851,7 +859,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public int createNode(int usr_id, int map_id, int nd_id, int nd_cmp, int nd_x_pos, int nd_y_pos, int adj_nd_x_pos, int adj_nd_y_pos)
+    public int createNode(int usr_id, int map_id, int nd_id, int nd_cmp, int nd_x_pos, int nd_y_pos, int adj_nd_x_pos, int adj_nd_y_pos, int challengeID, int isBoss)
     {
         int ret = -1;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -864,6 +872,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("nd_y_pos", nd_y_pos);
         values.put("adj_nd_x_pos",adj_nd_x_pos);
         values.put("adj_nd_y_pos",adj_nd_y_pos);
+        values.put("act_id", challengeID);
+        values.put("boss_flg", isBoss);
 
         try{
             db.insertOrThrow("fr_map", null, values);
@@ -906,7 +916,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void updateNode(int id, int map_id, int nd_id, int nd_cmp, int nd_x_pos, int nd_y_pos, int adj_nd_x_pos, int adj_nd_y_pos)
+    public void updateNode(int id, int map_id, int nd_id, int nd_cmp, int nd_x_pos, int nd_y_pos, int adj_nd_x_pos, int adj_nd_y_pos, int challengeID, int isBoss)
     {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues values = new ContentValues();
@@ -918,6 +928,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("nd_y_pos", nd_y_pos);
         values.put("adj_nd_x_pos", adj_nd_x_pos);
         values.put("adj_nd_y_pos", adj_nd_y_pos);
+        values.put("act_id", challengeID);
+        values.put("boss_flg", isBoss);
 
 
      if(db.update("fr_map", values, "usr_id = " + id + " and map_id = " + map_id + " and nd_id = " + nd_id + "", null) > 0)
@@ -929,7 +941,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         {
             Log.d("ERR", "Error Updating Node - now trying to insert record");
             //if we cannon update the rows, they might not exist
-            if(createNode(id,map_id,nd_id,nd_cmp,nd_x_pos,nd_y_pos,adj_nd_x_pos,adj_nd_y_pos) != -1)
+            if(createNode(id,map_id,nd_id,nd_cmp,nd_x_pos,nd_y_pos,adj_nd_x_pos,adj_nd_y_pos,challengeID, isBoss) != -1)
             {
                 Log.d("SCS", "Successfully Created Node");
             }

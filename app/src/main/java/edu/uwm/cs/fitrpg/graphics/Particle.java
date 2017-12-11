@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class Particle {
 
-    private float curLife;
+    private float curLife, maxLife;
     private int x, y;
     private float speedX, speedY;
     private int color;
@@ -22,6 +22,7 @@ public class Particle {
     public Particle(float life, float speedX, float speedY, int x, int y, int color, Behavior behavior)
     {
         this.curLife = life;
+        this.maxLife = life;
         this.speedX = speedX;
         this.speedY = speedY;
         this.x = x;
@@ -42,19 +43,25 @@ public class Particle {
     {
         // Decrement the current life
         curLife -= deltaTime;
-        if(curLife <= 0) return;
+        if(curLife <= 0)
+        {
+            curLife = 0;
+            return;
+        }
+
         Random r = new Random();
         // Advance the particle on the path based on behavior
         switch(behavior)
         {
             case RANDOM:
-                //this.x +=
+                this.x += speedX + (int)r.nextInt()%8;
+                this.y += speedY + (int)r.nextInt()%8;
                 break;
             default:
                 // Make the particle move based on the axis speeds
 
-                this.x += speedX + (int)r.nextInt()%8;
-                this.y += speedY + (int)r.nextInt()%8;
+                this.x += speedX;
+                this.y += speedY;
                 break;
         }
 
@@ -62,7 +69,8 @@ public class Particle {
 
     public void draw(Canvas canvas)
     {
-        canvas.drawCircle(x, y, 4, paint);
+        paint.setAlpha((int)((float)(curLife/maxLife) *255));
+        canvas.drawCircle(x, y, 8, paint);
     }
 
 }
