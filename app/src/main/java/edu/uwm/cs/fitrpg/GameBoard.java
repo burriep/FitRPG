@@ -265,7 +265,7 @@ public class GameBoard {
         //viewport area that nodes can be drawn in
         int xMaxA = maxX - 150;
         int xMinA = 50;
-        int yMaxA = maxY - 150;
+        int yMaxA = maxY - 450;
         int yMinA = 150;
 
         //starting coordinates of node
