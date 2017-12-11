@@ -484,7 +484,8 @@ public class MapActivity extends AppCompatActivity {
         {
             menuLayout.setVisibility(View.INVISIBLE);
             menuIsVisible = false;
-
+            mapView.board.player.setChallengeFlag(0);
+            mapView.board.player.dbPush();
         }
     }
 
