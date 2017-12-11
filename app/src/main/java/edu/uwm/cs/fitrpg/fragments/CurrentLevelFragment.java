@@ -1,6 +1,7 @@
 package edu.uwm.cs.fitrpg.fragments;
 
 import android.app.Fragment;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import edu.uwm.cs.fitrpg.DatabaseHelper;
+import edu.uwm.cs.fitrpg.GameBoard;
+import edu.uwm.cs.fitrpg.MapView;
 import edu.uwm.cs.fitrpg.R;
 
 public class CurrentLevelFragment extends Fragment {
@@ -27,10 +33,16 @@ public class CurrentLevelFragment extends Fragment {
 
         //Should call information from level and map class or database
         //ToDo
-        currentLevel.setText("01");
+
+        GameBoard board = new GameBoard();
+        int numberOfNodes = board.getNumNodes();
+        int id = board.getmapId();
+        int loop = board.getLoopCount();
+
+        currentLevel.setText("" + id + 1);
         currentLevelProgress.setAnimation(null);
-        currentLevelProgress.setMax(100);
-        currentLevelProgress.setProgress(5);
+        currentLevelProgress.setMax(numberOfNodes);
+        currentLevelProgress.setProgress(loop);
     }
 
 //    private int getLevel() {

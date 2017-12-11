@@ -301,12 +301,11 @@ public class FitnessActivity {
     @Override
     public String toString() {
         SimpleDateFormat formatTime = new SimpleDateFormat("hh:mm:ss a", Locale.US);
-//
 
         String line1 = "Activity: " + getType().getName();
-        String line2 = "Start Time: " + formatTime.format(getStartDate()) + " :: End Time: " + formatTime.format(getStopDate());
-        String line3 = "Distance: " + getDistance() + " :: Duration: " + Utils.formatDuration(getDuration()) + " :: Top Speed: " + getTopSpeed();
-        String line4 = "Sets: " + getSets() + " :: Reps: " + getRepetitions();
+        String line2 = "Start Time: " + formatTime.format(getStartDate()) + "  | End Time: " + formatTime.format(getStopDate());
+        String line3 = "Distance: " + getDistance() + "  |  Duration: " + Utils.formatDuration(getDuration()) + "  |  Top Speed: " + getTopSpeed();
+        String line4 = "Sets: " + getSets() + "  |  Reps: " + getRepetitions();
         return line1 + "\n" + line2 + "\n" + line3 + "\n" + line4;
     }
 }

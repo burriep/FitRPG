@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -132,14 +133,22 @@ public class Home extends AppCompatActivity {
 
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    name = etName.getText().toString();
-                    weight = Integer.parseInt(etWeight.getText().toString());
-                    height = Integer.parseInt(etHeight.getText().toString());
+                    if(etName.getText().length() > 0)
+                        name = etName.getText().toString();
+                    else
+                        name = "User";
+                    if(etWeight.getText().length() > 0)
+                        weight = Integer.parseInt(etWeight.getText().toString());
+                    if(etHeight.getText().length() > 0)
+                        height = Integer.parseInt(etHeight.getText().toString());
+
+
                     User user = new User(name, 1);
                     user.setWeight(weight);
                     user.setHeight(height);
                     user.setLastUpdateDate(new SimpleDateFormat(Utils.ISO_DATE_TIME_FORMAT).format(Calendar.getInstance().getTime()));
                     user.updateUser(myDB);
+                    Toast.makeText(getApplicationContext(), "User created", Toast.LENGTH_SHORT).show();
                 }
             });
             AlertDialog dialog = alert.create();

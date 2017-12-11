@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -141,9 +142,12 @@ public class SettingsActivity extends AppCompatActivity{
     }
 
     private void resetSettings() {
-        etName.setText(user.getName());
-        etWeight.setText(Integer.toString(user.getWeight()));
-        etHeight.setText(Integer.toString(user.getHeight()));
+        etName.setText("");
+        etName.setHint(user.getName());
+        etWeight.setText("");
+        etWeight.setHint(Integer.toString(user.getWeight()));
+        etHeight.setText("");
+        etHeight.setHint(Integer.toString(user.getHeight()));
         tvUpdateDate.setText("Last updated: " + user.getLastUpdateDate());
     }
 
@@ -158,12 +162,29 @@ public class SettingsActivity extends AppCompatActivity{
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                name = etName.getText().toString();
-                weight = Integer.parseInt(etWeight.getText().toString());
-                height = Integer.parseInt(etHeight.getText().toString());
-                tvUpdateDate.setText(DATE_FORMAT.format(Calendar.getInstance().getTime()));
-                updateSettings();
-                resetSettings();
+                boolean changed = false;
+                if(etName.getText().length() > 0) {
+                    name = etName.getText().toString();
+                    changed = true;
+                }
+                if(etWeight.getText().length() > 0) {
+                    weight = Integer.parseInt(etWeight.getText().toString());
+                    changed = true;
+                }
+                if(etHeight.getText().length() > 0) {
+                    height = Integer.parseInt(etHeight.getText().toString());
+                    changed = true;
+                }
+                if(changed) {
+                    tvUpdateDate.setText(DATE_FORMAT.format(Calendar.getInstance().getTime()));
+                    updateSettings();
+                    resetSettings();
+                    Toast.makeText(getApplicationContext(), "Updated user", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Nothing to update", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

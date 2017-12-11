@@ -91,40 +91,49 @@
         app:layout_constraintTop_toBottomOf="@+id/settings_height_label" />
 
 
-    <TextView
-        android:id="@+id/settings_last_updated"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="Last updated:"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_settings_save" />
+        app:layout_constraintTop_toBottomOf="@+id/ll_settings"
+        android:gravity="center">
 
+        <TextView
+            android:id="@+id/settings_last_updated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Last updated:"/>
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_settings_save"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/ll_settings"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="Save"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_weight" />
+        app:layout_constraintTop_toBottomOf="@+id/settings_weight"
+        android:gravity="center">
 
-    <Button
-        android:id="@+id/btn_settings_reset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="Clear"
-        app:layout_constraintStart_toEndOf="@+id/btn_settings_save"
-        app:layout_constraintTop_toBottomOf="@+id/settings_weight" />
+        <Button
+            android:id="@+id/btn_settings_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"/>
+
+        <Button
+            android:id="@+id/btn_settings_reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clear"/>
+
+    </LinearLayout>
 
 
     <TextView
