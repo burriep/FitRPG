@@ -374,7 +374,8 @@ public class Scene
                     color = Color.RED;
                     victoryScene();
                 }
-                writeText(dmg + "", color, combatUnitList.get(1).getx(), combatUnitList.get(1).getY(), 80, Text.Behavior.FALLING, 100);
+                writeText( dmg + "", color, combatUnitList.get(1).getx() + combatUnitList.get(1).getSprite().getWidth(),
+                        combatUnitList.get(1).getY() + combatUnitList.get(1).getSprite().getHeight(), 80, Text.Behavior.FALLING, 100);
                 sfx.playSound(raw.hit);
             }
             cdbar.reset();
@@ -406,6 +407,25 @@ public class Scene
     {
         combatUnitList.get(1).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_DIE);
         combatUnitList.get(1).getSprite().setFinal(true);
+
+        Random random = new Random();
+
+        int xpos = combatUnitList.get(1).getx() + combatUnitList.get(1).getSprite().getWidth() / 2;
+        int ypos = combatUnitList.get(1).getY()+ combatUnitList.get(1).getSprite().getHeight() / 2;;
+
+        for (int i = 0; i < 20; ++i)
+        {
+            int r = 255;
+            int g = 0;
+            int b = 0;
+
+            double xspeed = random.nextGaussian();
+            double yspeed = random.nextGaussian();
+
+            spawnParticles(1, 100, (float)(5*xspeed), (float)(5*yspeed), xpos, ypos, Color.rgb(r, g, b), Particle.Behavior.DEFAULT);
+        }
+
+
         textList.clear();
         disableHealth();
         curState = State.VICTORY;
@@ -419,6 +439,25 @@ public class Scene
     {
         combatUnitList.get(0).getSprite().triggerAnimation(AnimatedSprite.ANIMATION_DIE);
         combatUnitList.get(0).getSprite().setFinal(true);
+
+        Random random = new Random();
+
+        int xpos = combatUnitList.get(0).getx() + combatUnitList.get(0).getSprite().getWidth() / 2;
+        int ypos = combatUnitList.get(0).getY()+ combatUnitList.get(0).getSprite().getHeight() / 2;;
+
+        for (int i = 0; i < 20; ++i)
+        {
+            int r = 255;
+            int g = 0;
+            int b = 0;
+
+            double xspeed = random.nextGaussian();
+            double yspeed = random.nextGaussian();
+
+            spawnParticles(1, 100, (float)(5*xspeed), (float)(5*yspeed), xpos, ypos, Color.rgb(r, g, b), Particle.Behavior.DEFAULT);
+        }
+
+
         textList.clear();
         disableHealth();
         curState = State.DEFEAT;
