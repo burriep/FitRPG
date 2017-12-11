@@ -122,6 +122,9 @@ public class RpgChar {
         values.put("loop_cnt", loopCount);
         values.put("map_id", currentMap);
         values.put("last_check_time", lastCheckedTime == null ? "" : dateFormat.format(lastCheckedTime));
+        values.put("current_challenge_id", currentChallengeID);
+        values.put("challenge_dest_node", challengeDestinationNode);
+        values.put("challenge_flag", challengeFlag);
         id = (int) db.insert("fr_char", null, values);
         return id > 0;
     }
@@ -145,6 +148,9 @@ public class RpgChar {
         values.put("loop_cnt", loopCount);
         values.put("map_id", currentMap);
         values.put("last_check_time", lastCheckedTime == null ? "" : dateFormat.format(lastCheckedTime));
+        values.put("current_challenge_id", currentChallengeID);
+        values.put("challenge_dest_node", challengeDestinationNode);
+        values.put("challenge_flag", challengeFlag);
         db.update("fr_char", values, "usr_id = ?", new String[]{Integer.toString(id)});
     }
 
