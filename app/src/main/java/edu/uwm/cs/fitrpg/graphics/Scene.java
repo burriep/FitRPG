@@ -337,12 +337,12 @@ public class Scene
             int dmg = combatUnitList.get(1).Attack(combatUnitList.get(0));
             if(dmg <= 0)
             {
-                writeText("MISS", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING, 100);
+                writeText("MISS", Color.WHITE, combatUnitList.get(0).getx(), combatUnitList.get(0).getY(), 80, Text.Behavior.RISING, 1000);
             }
             else
             {
                 int color = Color.WHITE;
-                int life = 100;
+                long life = 100;
                 if(combatUnitList.get(0).GetCurrentHP() == 0)
                 {
                     color = Color.RED;
@@ -375,7 +375,7 @@ public class Scene
                     victoryScene();
                 }
                 writeText( dmg + "", color, combatUnitList.get(1).getx() + combatUnitList.get(1).getSprite().getWidth(),
-                        combatUnitList.get(1).getY() + combatUnitList.get(1).getSprite().getHeight(), 80, Text.Behavior.FALLING, 100);
+                        combatUnitList.get(1).getY() + combatUnitList.get(1).getSprite().getHeight(), 80, Text.Behavior.FALLING, 1000);
                 sfx.playSound(raw.hit);
             }
             cdbar.reset();
