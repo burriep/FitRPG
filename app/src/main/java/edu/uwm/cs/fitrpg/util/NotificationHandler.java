@@ -106,7 +106,7 @@ public class NotificationHandler extends BroadcastReceiver {
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         // TODO: change interval to AlarmManager.INTERVAL_DAY
-        alarmManager.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, alarmIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
     }
 
     public static void cancelReminder(Context context) {
